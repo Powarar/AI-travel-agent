@@ -1,0 +1,51 @@
+[
+ {
+  "source_id": "geonames_bulk",
+  "name": "GeoNames cities500",
+  "url": "https://download.geonames.org/export/dump/cities500.zip",
+  "kind": "real",
+  "fetched_at": "2026-10-25T14:08:02Z"
+ },
+ {
+  "source_id": "open_meteo_archive",
+  "name": "Open-Meteo historical archive",
+  "url": "https://archive-api.open-meteo.com/v1/archive",
+  "kind": "real",
+  "fetched_at": "2026-10-25T14:08:04Z"
+ },
+ {
+  "source_id": "openflights",
+  "name": "OpenFlights airports.dat",
+  "url": "https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat",
+  "kind": "real",
+  "fetched_at": "2026-10-25T14:36:11Z"
+ },
+ {
+  "source_id": "osm_overpass",
+  "name": "OpenStreetMap Overpass API",
+  "url": "https://overpass-api.de/api/interpreter",
+  "kind": "real",
+  "fetched_at": "2026-10-25T14:55:41Z"
+ },
+ {
+  "source_id": "osrm_demo",
+  "name": "OSRM public demo server",
+  "url": "https://router.project-osrm.org/table/v1/driving",
+  "kind": "real",
+  "fetched_at": "2026-10-25T14:53:48Z"
+ },
+ {
+  "source_id": "ourairports",
+  "name": "OurAirports data dump",
+  "url": "https://ourairports.com/data/airports.csv",
+  "kind": "real",
+  "fetched_at": "2026-10-25T14:36:11Z"
+ },
+ {
+  "source_id": "synthetic_seed",
+  "name": "Детерминированный генератор (hash-синтетика)",
+  "url": "local",
+  "kind": "synthetic",
+  "fetched_at": "2026-10-25T14:55:41Z"
+ }
+]
