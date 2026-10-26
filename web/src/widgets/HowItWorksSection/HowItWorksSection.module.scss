@@ -1,0 +1,55 @@
+.section {
+  padding-block: 5rem 6rem;
+  background: #fff;
+}
+
+.heading { margin-bottom: 2rem; }
+
+.kicker {
+  display: inline-block;
+  color: var(--color-blue);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.heading h2 {
+  margin: 0.8rem 0 1rem;
+  color: var(--color-blue);
+  font-size: clamp(2.5rem, 4vw, 4.5rem);
+  font-weight: 850;
+  line-height: 1.05;
+  letter-spacing: -0.06em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.stepCard {
+  min-height: 230px;
+  padding: 1.8rem;
+
+  h3 {
+    margin: 1.1rem 0 0.7rem;
+    color: var(--color-blue);
+    font-size: 1.35rem;
+    letter-spacing: -0.03em;
+  }
+
+  p { margin-bottom: 0; color: var(--color-muted); line-height: 1.55; }
+}
+
+.stepNumber { color: var(--color-blue); font-size: 1.8rem; font-weight: 850; }
+
+@media (max-width: 800px) {
+  .grid { grid-template-columns: 1fr; }
+  .stepCard { min-height: auto; }
+}
+
+@media (max-width: 540px) {
+  .section { padding-block: 4rem; }
+}

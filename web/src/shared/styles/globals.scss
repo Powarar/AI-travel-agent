@@ -1,0 +1,15 @@
+@use './variables';
+@use './reset';
+
+body {
+  background: var(--color-page);
+  color: var(--color-text);
+  font-family: 'Arial Rounded MT Bold', 'Trebuchet MS', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, p { margin-top: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

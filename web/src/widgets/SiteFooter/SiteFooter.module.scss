@@ -1,0 +1,21 @@
+.footer {
+  background: var(--color-blue);
+  color: #fff;
+}
+
+.inner {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 2rem;
+  font-size: 0.9rem;
+}
+
+.brand {
+  font-size: 1.2rem;
+  font-weight: 850;
+}
+
+@media (max-width: 540px) {
+  .inner { flex-direction: column; }
+}

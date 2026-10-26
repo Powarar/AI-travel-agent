@@ -5,8 +5,8 @@ WORKDIR /app
 ENV npm_config_fund=false \
     npm_config_audit=false
 
-COPY web/package.json ./
-RUN npm install
+COPY web/package.json web/package-lock.json ./
+RUN npm ci
 
 COPY web/ ./
 

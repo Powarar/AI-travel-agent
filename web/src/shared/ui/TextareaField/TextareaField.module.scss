@@ -1,0 +1,39 @@
+.field {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.label {
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 8.5rem;
+  resize: vertical;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-input);
+  outline: none;
+  background: #fff;
+  color: var(--color-text);
+  font: inherit;
+  line-height: 1.5;
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
+
+  &:focus-visible {
+    border-color: var(--color-blue);
+    box-shadow: 0 0 0 3px rgb(13 65 210 / 14%);
+  }
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}

@@ -7,6 +7,7 @@ PSQL := $(DC) exec postgres psql -U ostrovok -d ostrovok
 .PHONY: help
 help:
 	@echo "make up        — postgres+backend+agent+web (hot reload)"
+	@echo "make web       — только фронтенд (hot reload), http://localhost:5173"
 	@echo "make down      — остановить стек (данные в volume pgdata остаются)"
 	@echo "make build     — пересобрать образы"
 	@echo "make rebuild   — пересобрать без кэша"
@@ -23,6 +24,10 @@ help:
 .PHONY: up
 up:
 	$(DC) up -d
+
+.PHONY: web
+web:
+	$(DC) up -d --build web
 
 .PHONY: down
 down:
