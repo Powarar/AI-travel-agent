@@ -12,7 +12,7 @@ from services.agent.scripts.quiz_demo import (
     resume_from_file,
     resume_with_answer,
 )
-from shared.contracts.enums import Stage
+from shared.contracts.enums import Stage, Theme
 from shared.contracts.state import TripState
 
 MESSAGE = "хочу к тёплому морю в ноябре вдвоём с ребёнком, 150к, без долгих перелётов"
@@ -85,3 +85,18 @@ class TestInterrupt:
         assert request.party.pets.value is True
         assert request.party.pets.kind.value == "hard"
         assert request.party.pets.source == "user"
+
+    def test_mock_does_not_invent_what_the_user_did_not_say(self):
+        request = mock_parse("хочу куда-нибудь на неделю")
+        user_said = {path for path, field in request.iter_fields()
+                     if getattr(field, "source", None) == "user"}
+        assert user_said == set()
+        assert request.themes.is_unknown
+        assert request.party.adults.status.value == "defaulted"
+        assert request.direction.mode.status.value == "defaulted"
+
+    def test_words_the_user_did_say_stay_known(self):
+        request = mock_parse("вдвоём к морю")
+        assert request.themes.value == [Theme.BEACH]
+        assert request.party.adults.value == 2
+        assert request.party.adults.source == "user"

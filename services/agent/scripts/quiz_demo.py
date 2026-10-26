@@ -51,22 +51,46 @@ QUESTIONS: dict[str, dict[str, object]] = {
 }
 
 
+_ADULTS_WORDS = {
+    "вдвоём": 2, "для двоих": 2, "нас двое": 2, "мы двое": 2,
+    "втроём": 3, "для троих": 3, "нас трое": 3,
+}
+_THEME_WORDS = {
+    Theme.BEACH: ("морю", "море", "пляж"),
+    Theme.NATURE: ("гор", "лес", "природа"),
+    Theme.CITY: ("город",),
+    Theme.CULTURE: ("музе", "культур", "истори"),
+    Theme.FOOD: ("гастро", "еда", "ресторан"),
+}
+
+
 def mock_parse(text: str) -> TripRequest:
-    """Слот №1 (Parse) на моке: значение + kind + status + source."""
+    """Слот №1 (Parse) на моке: значение + kind + status + source.
+
+    Мок не имеет права приписывать юзеру то, чего он не сказал: unmatched поле остаётся
+    `unknown`, а безопасная подстановка — `defaulted`, иначе `known` только по тексту.
+    """
 
     request = TripRequest()
     lowered = text.lower()
 
-    request.direction.mode = FieldValue[DirectionMode].known(
-        DirectionMode.OPEN, kind=ConstraintKind.HARD, source="user"
+    request.direction.mode = FieldValue[DirectionMode].defaulted(
+        DirectionMode.OPEN, kind=ConstraintKind.HARD
     )
-    request.themes = FieldValue[list[Theme]].known([Theme.BEACH], kind=ConstraintKind.SOFT, source="user")
+    themes = [theme for theme, words in _THEME_WORDS.items() if any(word in lowered for word in words)]
+    if themes:
+        request.themes = FieldValue[list[Theme]].known(themes, kind=ConstraintKind.SOFT, source="user")
     request.soft_preferences = [
         phrase.strip()
         for phrase in re.findall(r"(без долгих перелётов|не долго лететь|тёплому морю)", lowered)
     ]
 
-    request.party.adults = FieldValue[int].known(2, kind=ConstraintKind.HARD, source="user")
+    hits = [count for word, count in _ADULTS_WORDS.items() if word in lowered]
+    adults = hits[0] if hits else None
+    if adults is None:
+        request.party.adults = FieldValue[int].defaulted(2, kind=ConstraintKind.HARD)
+    else:
+        request.party.adults = FieldValue[int].known(adults, kind=ConstraintKind.HARD, source="user")
     if re.search(r"с ребёнком", lowered):
         request.party.children = FieldValue[list[int]].known([7], kind=ConstraintKind.HARD, source="user")
     if re.search(r"с собако|с кот", lowered):
