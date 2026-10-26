@@ -1,0 +1,11 @@
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["shared/contracts"]
+mypy_path = "."
+explicit_package_bases = true
+exclude = "shared/contracts/(hotel|flight)\\.py"
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
