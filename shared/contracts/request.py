@@ -98,7 +98,7 @@ class Party(BaseModel):
 
 class Budget(BaseModel):
     amount: FieldValue[Money] = FieldValue.unknown(kind=ConstraintKind.HARD)
-    currency: FieldValue[str] = FieldValue.known("RUB", kind=ConstraintKind.HARD, source="default")
+    currency: FieldValue[str] = FieldValue.defaulted("RUB", kind=ConstraintKind.HARD)
     scope: FieldValue[BudgetScope] = FieldValue.unknown(kind=ConstraintKind.HARD)
     includes: FieldValue[list[BudgetInclude]] = FieldValue.unknown(kind=ConstraintKind.HARD)
 
