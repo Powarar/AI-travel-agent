@@ -8,11 +8,11 @@
 ## Как пользоваться
 
 1. Открыть волну, взять **свой** блок, у которого все «зависит» уже в `done`.
-2. В чат агенту: `agent/INFA.md` целиком + текст из поля «Текст для вставки» одного блока +
-   `agent/CONTRACTS.md`. Больше ничего; `docs/ARCHITECTURE.md` — только раздел, названный в
+2. В чат агенту: `services/agent/docs/INFA.md` целиком + текст из поля «Текст для вставки» одного блока +
+   `services/agent/docs/CONTRACTS.md`. Больше ничего; `docs/ARCHITECTURE.md` — только раздел, названный в
    блоке. Агент не инициирует чтение остальных документов.
 3. Прогнать команды из поля «Приёмка». Не сходится — блок не закрывать.
-4. Коммит: только файлы из поля «Файлы». Если задет контракт — `agent/CONTRACTS.md` в этом же
+4. Коммит: только файлы из поля «Файлы». Если задет контракт — `services/agent/docs/CONTRACTS.md` в этом же
    коммите.
 5. Пересечение с чужим треком — вопрос в общем чате, не правка чужих файлов.
 
@@ -21,10 +21,10 @@
 Пять проверок, в этом порядке. Первые две отклоняют большинство плохих прогонов.
 
 1. `git diff --stat` — изменены только файлы из поля «Файлы» и, если задет контракт,
-   `agent/CONTRACTS.md`. Всё остальное в диффе — отклонить, не «починить потом».
+   `services/agent/docs/CONTRACTS.md`. Всё остальное в диффе — отклонить, не «починить потом».
 2. Прогнать приёмку самому: `pytest`, `mypy`, grep из блока. Слова агента о том, что тесты
    зелёные, не считаются результатом.
-3. Если в диффе есть `agent/CONTRACTS.md` — читать его первым: имя поля, код нарушения или
+3. Если в диффе есть `services/agent/docs/CONTRACTS.md` — читать его первым: имя поля, код нарушения или
    SSE-событие могли быть подменены под удобную реализацию.
 4. Ищем запрещённое: импорты LLM-пакетов в `validation/`, `float` или «рубли в `int`» в
    money-коде, `httpx`/`requests`/парсеры вне `ingestion/`, новая зависимость в
@@ -38,10 +38,10 @@
 | Роль | Зона |
 |---|---|
 | П1 | агентский трек: модели, граф, валидатор, repair, LLM-слоты, грейдеры и метрики |
-| П2 | данные, HTTP, окружение, экран: seed, миграции, CI, retrieval (SQL + эмбеддинги), API/SSE, frontend, сценарии eval |
+| П2 | данные, HTTP, окружение, экран: seed, миграции, CI, retrieval (SQL + эмбеддинги), API/SSE, web, сценарии eval |
 
-Общее только двух: `backend/app/models/` (пишет П1, читает П2) и схема БД (пишет П2, читает П1).
-Формулу ранжирования и набор признаков утверждает П1 в `agent/CONTRACTS.md`, реализует П2.
+Общее только двух: `shared/contracts/` (пишет П1, читает П2) и схема БД (пишет П2, читает П1).
+Формулу ранжирования и набор признаков утверждает П1 в `services/agent/docs/CONTRACTS.md`, реализует П2.
 
 ## Волны
 
@@ -73,13 +73,13 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 
 **Владелец:** П1 пишет, П2 в этом же блоке задаёт enum-ы данных и тесты на сериализацию
 **Волна:** 0 · **Зависит:** — · **Нужно для:** всех остальных блоков
-**Файлы:** `backend/app/models/` (`request.py`, `state.py`, `money.py`, `violation.py`,
-`enums.py`), `backend/tests/unit/test_models.py`
+**Файлы:** `shared/contracts/` (`request.py`, `state.py`, `money.py`, `violation.py`,
+`enums.py`), `tests/unit/test_models.py`
 
 **Текст для вставки:**
-> Работай строго по блоку T-01 из agent/TASKS.md. Контракт: agent/CONTRACTS.md, разделы
-> TripRequest, FieldStatus, ConstraintKind, Money, TripState. Файлы: backend/app/models/* и
-> backend/tests/unit/test_models.py. Ничего кроме.
+> Работай строго по блоку T-01 из services/agent/docs/TASKS.md. Контракт: services/agent/docs/CONTRACTS.md, разделы
+> TripRequest, FieldStatus, ConstraintKind, Money, TripState. Файлы: shared/contracts/* и
+> tests/unit/test_models.py. Ничего кроме.
 
 **Сделать:**
 - Каждое поле `TripRequest` — обёртка со `kind`, `status`, `source`, `confidence`; список
@@ -89,7 +89,7 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
   пересчитывается из линий.
 
 **Приёмка:**
-- `pytest backend/tests/unit/test_models.py` зелёный, `mypy backend/app/models` чистый.
+- `pytest tests/unit/test_models.py` зелёный, `mypy shared/contracts` чистый.
 - Тест: `Money` в разных валютах → типизированная ошибка, а не тихая конвертация.
 - Тест: `BudgetLedger.total` не может разойтись с суммой `PriceLine` (кейс двойного учёта).
 - Ни одного `float` и «рублей в `int`» в модуле — проверить grep'ом.
@@ -101,12 +101,12 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 ### T-11 · Окружение, миграции, CI
 
 **Владелец:** П2 · **Волна:** 0 · **Зависит:** — · **Нужно для:** T-02, T-06, T-12
-**Файлы:** `docker-compose.yml`, `Makefile`, `backend/app/db/migrations/`,
+**Файлы:** `docker-compose.yml`, `Makefile`, `services/backend/app/db/migrations/`,
 `.github/workflows/ci.yml`, `.env.example`
 
 **Текст для вставки:**
-> Работай строго по блоку T-11 из agent/TASKS.md. Файлы: docker-compose.yml, Makefile,
-> backend/app/db/migrations/, .github/workflows/ci.yml, .env.example. Ничего кроме.
+> Работай строго по блоку T-11 из services/agent/docs/TASKS.md. Файлы: docker-compose.yml, Makefile,
+> services/backend/app/db/migrations/, .github/workflows/ci.yml, .env.example. Ничего кроме.
 
 **Приёмка:**
 - `make up` (postgres с pgvector + api), `make seed`, `make test`, `make eval` объявлены и
@@ -114,11 +114,11 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 - Одна базовая Alembic-миграция, одна схема.
 - `make up && make seed && make test` с чистого клона проходит без сети; время замера — в
   README.
-- CI гейты: `pytest`, `mypy backend/app` без новых ошибок, grep-проверка что в
+- CI гейты: `pytest`, `mypy services/backend/app services/agent/app shared/contracts` без новых ошибок, grep-проверка что в
   `validation/` нет импортов LLM-пакетов.
 - В `.env.example` только имена переменных, без ключей.
 
-**Не трогать:** `backend/app/*`. Не добавлять redis, очереди, nginx — их нет в `docs/adr.md`.
+**Не трогать:** `services/backend/app/*`. Не добавлять redis, очереди, nginx — их нет в `docs/adr.md`.
 
 ---
 
@@ -127,11 +127,11 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 ### T-02 · Воспроизводимый синтетический мир
 
 **Владелец:** П2 · **Волна:** 1 · **Зависит:** T-01, T-11 · **Нужно для:** T-04, T-05, T-10
-**Файлы:** `backend/app/data/seed.py`, миграция таблиц данных, `backend/app/data/README.md`
+**Файлы:** `services/backend/app/data/seed.py`, миграция таблиц данных, `services/backend/app/data/README.md`
 
 **Текст для вставки:**
-> Работай строго по блоку T-02 из agent/TASKS.md. Контракт: docs/ARCHITECTURE.md §9 и
-> разделы stay_rates / transport_legs / hotels / sources в agent/CONTRACTS.md. Ничего кроме.
+> Работай строго по блоку T-02 из services/agent/docs/TASKS.md. Контракт: docs/ARCHITECTURE.md §9 и
+> разделы stay_rates / transport_legs / hotels / sources в services/agent/docs/CONTRACTS.md. Ничего кроме.
 
 **Приёмка:**
 - 10 направлений × 40 отелей; `stay_rates` покрывает окно дат демо ±14 дней; часть дат
@@ -149,12 +149,12 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 ### T-03 · Валидатор: стыковки, сумма, целостность
 
 **Владелец:** П1 · **Волна:** 1 · **Зависит:** T-01 · **Нужно для:** T-05, T-08
-**Файлы:** `backend/app/validation/`, `backend/tests/unit/test_validator_coherence.py`,
-`backend/tests/unit/test_validator_budget.py`
+**Файлы:** `services/agent/app/validation/`, `tests/unit/test_validator_coherence.py`,
+`tests/unit/test_validator_budget.py`
 
 **Текст для вставки:**
-> Работай строго по блоку T-03 из agent/TASKS.md. Контракт: таблица кодов нарушений в
-> agent/CONTRACTS.md. В модуле validation/ запрещены импорты LLM-пакетов. Ничего кроме.
+> Работай строго по блоку T-03 из services/agent/docs/TASKS.md. Контракт: таблица кодов нарушений в
+> services/agent/docs/CONTRACTS.md. В модуле validation/ запрещены импорты LLM-пакетов. Ничего кроме.
 
 **Приёмка:**
 - Проверки: `ARRIVAL_AFTER_CHECKIN_DEADLINE`, `CHECKOUT_BEFORE_DEPARTURE`,
@@ -164,7 +164,7 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
   `repairable`, `suggested_actions`.
 - ≥12 unit-тестов на границах: прилёт 23:50 vs check-in 15:00; red-eye; checkout == время
   вылета; ночь без ставки; бюджет превышен на 1 ₽; `scope=per_person` при total-бюджете.
-- `grep -rn "import \(openai\|instructor\|litellm\|anthropic\)" backend/app/validation/` пусто.
+- `grep -rn "import \(openai\|instructor\|litellm\|anthropic\)" services/agent/app/validation/` пусто.
 
 **Не трогать:** структуру `TripState`. Repair не реализовывать, только помечать `repairable`.
 
@@ -173,12 +173,12 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 ### T-04 · Реестр инструментов + `affected()`
 
 **Владелец:** П1 · **Волна:** 1 · **Зависит:** T-01, T-02 · **Нужно для:** T-05, T-08
-**Файлы:** `backend/app/tools/registry.py`, `backend/app/orchestration/graph.py`,
-`backend/tests/unit/test_invalidation.py`
+**Файлы:** `services/agent/app/tools/registry.py`, `services/agent/app/orchestration/graph.py`,
+`tests/unit/test_invalidation.py`
 
 **Текст для вставки:**
-> Работай строго по блоку T-04 из agent/TASKS.md. Контракт: разделы «Реестр инструментов» и
-> «Ступени эскалации» в agent/CONTRACTS.md. Инструменты могут быть заглушками на данных T-02.
+> Работай строго по блоку T-04 из services/agent/docs/TASKS.md. Контракт: разделы «Реестр инструментов» и
+> «Ступени эскалации» в services/agent/docs/CONTRACTS.md. Инструменты могут быть заглушками на данных T-02.
 > Ничего кроме.
 
 **Приёмка:**
@@ -199,11 +199,11 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 ### T-06 · API v1 + SSE + возобновление хода
 
 **Владелец:** П2 · **Волна:** 1 · **Зависит:** T-01 · **Нужно для:** T-12
-**Файлы:** `backend/app/api/`, `backend/tests/integration/test_api.py`
+**Файлы:** `services/backend/app/api/`, `tests/integration/test_api.py`
 
 **Текст для вставки:**
-> Работай строго по блоку T-06 из agent/TASKS.md. Контракт: разделы «HTTP и возобновление» и
-> SSE-события в agent/CONTRACTS.md. Оркестратор подменяется фейком, который отдаёт
+> Работай строго по блоку T-06 из services/agent/docs/TASKS.md. Контракт: разделы «HTTP и возобновление» и
+> SSE-события в services/agent/docs/CONTRACTS.md. Оркестратор подменяется фейком, который отдаёт
 > заготовленные события. Ничего кроме.
 
 **Сделать:** роуты по контракту; `run.status=interrupted` читается из БД; оркестратор
@@ -227,12 +227,12 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 
 **Владелец:** П2 · **Волна:** 2 · **Зависит:** T-02 · **Нужно для:** T-05 (гейту хватает SQL-фильтра,
 векторная часть подключается после)
-**Файлы:** `backend/app/retrieval/`, `backend/app/ranking/`,
-`backend/tests/unit/test_retrieval_hard_filter.py`, `backend/tests/unit/test_ranking.py`
+**Файлы:** `services/backend/app/retrieval/`, `services/backend/app/ranking/`,
+`tests/unit/test_retrieval_hard_filter.py`, `tests/unit/test_ranking.py`
 
 **Текст для вставки:**
-> Работай строго по блоку T-10 из agent/TASKS.md. Контракт: docs/ARCHITECTURE.md §5 и поля
-> soft_preferences / lodging.* в agent/CONTRACTS.md. Без RRF и без cross-encoder. Ничего кроме.
+> Работай строго по блоку T-10 из services/agent/docs/TASKS.md. Контракт: docs/ARCHITECTURE.md §5 и поля
+> soft_preferences / lodging.* в services/agent/docs/CONTRACTS.md. Без RRF и без cross-encoder. Ничего кроме.
 
 **Приёмка:**
 - Hard-фильтр на SQL: страна, город, даты, `min_nights`, гости, `stars_min`,
@@ -253,12 +253,12 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 ### T-05 · Рантайм оркестратора и сквозной сценарий — ГЕЙТ
 
 **Владелец:** П1 · **Волна:** 2 · **Зависит:** T-02, T-03, T-04 · **Нужно для:** T-07, T-08, T-09, T-13
-**Файлы:** `backend/app/orchestration/{runtime,nodes,policy}.py`,
-`backend/app/llm/slots.py` (моки), `backend/tests/scenarios/test_golden_path.py`
+**Файлы:** `services/agent/app/orchestration/{runtime,nodes,policy}.py`,
+`services/agent/app/llm/slots.py` (моки), `tests/scenarios/test_golden_path.py`
 
 **Текст для вставки:**
-> Работай строго по блоку T-05 из agent/TASKS.md. Контракт: фазы в docs/ARCHITECTURE.md §2 и
-> SSE-события в agent/CONTRACTS.md. LLM-слоты — моки с фиксированными ответами. Ничего кроме.
+> Работай строго по блоку T-05 из services/agent/docs/TASKS.md. Контракт: фазы в docs/ARCHITECTURE.md §2 и
+> SSE-события в services/agent/docs/CONTRACTS.md. LLM-слоты — моки с фиксированными ответами. Ничего кроме.
 
 **Приёмка:**
 - Узлы — чистые функции `state → state`; рёбра — policy-функция; `interrupt` при вопросе
@@ -277,11 +277,11 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 ### T-12 · Frontend против SSE-контракта
 
 **Владелец:** П2 · **Волна:** 2 · **Зависит:** T-06, список SSE-событий · **Нужно для:** демо
-**Файлы:** `frontend/`
+**Файлы:** `web/`
 
 **Текст для вставки:**
-> Работай строго по блоку T-12 из agent/TASKS.md. Контракт: SSE-события и раздел «HTTP и
-> возобновление» в agent/CONTRACTS.md. Backend не менять; для разработки использовать записанные
+> Работай строго по блоку T-12 из services/agent/docs/TASKS.md. Контракт: SSE-события и раздел «HTTP и
+> возобновление» в services/agent/docs/CONTRACTS.md. Backend не менять; для разработки использовать записанные
 > ответы (fixtures). Ничего кроме.
 
 **Приёмка:**
@@ -295,7 +295,7 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 - `interrupted` run возобновляется после перезагрузки страницы; golden path прогоняется в
   браузере на офлайн-данных.
 
-**Не трогать:** `backend/`.
+**Не трогать:** `services/backend/`.
 
 ---
 
@@ -304,11 +304,11 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 ### T-07 · LLM-слоты на реальном провайдере
 
 **Владелец:** П1 · **Волна:** 3 · **Зависит:** T-05 · **Нужно для:** T-08, T-09
-**Файлы:** `backend/app/llm/{provider_openai_compatible.py,schemas.py,instructor.py}`,
-`backend/tests/scenarios/test_parse_accuracy.py`
+**Файлы:** `services/agent/app/llm/{provider_openai_compatible.py,schemas.py,instructor.py}`,
+`tests/scenarios/test_parse_accuracy.py`
 
 **Текст для вставки:**
-> Работай строго по блоку T-07 из agent/TASKS.md. Контракт: таблица 6 слотов в
+> Работай строго по блоку T-07 из services/agent/docs/TASKS.md. Контракт: таблица 6 слотов в
 > docs/LLM-BOUNDARY.md. Моки из T-05 должны остаться рабочими. Ничего кроме.
 
 **Приёмка:**
@@ -326,12 +326,12 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 ### T-08 · Дельта-пересборка + repair
 
 **Владелец:** П1 · **Волна:** 3 · **Зависит:** T-05, T-07 · **Нужно для:** T-09, демо
-**Файлы:** `backend/app/repair/`, `backend/tests/scenarios/test_delta_replan.py`,
-`backend/tests/scenarios/test_repair.py`
+**Файлы:** `services/agent/app/repair/`, `tests/scenarios/test_delta_replan.py`,
+`tests/scenarios/test_repair.py`
 
 **Текст для вставки:**
-> Работай строго по блоку T-08 из agent/TASKS.md. Контракт: «Ступени эскалации» и Repair в
-> agent/CONTRACTS.md, docs/ARCHITECTURE.md §7. Ступень 3 не реализовывать. Ничего кроме.
+> Работай строго по блоку T-08 из services/agent/docs/TASKS.md. Контракт: «Ступени эскалации» и Repair в
+> services/agent/docs/CONTRACTS.md, docs/ARCHITECTURE.md §7. Ступень 3 не реализовывать. Ничего кроме.
 
 **Приёмка:**
 - Кейсы: «давай на троих», «у нас собака», «бюджет −30%», «на два дня позже». Для каждого
@@ -353,7 +353,7 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 **Файлы:** `evaluation/scenarios/*.json`, `evaluation/run_eval.py`, `evaluation/metrics.md`
 
 **Текст для вставки:**
-> Работай строго по блоку T-09 из agent/TASKS.md. Контракт: определение «доведён до конца» в
+> Работай строго по блоку T-09 из services/agent/docs/TASKS.md. Контракт: определение «доведён до конца» в
 > docs/PLAN.md §5. Модельный грейтир разрешён только для качества объяснения. Ничего кроме.
 
 **Приёмка:**
@@ -373,10 +373,10 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 ### T-13 · Ingestion-адаптер легального источника
 
 **Владелец:** П2 · **Волна:** 3, только после зелёного T-05 · **Зависит:** T-05
-**Файлы:** `backend/app/ingestion/`, цель `make warmup` в `Makefile`
+**Файлы:** `services/backend/app/ingestion/`, цель `make warmup` в `Makefile`
 
 **Текст для вставки:**
-> Работай строго по блоку T-13 из agent/TASKS.md. Источник — документированный API с токеном
+> Работай строго по блоку T-13 из services/agent/docs/TASKS.md. Источник — документированный API с токеном
 > или открытый датасет; HTML чужих сайтов не парсится (docs/adr.md ADR-006). Ничего кроме.
 
 **Приёмка:**
