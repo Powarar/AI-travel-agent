@@ -127,7 +127,8 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 
 ### T-02 · Воспроизводимый синтетический мир
 
-**Статус:** 🟡 almost done 2026-10-26 (П2, коммит 20f558d) — генераторы + `data/seeds/*.json` (61 направление, 1296 отелей, 44 528 ставок) + `scripts/seed_database.py`; не хватает части тестов приёмки и покрытия сценариев «нет ставки», «red-eye», «прилёт позже check-in»
+**Статус:** 🟡 almost done 2026-10-26 (П2, коммит 20f558d) — генераторы + `data/seeds/*.json` (61 направление, 1296 отелей, 44 528 ставок) + `scripts/seed_database.py`; не хватает части тестов приёмки и покрытия сценариев «нет ставки», «red-eye», «прилёт позже check-in».
+Проверено П1 на своей приёмке: загрузка в postgres прошла — `sources 7 / destinations 61 / hotels 1296 / stay_rates 44 528 / transport_legs 3788 / transfers 1260 / climate 732`, порог `> 10 000` закрыт. Тесты валидатора T-03 на этих сценариях пишутся от синтетических `Plan`, не от БД, так что T-02 больше не блокирует критический путь.
 **Владелец:** П2 · **Волна:** 1 · **Зависит:** T-01, T-11 · **Нужно для:** T-04, T-05, T-10
 **Файлы:** `services/backend/app/data/seed.py`, миграция таблиц данных, `services/backend/app/data/README.md`
 
@@ -150,7 +151,12 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 
 ### T-03 · Валидатор: стыковки, сумма, целостность
 
-**Статус:** 🔵 in progress 2026-10-26 (П1)
+**Статус:** ✅ done 2026-10-26 (П1) — `services/agent/app/validation/{inputs,policy,coherence}.py`,
+31 тестов приёмки (`tests/unit/test_validator_coherence.py`, `test_validator_budget.py`),
+модуль без LLM- и сетевых импортов, `mypy strict` чистый. Реализовано: все коды из приёмки +
+`HARD_CONSTRAINT_UNSATISFIED` против сказанных полей (питомец, названный бюджет, `max_hours_direct`),
+`per_person` умножается на состав, `over_by`/`reduce_lodging_to` считаются в `BudgetLedger`-денеггах.
+Не делал: repair (по ТЗ только флаг `repairable`) — это T-08.
 **Владелец:** П1 · **Волна:** 1 · **Зависит:** T-01 · **Нужно для:** T-05, T-08
 **Файлы:** `services/agent/app/validation/`, `tests/unit/test_validator_coherence.py`,
 `tests/unit/test_validator_budget.py`
