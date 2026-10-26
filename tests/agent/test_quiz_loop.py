@@ -64,3 +64,12 @@ class TestInterrupt:
         state = resume_with_answer(fresh_state(), "origin", "Москва")
         assert state.request.origin.source == "user"
         assert state.request.origin.status.value == "known"
+
+    def test_iso_date_pair_is_not_misparsed_as_year_digits(self):
+        state = resume_with_answer(fresh_state(), "dates.start", "2026-11-01:2026-11-08")
+        assert str(state.request.dates.start.value) == "2026-11-01"
+        assert state.request.nights.value == 7
+
+    def test_empty_date_range_is_rejected(self):
+        with pytest.raises(ValueError):
+            apply_answer(fresh_state().request, "dates.start", "с 27 по 20")

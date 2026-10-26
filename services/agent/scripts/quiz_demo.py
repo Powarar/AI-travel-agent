@@ -138,11 +138,17 @@ def apply_answer(request: TripRequest, field: str, raw: str) -> TripRequest:
             request.dates.flexibility_days = FieldValue[int].defaulted(3, kind=ConstraintKind.SOFT)
             request.nights = FieldValue[int].defaulted(7, kind=ConstraintKind.HARD)
         else:
-            match = re.search(r"(\d{1,2}).*?(\d{1,2})", answer)
-            if not match:
-                raise ValueError(f"cannot read a date range from {answer!r}")
-            start = DEMO_MONTH.replace(day=int(match.group(1)))
-            end = DEMO_MONTH.replace(day=int(match.group(2)))
+            iso = re.findall(r"\d{4}-\d{2}-\d{2}", answer)
+            if len(iso) >= 2:
+                start, end = date.fromisoformat(iso[0]), date.fromisoformat(iso[1])
+            else:
+                days = [int(n) for n in re.findall(r"\d{1,2}", answer)]
+                if len(days) < 2:
+                    raise ValueError(f"cannot read a date range from {answer!r}")
+                start = DEMO_MONTH.replace(day=days[0])
+                end = DEMO_MONTH.replace(day=days[1])
+            if end <= start:
+                raise ValueError(f"date range is empty: {start} → {end}")
             request.dates.start = FieldValue[date].known(start, kind=ConstraintKind.HARD, source="user")
             request.dates.end = FieldValue[date].known(end, kind=ConstraintKind.HARD, source="user")
             request.nights = FieldValue[int].inferred(
