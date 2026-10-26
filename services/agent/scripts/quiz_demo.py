@@ -69,7 +69,7 @@ def mock_parse(text: str) -> TripRequest:
     request.party.adults = FieldValue[int].known(2, kind=ConstraintKind.HARD, source="user")
     if re.search(r"с ребёнком", lowered):
         request.party.children = FieldValue[list[int]].known([7], kind=ConstraintKind.HARD, source="user")
-    if re.search(r"宠物|с собако|с кот", lowered):
+    if re.search(r"с собако|с кот", lowered):
         request.party.pets = FieldValue[bool].known(True, kind=ConstraintKind.HARD, source="user")
 
     if match := re.search(r"(\d{1,3})\s*[кk]\b", lowered):
@@ -85,8 +85,9 @@ def mock_parse(text: str) -> TripRequest:
         request.transport.prefer_direct = FieldValue[bool].known(True, kind=ConstraintKind.SOFT, source="user")
 
     if "ноябр" in lowered:
+        # «в ноябре» — это не дата: вывели мы, значит поле требует подтверждения (CONTRACTS.md)
         request.dates.start = FieldValue[date].inferred(
-            DEMO_MONTH.replace(day=1), kind=ConstraintKind.HARD, source="user", confidence=0.5
+            DEMO_MONTH.replace(day=1), kind=ConstraintKind.HARD, source="context", confidence=0.5
         )
 
     if match := re.search(r"(\d{1,2})\s*(?:ноч|ночей)", lowered):

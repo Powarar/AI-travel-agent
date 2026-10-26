@@ -73,3 +73,15 @@ class TestInterrupt:
     def test_empty_date_range_is_rejected(self):
         with pytest.raises(ValueError):
             apply_answer(fresh_state().request, "dates.start", "с 27 по 20")
+
+    def test_month_without_a_date_is_inferred_not_user(self):
+        request = mock_parse("уедем в ноябре на неделю")
+        assert request.dates.start.status.value == "inferred"
+        assert request.dates.start.source == "context"
+        assert request.dates.start.needs_confirmation is True
+
+    def test_pet_phrase_marks_hard_known_field(self):
+        request = mock_parse("едем с собакой")
+        assert request.party.pets.value is True
+        assert request.party.pets.kind.value == "hard"
+        assert request.party.pets.source == "user"
