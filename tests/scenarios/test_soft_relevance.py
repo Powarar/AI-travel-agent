@@ -1,0 +1,272 @@
+"""Слот №3 в контуре: мягкая релевантность меняет состав плана и не ломает воспроизводимость.
+
+Три вещи, которые здесь проверяются (CONTRACTS.md, «Мягкая релевантность (слот №3)»):
+
+* ранжирование работает — при выставленном балле `compose` берёт другой отель;
+* отказ слота не меняет ничего — офлайн-прогон и прогон с `soft_relevance() -> None`
+  дают тот же состав плана, иначе воспроизводимость трейса зависит от доступности сети;
+* учёт хода честный — `/rerank` не ест `llm_calls` (лимит шести обращений про чат-слоты),
+  но его токены попадают в `budgets.tokens`.
+
+Заодно — два инварианты рядом с слотом №4: числа, которых нет в `ref` кандидата, не попадают
+в `TripState` (иначе guard сверяет объяснение по тексту той же модели), и деньги в слот №5
+уходят уже отформатированными.
+"""
+
+from __future__ import annotations
+
+from decimal import Decimal
+from uuid import UUID, uuid4
+
+import pytest
+
+from services.agent.app.llm.provider_openai_compatible import _usage_tokens
+from services.agent.app.llm.rerank import RerankHit
+from services.agent.app.llm.slots import Explanation, MockSlots
+from services.agent.app.orchestration import nodes
+from services.agent.app.orchestration.nodes import SearchResult, apply_relevance, merge_results
+from services.agent.app.orchestration.runtime import Runtime
+from shared.contracts.enums import DataStatus
+from shared.contracts.money import BudgetLedger, Money
+from shared.contracts.state import Candidate, TripState
+from tests.scenarios.test_golden_path import (
+    MESSAGE,
+    NOW,
+    SOURCES,
+    _money,
+    golden_run,
+    walk_question,
+)
+
+UTC = NOW.tzinfo
+
+#: `trip_id` без цифр: haystack guard'а — сериализованное состояние целиком, а в hex
+#: произвольного UUID двухзначные числа встречаются примерно в половине случаев, и проверка
+#: «выдуманное 29 поймано» на `uuid4()` была бы flaky-тестом.
+QUIET_TRIP = UUID("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+
+
+class RankedSlots(MockSlots):
+    """Мок с известными баллами: проверяем следствие, а не запрос к шлюзу."""
+
+    def __init__(self, scores: dict[str, float]) -> None:
+        self.scores = scores
+        self.tokens_used = 0
+        self.calls: list[tuple[str, list[str]]] = []
+
+    def soft_relevance(self, query: str, documents: dict[str, str]):
+        self.calls.append((query, sorted(documents)))
+        self.tokens_used += 120
+        return {cid: self.scores[cid] for cid in documents if cid in self.scores}
+
+
+class UnavailableSlots(RankedSlots):
+    """Слот выключен или шлюз молчит: `None` на входе слота №3."""
+
+    def soft_relevance(self, query: str, documents: dict[str, str]):
+        self.calls.append((query, sorted(documents)))
+        return None
+
+
+def run_with(scores: dict[str, float]) -> tuple[Runtime, RankedSlots, object]:
+    slots = RankedSlots(scores)
+    engine = Runtime(SOURCES, slots=slots)  # type: ignore[arg-type]
+    run = engine.start(MESSAGE, now=NOW)
+    run = walk_question(run, engine, "Москва")
+    run = walk_question(run, engine, "с 14 по 21")
+    return engine, slots, run
+
+
+def relevance_of(run) -> dict[str, str]:
+    return {candidate.candidate_id: candidate.ref.get("relevance", "")
+            for candidate in run.state.candidates.hotels}
+
+
+class TestQueryAndDocument:
+    """Запрос и текст кандидата собирает код, а не модель."""
+
+    def test_themes_and_phrases_become_one_russian_line(self) -> None:
+        slots = MockSlots()
+        request = slots.parse("хочу к тёплому морю в ноябре, без долгих перелётов")
+        query = nodes.relevance_query(request)
+        assert "море пляж" in query
+        assert "без долгих перелётов" in query
+        #: английское значение enum в русском запросе — мусор: реранкер скорит лексику
+        assert "beach" not in query
+
+    def test_document_carries_amenities_translated(self) -> None:
+        candidate = Candidate(
+            candidate_id="AYT-LUX", kind="hotel",
+            ref={"name": "Gulf Palace", "stars": "5", "destination": "AYT",
+                 "amenities": "spa,beach_first_line,unknown_thing"},
+            score=0.195, data_status=DataStatus.SYNTHETIC,
+        )
+        text = nodes.hotel_document(candidate)
+        assert text.startswith("Gulf Palace, 5 звёзд, AYT, ")
+        assert "спа" in text and "первая линия пляжа" in text
+        #: неизвестное значение словаря остаётся как названо, а не выкидывается
+        assert "unknown_thing" in text
+
+    def test_empty_amenities_do_not_leave_a_comma(self) -> None:
+        candidate = Candidate(candidate_id="X", kind="hotel",
+                              ref={"name": "Тихий двор", "stars": "3"},
+                              score=0.1, data_status=DataStatus.SYNTHETIC)
+        assert nodes.hotel_document(candidate) == "Тихий двор, 3 звёзд"
+
+
+class TestApplyRelevance:
+    def test_step_rounding_and_source_score_untouched(self) -> None:
+        state = TripState(trip_id=uuid4())
+        state.candidates.hotels = [
+            Candidate(candidate_id="A", kind="hotel", ref={"name": "A"}, score=0.5,
+                      data_status=DataStatus.SYNTHETIC),
+            Candidate(candidate_id="B", kind="hotel", ref={"name": "B"}, score=0.4,
+                      data_status=DataStatus.SYNTHETIC),
+        ]
+        updated = apply_relevance(state, {"A": 0.833, "B": 0.674})
+        scores = {c.candidate_id: c.ref["relevance"] for c in updated.candidates.hotels}
+        #: шаг 0.05: 0.833 → 0.85, 0.674 → 0.65 — различие ниже шага выбор менять не должно
+        assert scores == {"A": "0.85", "B": "0.65"}
+        #: `score` источника — отдельное число, слот №3 его не перезаписывает
+        assert [c.score for c in updated.candidates.hotels] == [0.5, 0.4]
+
+    def test_unknown_candidate_is_ignored(self) -> None:
+        state = TripState(trip_id=uuid4())
+        state.candidates.hotels = [
+            Candidate(candidate_id="A", kind="hotel", ref={"name": "A"}, score=0.5,
+                      data_status=DataStatus.SYNTHETIC)]
+        updated = apply_relevance(state, {"NOPE": 0.9})
+        assert "relevance" not in updated.candidates.hotels[0].ref
+
+
+class TestComposeUsesRelevance:
+    """Был выбран дешёвый отель, стал — подходящий по теме: меняться должен именно состав."""
+
+    def _composed(self, run, scores: dict[str, float]):
+        state = apply_relevance(run.state, scores)
+        search = merge_results(list(run.scratch.results.values()))
+        return nodes.compose(state, search, now=NOW)
+
+    def test_more_relevant_hotel_wins_over_cheaper(self) -> None:
+        engine, _slots, run = run_with({})
+        composition = self._composed(run, {"AYT-FAM": 0.10, "AYT-LUX": 0.95,
+                                          "HKT-ONE": 0.50, "HER-ONE": 0.50})
+        assert composition.plan is not None
+        assert composition.plan.hotel.hotel_id == "AYT-LUX"
+
+    def test_equal_relevance_falls_back_to_price(self) -> None:
+        engine, _slots, run = run_with({})
+        composition = self._composed(run, {"AYT-FAM": 0.80, "AYT-LUX": 0.80,
+                                          "HKT-ONE": 0.10, "HER-ONE": 0.10})
+        assert composition.plan is not None
+        #: при равенстве балла решает стоимость ночи — иначе порядок берётся из шума
+        assert composition.plan.hotel.hotel_id == "AYT-FAM"
+
+    def test_garbage_relevance_does_not_break_composition(self) -> None:
+        engine, _slots, run = run_with({})
+        state = run.state.model_copy(update={}, deep=True)
+        state.candidates.hotels[0].ref["relevance"] = "не число"
+        composition = nodes.compose(
+            state, merge_results(list(run.scratch.results.values())), now=NOW)
+        assert composition.plan is not None
+
+
+class TestRuntimeWiring:
+    def test_slot_three_runs_once_and_fills_every_hotel(self) -> None:
+        _engine, slots, run = run_with({"AYT-FAM": 0.9, "AYT-LUX": 0.5,
+                                        "HKT-ONE": 0.4, "HER-ONE": 0.3})
+        assert len(slots.calls) == 1
+        query, documents = slots.calls[0]
+        assert "море" in query
+        assert sorted(documents) == ["AYT-FAM", "AYT-LUX", "AYT-STD", "HER-ONE", "HKT-ONE"]
+        #: AYT-STD не получил балл (его нет в `scores`) — он отсеян по вместимости, и в
+        #: состоянии у него остаётся пустая релевантность, а не ноль от нас
+        assert relevance_of(run)["AYT-LUX"] == "0.50"
+        assert run.state.outcome is not None
+
+    def test_rerank_is_not_an_llm_call_but_is_a_cost(self) -> None:
+        budgets = run_with({"AYT-FAM": 0.9})[2].state.budgets
+        #: parse + 2 вопроса + finalists + explain = 5 чат-обращений, реранк сверху не считается
+        assert budgets.llm_calls == 5
+        assert budgets.tokens == 120
+
+    def test_unavailable_slot_leaves_the_plan_identical(self) -> None:
+        slots = UnavailableSlots({})
+        engine = Runtime(SOURCES, slots=slots)  # type: ignore[arg-type]
+        run = golden_run_on(engine)
+        offline = golden_run(Runtime(SOURCES))
+        assert run.state.chosen.component_refs == offline.state.chosen.component_refs
+        assert all("relevance" not in candidate.ref for candidate in run.state.candidates.hotels)
+        assert slots.calls, "слот №3 вызывается, даже когда нечем скорить"
+
+
+def golden_run_on(engine: Runtime):
+    run = engine.start(MESSAGE, now=NOW)
+    run = walk_question(run, engine, "Москва")
+    run = walk_question(run, engine, "с 14 по 21")
+    return engine.checkout(run, now=NOW)
+
+
+class TestFinalistReasonKeepsOnlyKnownNumbers:
+    """Число в `why` живёт, только если оно уже лежит в `ref` того же кандидата."""
+
+    def _mark(self, reason: str) -> str:
+        state = TripState(trip_id=uuid4())
+        source = Candidate(
+            candidate_id="AYT", kind="destination",
+            ref={"name": "Анталья", "country": "Турция", "sea_temp_c": "24", "stars": ""},
+            score=0.92, data_status=DataStatus.SYNTHETIC)
+        state.candidates.destinations = [source]
+        chosen = source.model_copy(update={"ref": {**source.ref, "why": reason}})
+        updated = nodes.mark_finalists(state, [chosen])
+        return updated.candidates.destinations[0].ref["why"]
+
+    def test_number_from_the_source_survives(self) -> None:
+        assert self._mark("море +24° в ноябре") == "море +24° в ноябре"
+
+    def test_invented_number_is_cut_out_with_its_unit(self) -> None:
+        cleaned = self._mark("море +29°, перелёт 3.5 ч, 5 звёзд")
+        assert "29" not in cleaned and "3.5" not in cleaned and "5" not in cleaned
+        assert not cleaned.endswith(("+", "°,", "ч", "звёзд"))
+        assert "море" in cleaned
+
+    def test_reason_without_numbers_is_untouched(self) -> None:
+        assert self._mark("тёплое море и короткий перелёт") == "тёплое море и короткий перелёт"
+
+    def test_state_gives_guard_nothing_the_model_invented(self) -> None:
+        #: прямая проверка дыры: объяснение с выдуманным числом после `mark_finalists`
+        #: ловится, хотя это число только что было в тексте причины
+        state = TripState(trip_id=QUIET_TRIP)
+        source = Candidate(candidate_id="AYT", kind="destination",
+                           ref={"name": "Анталья", "sea_temp_c": "24"},
+                           score=0.92, data_status=DataStatus.SYNTHETIC)
+        state.candidates.destinations = [source]
+        chosen = source.model_copy(update={"ref": {"why": "море 29°"}})
+        state = nodes.mark_finalists(state, [chosen])
+        from services.agent.app.orchestration.runtime import unverified_numbers
+        ledger = BudgetLedger(lines=[], budget=_money(150000), scope="total")
+        assert unverified_numbers("29", state, ledger) == ["29"]
+
+
+class TestUsageAccounting:
+    def test_total_tokens_preferred(self) -> None:
+        assert _usage_tokens({"total_tokens": 700, "prompt_tokens": 600,
+                              "completion_tokens": 100}) == 700
+
+    def test_parts_sum_when_gateway_omits_total(self) -> None:
+        assert _usage_tokens({"prompt_tokens": 610, "completion_tokens": 90}) == 700
+
+    def test_missing_usage_is_not_an_error(self) -> None:
+        assert _usage_tokens({}) == 0
+
+
+class TestExplanationCarriesDisplayStrings:
+    def test_money_reaches_the_model_already_formatted(self) -> None:
+        ledger = BudgetLedger(
+            lines=[], budget=_money(150000), scope="total")
+        explanation = Explanation.from_parts(
+            headline="Анталья", nights=7, guests=3,
+            check_in=NOW.date(), check_out=NOW.date(),
+            ledger=ledger, facts={})
+        assert explanation.displays["total"] == "0 ₽"
+        assert explanation.displays["budget"] == "150 000 ₽"

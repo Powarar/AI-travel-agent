@@ -101,6 +101,9 @@ class Run:
     order_id: str | None = None
     trace: list[str] = field(default_factory=list)
     started_at: float = 0.0
+    #: сколько токенов провайдер насчитал на момент последней зарядки: `budgets.tokens`
+    #: прирастает разностью, потому что один провайдер живёт дольше одного хода
+    tokens_seen: int = 0
 
 
 class InterruptedRun(BaseModel):
@@ -369,6 +372,33 @@ class Runtime:
             run.state = nodes.absorb(run.state, name, result)
             if name == "suggest_destinations":
                 run = self._finalists(run)
+            elif name == "hotel_search":
+                run = self._relevance(run)
+        return run
+
+    def _relevance(self, run: Run) -> Run:
+        """Слот №3: мягкая релевантность отелей против фраз предпочтений (CONTRACTS.md).
+
+        Отказ, выключенный слот или пустой запрос — не ошибка и не ноль на всех кандидатах:
+        порядок остаётся тем, как его отдал источник. Иначе офлайн-прогон и прогон с сетью
+        разошлись бы составом плана, а воспроизводимость трейса — первое требование T-05.
+        """
+
+        documents = {candidate.candidate_id: nodes.hotel_document(candidate)
+                     for candidate in run.state.candidates.hotels}
+        query = nodes.relevance_query(run.state.request)
+        if not documents or not query:
+            logger.info("relevance skipped trip=%s docs=%d query_empty=%s",
+                        run.state.trip_id, len(documents), not query)
+            return run
+        scores = self._slot_relevance(run, query, documents)
+        if not scores:
+            logger.info("relevance unavailable trip=%s docs=%d", run.state.trip_id, len(documents))
+            return run
+        run.state = nodes.apply_relevance(run.state, scores)
+        best = max(scores, key=lambda candidate_id: scores[candidate_id])
+        logger.info("relevance applied trip=%s hotels=%d top=%s",
+                    run.state.trip_id, len(scores), best)
         return run
 
     def _finalists(self, run: Run) -> Run:
@@ -614,25 +644,48 @@ class Runtime:
         if self._stop_reason(run):
             return None
         self._charge(run, llm=1)
-        return self._slots.parse(message)
+        delta = self._slots.parse(message)
+        self._charge_tokens(run)
+        return delta
 
     def _slot_formulate(self, run: Run, spec: QuestionSpec) -> str | None:
         if self._stop_reason(run):
             return None
         self._charge(run, llm=1)
-        return self._slots.formulate(spec)
+        text = self._slots.formulate(spec)
+        self._charge_tokens(run)
+        return text
+
+    def _slot_relevance(self, run: Run, query: str,
+                        documents: dict[str, str]) -> dict[str, float] | None:
+        """Слот №3 — вне `llm_calls`: лимит шести обращений хода считается по чат-слотам.
+
+        Чат-слоты и cross-encoder различаются ценой и тем, что они решают; засчитывать реранк
+        в `llm_calls` значило бы, что два вопроса плюс перегенерация объяснения обнуляют ход
+        раньше, чем он успеет ранжировать (CONTRACTS.md, «Мягкая релевантность (слот №3)»).
+        """
+
+        if self._stop_reason(run):
+            return None
+        scores = self._slots.soft_relevance(query, documents)
+        self._charge_tokens(run)
+        return scores
 
     def _slot_finalists(self, run: Run, candidates: list[Candidate]) -> list[Candidate] | None:
         if self._stop_reason(run):
             return None
         self._charge(run, llm=1)
-        return self._slots.pick_finalists(candidates)
+        picked = self._slots.pick_finalists(candidates)
+        self._charge_tokens(run)
+        return picked
 
     def _slot_explain(self, run: Run, explanation: Explanation) -> str | None:
         if self._stop_reason(run):
             return None
         self._charge(run, llm=1)
-        return self._slots.explain(explanation)
+        text = self._slots.explain(explanation)
+        self._charge_tokens(run)
+        return text
 
     # ---------------------------------------------------------------- счётчики
 
@@ -645,6 +698,23 @@ class Runtime:
             "questions_asked": run.state.budgets.questions_asked + questions,
         })
         run.state = run.state.model_copy(update={"budgets": budgets})
+
+    def _charge_tokens(self, run: Run) -> None:
+        """Приращение счётчика провайдера → `budgets.tokens`: учёт стоимости хода в состоянии.
+
+        Поле есть в контракте с T-01 и всегда было нулём: «сколько стоил ход» приходилось
+        считать по логам. Разность, а не абсолют, — потому что один провайдер обслуживает
+        несколько ходов подряд, а счётчик хода обнуляется на `start()`.
+        """
+
+        total = int(getattr(self._slots, "tokens_used", 0) or 0)
+        delta = total - run.tokens_seen
+        if delta <= 0:
+            return
+        run.tokens_seen = total
+        run.state = run.state.model_copy(update={
+            "budgets": run.state.budgets.model_copy(update={"tokens": run.state.budgets.tokens + delta})
+        })
 
     def _charge_clock(self, run: Run) -> None:
         run.state = run.state.model_copy(update={

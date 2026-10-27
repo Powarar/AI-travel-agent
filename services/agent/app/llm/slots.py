@@ -153,12 +153,23 @@ class Explanation(BaseModel):
     remaining: Money
     breakdown: dict[str, Money]
     facts: dict[str, str] = Field(default_factory=dict)
+    #: Деньги в том виде, в каком их надо написать: «125 200 ₽». Модель копирует эту строку,
+    #: а не форматирует `total` сама. Живой прогон 2026-10-27 выдал «125200.00 RUB»: число
+    #: верное, guard его пропускает, и читается как выписка из БД — потому что в модели
+    #: `Money` сериализуется именно так, а другой подсказки во входе не было.
+    displays: dict[str, str] = Field(default_factory=dict)
 
     @classmethod
     def from_parts(cls, *, headline: str, nights: int, guests: int,
                    check_in: date, check_out: date, ledger: BudgetLedger,
                    facts: dict[str, str]) -> Explanation:
         breakdown = {kind.value: money for kind, money in ledger.breakdown.items()}
+        displays = {
+            "total": display(ledger.total),
+            "budget": display(ledger.budget),
+            "remaining": display(ledger.remaining),
+            **{kind: display(money) for kind, money in breakdown.items()},
+        }
         return cls(
             headline=headline,
             nights=nights,
@@ -170,6 +181,7 @@ class Explanation(BaseModel):
             remaining=ledger.remaining,
             breakdown=breakdown,
             facts=facts,
+            displays=displays,
         )
 
 
@@ -179,6 +191,9 @@ class LLMSlots(Protocol):
     def parse(self, message: str) -> TripRequest: ...
 
     def formulate(self, spec: QuestionSpec) -> str: ...
+
+    def soft_relevance(self, query: str,
+                       documents: dict[str, str]) -> dict[str, float] | None: ...
 
     def pick_finalists(self, candidates: list[Candidate]) -> list[Candidate]: ...
 
@@ -325,6 +340,18 @@ class MockSlots:
         if spec.options:
             return f"{spec.why} Варианты: {', '.join(spec.options)}."
         return spec.why
+
+    def soft_relevance(self, query: str,
+                       documents: dict[str, str]) -> dict[str, float] | None:
+        """Слот №3 офлайн: `None` — порядок остаётся тем, как его отдал источник.
+
+        Мок не умеет скорить текст, и выдумывать баллы «по названию» — это подмешать в
+        воспроизводимый прогон число, которого никто не считал. Честный офлайн-ответ: `None`,
+        и `compose` выбирает отель по цене, как до врезки слота №3
+        (CONTRACTS.md, «Мягкая релевантность (слот №3)»).
+        """
+
+        return None
 
     def pick_finalists(self, candidates: list[Candidate]) -> list[Candidate]:
         """Слот №4: из отфильтрованного кодом набора — три с причиной.

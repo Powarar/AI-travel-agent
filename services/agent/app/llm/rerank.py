@@ -134,6 +134,9 @@ class Reranker:
         )
         #: одна запись на один неудачный вызов; `kind` различает сеть и разбор ответа
         self.failures: list[dict[str, Any]] = []
+        #: сумма `usage.total_tokens` всех удачных вызовов: рантайм снимает приращение и
+        #: кладёт в `budgets.tokens`, чтобы стоимость хода была видна из состояния, а не из логов
+        self.tokens_used = 0
 
     @classmethod
     def from_config(cls) -> "Reranker | None":
@@ -171,9 +174,10 @@ class Reranker:
             raise RerankError(f"http {response.status_code}: {response.text[:120]}")
         body = response.json()
         hits = parse_rerank_response(body, documents=payload["documents"])
+        tokens = (body.get("usage") or {}).get("total_tokens")
+        self.tokens_used += int(tokens) if isinstance(tokens, (int, float)) else 0
         logger.info("rerank call model=%s docs=%d ms=%d tokens=%s",
-                    model, len(payload["documents"]), elapsed_ms,
-                    (body.get("usage") or {}).get("total_tokens"))
+                    model, len(payload["documents"]), elapsed_ms, tokens)
         return hits, elapsed_ms
 
     def rank(self, query: str, documents: list[str], *, top_n: int | None = None) -> list[RerankHit] | None:

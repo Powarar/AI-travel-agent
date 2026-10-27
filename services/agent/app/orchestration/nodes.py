@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import logging
 import re
-from collections.abc import Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import date, datetime
 from decimal import Decimal
 
@@ -93,6 +93,11 @@ class HotelOffer(BaseModel):
     specs: HotelSpecs
     stays: list[StayNight] = Field(default_factory=list)
     score: float
+    #: удобства приходят из источника (`hotels.amenities` в схеме сида) и нужны ровно одному
+    #: месту — индексируемому тексту слота №3. Без них «атмосферный» неотличим от «не
+    #: атмосферного»: в тексте остаются только название и звёзды, и cross-encoder скорит
+    #: вывеску. Пустой список — легальная выдача источника, а не ошибка.
+    amenities: list[str] = Field(default_factory=list)
     data_status: DataStatus = DataStatus.SYNTHETIC
 
 
@@ -299,6 +304,8 @@ def absorb(state: TripState, tool: str, result: SearchResult) -> TripState:
                     "pet_friendly": "true" if offer.specs.pet_friendly else "false",
                     "check_in_deadline": offer.specs.check_in_deadline,
                     "source_id": offer.specs.source_id or "",
+                    # текст слота №3: строки источника, чисел здесь нет
+                    "amenities": ", ".join(offer.amenities),
                 },
                 score=offer.score,
                 data_status=offer.data_status,
@@ -330,17 +337,153 @@ def absorb(state: TripState, tool: str, result: SearchResult) -> TripState:
     return next_state
 
 
-def mark_finalists(state: TripState, finalists: list[Candidate]) -> TripState:
-    """INSPIRE: из отобранного кодом набора — три направления (слот №4)."""
+#: `Theme` — английские slug-значения, а реранкер скорит русский текст кандидата. Без
+#: перевода запрос «море, атмосферно» выглядел бы как «beach, атмосферно», и сходство по
+#: теме терялось бы на уровне лексики, а не смысла.
+_THEME_RU: dict[str, str] = {
+    "beach": "море пляж",
+    "city": "город прогулки экскурсии",
+    "nature": "природа горы тишина",
+    "culture": "культура история музеи",
+    "food": "еда рестораны кухня",
+}
 
-    picked = {candidate.candidate_id: candidate for candidate in finalists}
-    next_state = state.next_version()
-    next_state.candidates.destinations = [
-        candidate.model_copy(update={"ref": {**candidate.ref, **picked[candidate.candidate_id].ref,
-                                             "finalist": "true"}})
-        if candidate.candidate_id in picked else candidate
-        for candidate in next_state.candidates.destinations
+#: Шаг округления мягкой релевантности (CONTRACTS.md, «Мягкая релевантность (слот №3)»).
+#: Ниже шага выбор менять нельзя: cross-encoder различает 0.83 и 0.85, а человек между этими
+#: отелями — нет, и порядок кандидатов начал бы переворачиваться на шуме модели.
+RELEVANCE_STEP = 0.05
+
+
+def relevance_query(request: TripRequest) -> str:
+    """Запрос слота №3: `" ".join(soft values)` (ARCHITECTURE.md §5), темы — переводом."""
+
+    themes = " ".join(_THEME_RU.get(theme.value, theme.value)
+                      for theme in (request.themes.value or []))
+    return " ".join(part for part in (request.pref_text, themes) if part).strip()
+
+
+#: Удобства источника (`hotels.amenities` в схеме сида) — английские slug-и, а запрос слота №3
+#: русский. Переводит код по словарю сида, а не модель: список закрытый (12 значений), и
+#: придумывать формулировку cross-encoder'у незачем.
+_AMENITY_RU: dict[str, str] = {
+    "wifi": "wi-fi",
+    "breakfast": "завтрак включён",
+    "pool": "бассейн",
+    "parking": "парковка",
+    "spa": "спа",
+    "gym": "фитнес-центр",
+    "beach_first_line": "первая линия пляжа",
+    "airport_shuttle": "трансфер из аэропорта",
+    "kids_club": "детский клуб",
+    "restaurant": "ресторан на территории",
+    "laundry": "стирка",
+    "air_conditioning": "кондиционер",
+}
+
+
+def hotel_document(candidate: Candidate) -> str:
+    """Индексируемый текст отеля: вывеска, звёзды, направление, удобства источника."""
+
+    ref = candidate.ref
+    amenities = ", ".join(
+        _AMENITY_RU.get(item.strip(), item.strip())
+        for item in ref.get("amenities", "").split(",") if item.strip()
+    )
+    parts = [
+        ref.get("name", candidate.candidate_id),
+        f"{ref['stars']} звёзд" if ref.get("stars") else "",
+        ref.get("destination", ""),
+        amenities,
     ]
+    return ", ".join(part for part in parts if part)
+
+
+def apply_relevance(state: TripState, scores: Mapping[str, float]) -> TripState:
+    """SEARCH (слот №3): мягкая релевантность ложится в `ref`, `score` источника не тронут.
+
+    Два числа в состоянии — не дублирование: по `score` решает источник, по `relevance` —
+    мягкое предпочтение, и в трейсе видно, какой именно отель поднялся из-за слота №3.
+    """
+
+    next_state = state.next_version()
+    next_state.candidates.hotels = [
+        candidate.model_copy(update={
+            "ref": {**candidate.ref, "relevance": _bucketed(scores[candidate.candidate_id])}})
+        if candidate.candidate_id in scores else candidate
+        for candidate in next_state.candidates.hotels
+    ]
+    return next_state
+
+
+def _bucketed(score: float) -> str:
+    """Балл, округлённый до шага 0.05, строкой: 0.833 → «0.85».
+
+    Хранится строкой, потому что `ref` — `dict[str, str]` (контраст с числами источника
+    ровно там же, где они лежат), и `_hotel_order` читает это число обратно.
+    """
+
+    steps = round(score / RELEVANCE_STEP)
+    return f"{steps * RELEVANCE_STEP:.2f}"
+
+
+#: Число с единицей: «150 000 ₽», «9 ч», «+29°», «7 ночей», «150к». Вырезается целиком,
+#: иначе после удаления цифры в строке висело бы «+ °» или «ночей». Однобуквенные единицы
+#: (`к`, `ч`, `м`, `C`) требуют непустого продолжения: без `(?![а-яё])` «3 комнаты»
+#: превратилось бы в «омнаты».
+_MEASURE_RE = re.compile(
+    r"\d[\d \u00a0]*(?:[.,]\d+)?(?:\s*(?:₽|руб\.?|млн\.?|тысяч|°C|°|[MCчк](?![а-яё])|"
+    r"час[а-яё]*|мин[а-яё]*|км(?![а-яё])|дн[её]?й?|ноч[её]й?|зв[её]зд[а-яё]*|"
+    r"см(?![а-яё])))?",
+    re.IGNORECASE,
+)
+_DANGLING_RE = re.compile(r"\s*[+\-–—<>=/и]+\s*(?=[,.;]|\Z)")
+
+
+def _digits_only(text: str) -> set[str]:
+    return set(re.findall(r"\d+", text.replace(" ", "").replace("\u00a0", "")))
+
+
+def _without_invented_numbers(text: str, known: Mapping[str, str]) -> str:
+    """Разрешаем только те числа, которые уже лежат в `ref` этого же кандидата."""
+
+    allowed = _digits_only(" ".join(str(value) for value in known.values()))
+    def keep(match: re.Match[str]) -> str:
+        token = re.sub(r"\D", "", match.group(0))
+        return match.group(0) if token and token in allowed else ""
+
+    cleaned = _MEASURE_RE.sub(keep, text)
+    cleaned = _DANGLING_RE.sub("", re.sub(r"\s+", " ", cleaned))
+    #: вырезанное число оставляет висячие разделители: «море , перелёт  звёзд» чинится
+    #: разбором на куски, а не третьей регуляркой поверх второй
+    pieces = [piece.strip(" .") for piece in re.split(r"[,;]", cleaned)]
+    joined = ", ".join(piece for piece in pieces if piece)
+    return f"{joined}." if cleaned.rstrip().endswith(".") and joined else joined
+
+
+def mark_finalists(state: TripState, finalists: list[Candidate]) -> TripState:
+    """INSPIRE: из отобранного кодом набора — три направления (слот №4).
+
+    `ref` слота №4 merging-ится в кандидата, поэтому строка модели идёт через
+    `_without_invented_numbers`: иначе число, которое модель придумала сама, попадает в
+    `TripState` и оттуда в стога, с которым `unverified_numbers` сверяет объяснение, — то
+    есть guard начинает проверять модель по её же тексту.
+    """
+
+    by_id = {candidate.candidate_id: candidate for candidate in finalists}
+    next_state = state.next_version()
+    updated: list[Candidate] = []
+    for candidate in next_state.candidates.destinations:
+        chosen = by_id.get(candidate.candidate_id)
+        if chosen is None:
+            updated.append(candidate)
+            continue
+        given = {key: value for key, value in chosen.ref.items()
+                 if key != "why" and key != "finalist"}
+        ref = {**candidate.ref, **given, "finalist": "true"}
+        if "why" in chosen.ref:
+            ref["why"] = _without_invented_numbers(chosen.ref["why"], candidate.ref)
+        updated.append(candidate.model_copy(update={"ref": ref}))
+    next_state.candidates.destinations = updated
     return next_state
 
 
@@ -403,7 +546,7 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
         if not transfers:
             return _empty("transfer", code, expected="трансфер от прилёта", actual="ни одного")
 
-        hotel = sorted(fitting, key=_stay_total)[0]
+        hotel = sorted(fitting, key=_hotel_order(state))[0]
         leg = sorted(within_limit, key=lambda offer: (offer.price_total, offer.hours))[0]
         transfer = transfers[0]
         plan = Plan(
@@ -628,6 +771,29 @@ def _hotel_fits(offer: HotelOffer, *, guests: int, nights: int, has_pet: bool) -
 
 def _stay_total(offer: HotelOffer) -> Decimal:
     return sum((stay.price.amount.amount for stay in offer.stays), Decimal(0))
+
+
+def _hotel_order(state: TripState) -> Callable[[HotelOffer], tuple[float, Decimal]]:
+    """Ключ выбора отеля: мягкое предпочтение (слот №3) важнее цены, цена — тай-брейк.
+
+    Совпадение по релевантности до шага 0.05 даёт равенство ключей, поэтому среди «одинаково
+    атмосферных» снова решает цена — детерминизм трейса не зависит от того, сколько знаков
+    вернул cross-encoder.
+
+    Когда `relevance` не проставлен ни у кого, ключ сводится к `(_stay_total,)`: то есть
+    поведение ровно такое, как до врезки слота №3. Офлайн-прогон и прогон с выключенным или
+    недоступным реранком обязаны совпадать, иначе воспроизводимость прогона зависит от сети.
+    """
+
+    scores: dict[str, float] = {}
+    for candidate in state.candidates.hotels:
+        raw = candidate.ref.get("relevance", "")
+        try:
+            scores[candidate.candidate_id] = float(raw)
+        except ValueError:
+            #: мусор в `ref` не должен уронить сборку плана: считаем, что слот №3 не ответил
+            continue
+    return lambda offer: (-scores.get(offer.specs.hotel_id, 0.0), _stay_total(offer))
 
 
 def _price_lines(plan: Plan, includes: list[str]) -> list[PriceLine]:

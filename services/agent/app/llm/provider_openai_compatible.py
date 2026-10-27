@@ -32,7 +32,7 @@ import time
 from collections.abc import Mapping
 from datetime import date
 from pathlib import Path
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 import httpx
 from pydantic import BaseModel
@@ -52,6 +52,12 @@ from services.agent.app.llm.slots import Explanation, MockSlots
 from services.agent.app.orchestration.policy import QuestionSpec
 from shared.contracts.request import TripRequest
 from shared.contracts.state import Candidate
+
+if TYPE_CHECKING:
+    #: `app/llm/rerank.py` импортирует этот модуль (`load_env_file`, `_env_float`), поэтому
+    #: обратная связь возможна только через `TYPE_CHECKING` + отложенный импорт в
+    #: `from_config`. Аннотация `Reranker | None` при этом остаётся проверяемой mypy.
+    from services.agent.app.llm.rerank import Reranker
 
 logger = logging.getLogger(__name__)
 
@@ -172,6 +178,22 @@ def _env_float(name: str, default: float) -> float:
         return default
 
 
+def _usage_tokens(usage: Mapping[str, Any]) -> int:
+    """Сколько токенов посчитал ответ: `total_tokens`, а если шлюз его не отдал — вход + выход.
+
+    Ход с нулём в `budgets.tokens` выглядит бесплатным, хотя деньги со счёта сняты: часть
+    шлюзов отдаёт только `prompt_tokens`/`completion_tokens`, и на них учёт не должен
+    схлопываться в ноль.
+    """
+
+    total = usage.get("total_tokens")
+    if isinstance(total, (int, float)):
+        return int(total)
+    parts = [value for value in (usage.get("prompt_tokens"), usage.get("completion_tokens"))
+             if isinstance(value, (int, float))]
+    return int(sum(parts))
+
+
 def _env_optional(name: str, default: str) -> str | None:
     """Строка из окружения, которую можно выключить.
 
@@ -210,15 +232,20 @@ def _slot_routes(model: str, temperature: float) -> dict[str, tuple[str, float]]
 
 
 class OpenAICompatibleSlots:
-    """Пять LLM-слотов поверх OpenAI-совместимого API; мок остаётся фолбэком.
+    """Пять чат-слотов и реранкер поверх OpenAI-совместимого API; мок остаётся фолбэком.
 
-    Методы соответствуют протоколу `LLMSlots`: `parse`, `formulate`, `pick_finalists`,
-    `explain`, `diff`. Никакого кэша здесь нет: счётчик вызовов хода ведёт рантайм, а лимиты
-    (`llm_calls`) останавливают ход раньше, чем мы успеем разориться на повторах.
+    Методы соответствуют протоколу `LLMSlots`: `parse`, `formulate`, `soft_relevance`,
+    `pick_finalists`, `explain`, `diff`. Никакого кэша здесь нет: счётчик вызовов хода ведёт
+    рантайм, а лимиты (`llm_calls`) останавливают ход раньше, чем мы успеем разориться на
+    повторах.
 
     Модель и температура могут быть свои на каждый слот (`slot_models`): SL-1/2/6 — дешёвый
     flash на извлечении, SL-5 — сильная модель на русском объяснении. Один HTTP-клиент на все
     слоты: ключ, base URL и таймаут у них общие, differ только тело запроса.
+
+    Слот №3 — не чат: `soft_relevance` идёт в `/rerank` своим клиентом (`app/llm/rerank.py`) и
+    в `llm_calls` не входит (CONTRACTS.md, «Мягкая релевантность (слот №3)»), но его токены
+    считаются в `tokens_used` наравне с чатом.
     """
 
     def __init__(self, *, model: str, api_key: str,
@@ -229,6 +256,7 @@ class OpenAICompatibleSlots:
                  max_output_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS,
                  json_mode: bool = True,
                  reasoning_effort: str | None = DEFAULT_REASONING_EFFORT,
+                 reranker: Reranker | None = None,
                  year: int | None = None) -> None:
         if not api_key:
             raise ValueError("api_key is required for the live provider")
@@ -247,11 +275,22 @@ class OpenAICompatibleSlots:
             timeout=self.timeout_s,
         )
         self._fallback = MockSlots()
+        self._reranker = reranker
         #: причины, по которым живой ответ пришлось заменить моком; видно в метрике T-07
         self.failures: list[dict[str, Any]] = []
         #: модель → параметры, которые шлюз отверг именно у неё: повторять заведомо
         #: неподдерживаемый параметр на каждом вызове — лишние секунды на ходу
         self._rejected_params: dict[str, set[str]] = {}
+        #: сумма `usage.total_tokens` всех чат-ответов этого провайдера; рантайм снимает
+        #: приращение после каждого слота и кладёт в `budgets.tokens`
+        self._chat_tokens = 0
+
+    @property
+    def tokens_used(self) -> int:
+        """Токены, сожжённые этим провайдером с момента создания: чат + реранк."""
+
+        rerank = self._reranker.tokens_used if self._reranker is not None else 0
+        return self._chat_tokens + rerank
 
     def _route(self, slot: str) -> tuple[str, float]:
         """Модель и температура слота: слотная переменная важнее общей, общей нет — дефолт."""
@@ -275,6 +314,9 @@ class OpenAICompatibleSlots:
         api_key = (os.environ.get("LLM_API_KEY") or os.environ.get("AITUNNEL_API_KEY") or "").strip()
         if not model or not api_key:
             raise ValueError(f"LLM_PROVIDER={provider} needs LLM_MODEL and LLM_API_KEY")
+        #: отложенный импорт: `app/llm/rerank.py` берёт из этого модуля `load_env_file`, и
+        #: обычным импортом на уровне файла мы замкнули бы цикл
+        from services.agent.app.llm.rerank import Reranker
         return cls(
             model=model,
             api_key=api_key,
@@ -289,10 +331,16 @@ class OpenAICompatibleSlots:
             #: без этого deepseek-v4.1-flash и qwen3.x-flash отдают пустой content: весь
             #: бюджет токенов уходит в скрытое размышление (замер 2026-10-27)
             reasoning_effort=_env_optional("LLM_REASONING_EFFORT", DEFAULT_REASONING_EFFORT),
+            #: слот №3 собирается сам и может вернуться `None` (`RERANK_MODEL=off`, нет ключа):
+            #: живой провайдер без реранка остаётся живым провайдером, просто с порядком
+            #: источника — импорт отложен, см. `TYPE_CHECKING` выше
+            reranker=Reranker.from_config(),
         )
 
     def close(self) -> None:
         self._client.close()
+        if self._reranker is not None:
+            self._reranker.close()
 
     # --- транспорт ---------------------------------------------------------
 
@@ -388,6 +436,7 @@ class OpenAICompatibleSlots:
             #: бывает у reasoning-моделей: ответ уехал в `reasoning_content`, а `content` — null
             raise ProviderError("empty completion (content is null)")
         usage = payload.get("usage") or {}
+        self._chat_tokens += _usage_tokens(usage)
         logger.info("llm call model=%s slot=%s ms=%d prompt_tokens=%s completion_tokens=%s",
                     model, slot, elapsed_ms,
                     usage.get("prompt_tokens"), usage.get("completion_tokens"))
@@ -491,6 +540,38 @@ class OpenAICompatibleSlots:
             return self._fallback.formulate(spec)
         return model.text
 
+    # --- слот №3: soft_relevance (/rerank) ---------------------------------
+
+    @property
+    def reranker(self) -> "Reranker | None":
+        """Клиент `/rerank` наружу: у него свои `failures` и свои токены, и метрике T-07 их
+        надо видеть, а не прятать за приватным полем."""
+
+        return self._reranker
+
+    def soft_relevance(self, query: str,
+                       documents: dict[str, str]) -> dict[str, float] | None:
+        """Слот №3: cross-encoder, а не чат (CONTRACTS.md, «Мягкая релевантность (слот №3)»).
+
+        Ключ возврата — `candidate_id`, не позиция: перепутать кандидата между двумя строками
+        текста хуже, чем не досчитать балл. `None` значит «ранжировать нечем» (слот выключен,
+        ключа нет, шлюз молчит) — тогда рантайм оставляет порядок источника, а не ноль на всех.
+
+        В `llm_calls` этот вызов не входит: лимит шести обращений хода — про чат-слоты, а
+        реранк по контракту «не LLM по возможности». В `tokens_used` входит, потому что
+        стоимость хода обязана быть видна целиком.
+        """
+
+        if self._reranker is None or not documents or not query.strip():
+            return None
+        ids = list(documents)
+        hits = self._reranker.rank(query, [documents[cid] for cid in ids])
+        if not hits:
+            logger.warning("rerank no_scores slot=relevance docs=%d failures=%d",
+                           len(ids), len(self._reranker.failures))
+            return None
+        return {ids[hit.index]: hit.score for hit in hits}
+
     # --- слот №4: pick_finalists ------------------------------------------
 
     def pick_finalists(self, candidates: list[Candidate]) -> list[Candidate]:
@@ -554,6 +635,9 @@ class OpenAICompatibleSlots:
             "Не складывай, не вычитай, не дели и не округляй: вместо «около 150 тысяч» — "
             "«125 200 ₽», а нет готового числа — напиши без числа. Даты называй днями месяца "
             "из check_in/check_out, год не упоминай.\n"
+            "Деньги бери из `displays` — там уже готовые строки вида «125 200 ₽». Поля `total`, "
+            "`budget`, `remaining`, `breakdown` — это сырые числа для сверки, в тексте их писать "
+            "не надо: «125200.00 RUB» читается как выписка из базы.\n"
             "Не добавляй новых фактов: ни про акции, ни про рейтинги, ни про погоду — их в "
             "данных нет."
         )

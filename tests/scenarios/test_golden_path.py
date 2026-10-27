@@ -83,15 +83,22 @@ FLIGHTS: dict[str, tuple[float, int, float, int]] = {
     "HKT": (9.0, 41000, 9.5, 43500),
     "HER": (5.5, 26000, 5.5, 27000),
 }
-#: код → отели: (id, название, звёзды, вместимость, ₽ за ночь, можно с животными)
-HOTELS: dict[str, tuple[tuple[str, str, int, int, int, bool], ...]] = {
+#: код → отели: (id, название, звёзды, вместимость, ₽ за ночь, можно с животными, удобства)
+#: Удобства — slug-и из vocabulary сида (`data/generators/hotels.py`, AMENITIES): слоту №3
+#: нечем скорить «атмосферный», если в тексте кандидата остаются только вывеска и звёзды.
+HOTELS: dict[str, tuple[tuple[str, str, int, int, int, bool, tuple[str, ...]], ...]] = {
     "AYT": (
-        ("AYT-FAM", "Aqua Family Resort", 4, 4, 11200, True),
-        ("AYT-LUX", "Gulf Palace", 5, 4, 19500, True),
-        ("AYT-STD", "Old Town Studio", 3, 2, 8900, True),
+        ("AYT-FAM", "Aqua Family Resort", 4, 4, 11200, True,
+         ("pool", "kids_club", "breakfast", "beach_first_line")),
+        ("AYT-LUX", "Gulf Palace", 5, 4, 19500, True,
+         ("spa", "beach_first_line", "restaurant", "breakfast", "pool")),
+        ("AYT-STD", "Old Town Studio", 3, 2, 8900, True,
+         ("wifi", "air_conditioning", "laundry")),
     ),
-    "HKT": (("HKT-ONE", "Andaman Bay", 4, 5, 15400, True),),
-    "HER": (("HER-ONE", "Creta Marina", 4, 3, 10900, False),),
+    "HKT": (("HKT-ONE", "Andaman Bay", 4, 5, 15400, True,
+             ("beach_first_line", "spa", "pool", "breakfast")),),
+    "HER": (("HER-ONE", "Creta Marina", 4, 3, 10900, False,
+             ("restaurant", "air_conditioning", "parking")),),
 }
 #: код → (минуты от прилёта, ₽, минуты до вылета, ₽)
 TRANSFERS: dict[str, tuple[int, int, int, int]] = {
@@ -219,7 +226,7 @@ def hotel_search(args: Mapping[str, object]) -> SearchResult:
     nights = (end - start).days
     offers = []
     for code in _codes(args):
-        for hotel_id, name, stars, capacity, rate, pet in HOTELS.get(code, ()):
+        for hotel_id, name, stars, capacity, rate, pet, amenities in HOTELS.get(code, ()):
             offers.append(HotelOffer(
                 destination_code=code,
                 name=name,
@@ -229,6 +236,7 @@ def hotel_search(args: Mapping[str, object]) -> SearchResult:
                     capacity=capacity, min_nights=2, source_id=HOTEL_SOURCE,
                 ),
                 stays=_stays(hotel_id, rate, start, nights),
+                amenities=list(amenities),
                 score=rate / 100000,
             ))
     return SearchResult(hotels=offers)
