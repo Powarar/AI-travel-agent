@@ -398,7 +398,7 @@ class TestProvenanceGuard:
 
 
 class TestContractOverModelJudgement:
-    """Три случая, где вывод модели правильный, а в контракт он попадает только после кода."""
+    """Случаи, где вывод модели правильный, а в контракт он попадает только после кода."""
 
     def test_word_numbers_are_parsed(self) -> None:
         from services.agent.app.llm.schemas import _to_int
@@ -407,6 +407,35 @@ class TestContractOverModelJudgement:
         assert _to_int("на двоих") == 2
         assert _to_int("одиннадцать") == 11
         assert _to_int("5 лет") == 5
+
+    def test_collective_adverbs_reach_the_contract(self) -> None:
+        """«Впятером» — дословная цитата человека, и терять её из-за словаря нельзя.
+
+        На живом прогоне 52 фраз модель именно так и цитирует состав, а converter знал
+        «пятеро», но не «впятером»: поле `party.adults` пропадало при верной цитате.
+        """
+
+        deltas = [ParsedDelta(path="party.adults", raw="впятером", kind=ConstraintKind.HARD)]
+        result = apply_deltas(deltas, "впятером на море, 6 ночей", year=YEAR)
+        assert result.request.party.adults.value == 5
+        assert result.request.party.adults.source == "user"
+        assert result.rejected == []
+
+    def test_cited_city_loses_its_preposition(self) -> None:
+        """Живая цитата «в сочи» — это про предлог, а контракт хранит название города.
+
+        Детерминированный парсер T-05 даёт «сочи» без предлога, и живой путь обязан сходиться
+        с моком на одном входе: иначе одна и та же фраза собирается в два разных запроса.
+        """
+
+        deltas = [
+            ParsedDelta(path="direction.explicit", raw="в сочи", kind=ConstraintKind.HARD),
+            ParsedDelta(path="origin", raw="из Казани", kind=ConstraintKind.HARD),
+        ]
+        result = apply_deltas(deltas, "еду в сочи из Казани", year=YEAR)
+        assert result.request.direction.explicit.value == "сочи"
+        assert result.request.origin.value == "Казани"
+        assert result.rejected == []
 
     def test_range_gives_two_different_days(self) -> None:
         deltas = [
