@@ -419,7 +419,8 @@ class Runtime:
         if composition.plan is None:
             logger.info("composition failed trip=%s codes=%s", run.state.trip_id,
                         [violation.code.value for violation in composition.blocking])
-            run.state = nodes.record_violations(run.state, composition.blocking)
+            run.state = nodes.record_violations(run.state,
+                                                nodes.with_notes(composition.blocking, composition.notes))
             return self._resolve_blocking(run)
         run.state = nodes.commit_plan(run.state, composition)
         return run
@@ -433,7 +434,10 @@ class Runtime:
             run.unresolved.append("budget.amount:unknown")
             return self._best_effort(run, "budget_unknown")
         violations = validate(run.scratch.composition.plan, self._ledger(run), run.state)
-        run.state = nodes.record_violations(run.state, violations)
+        #: «Дубай не влез: 244 850 ₽ при 150 000 ₽» обязано дожить до состояния: без него
+        #: план в более дешёвом направлении выглядел бы единственно возможным выбором
+        run.state = nodes.record_violations(
+            run.state, nodes.with_notes(violations, run.scratch.composition.notes))
         if has_blocking(violations):
             return self._resolve_blocking(run)
         return run

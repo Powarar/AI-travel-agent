@@ -43,6 +43,7 @@ from shared.contracts.enums import (
     Outcome,
     PriceKind,
     RunStatus,
+    Severity,
     Stage,
     ViolationCode,
 )
@@ -188,6 +189,11 @@ class Composition(BaseModel):
     lines: list[PriceLine] = Field(default_factory=list)
     refs: dict[str, str] = Field(default_factory=dict)
     blocking: list[Violation] = Field(default_factory=list)
+    #: что пришлось отпустить по дороге: направления, влезшие в hard-лимит по часам, но не
+    #: влезшие в бюджет, и срезы без данных. `blocking` отвечает на «почему плана нет», а это
+    #: поле — на «что вы ещё смотрели»: план в другом направлении не должен выглядеть так,
+    #: будто дороже варианта не было
+    notes: list[Violation] = Field(default_factory=list)
     facts: dict[str, str] = Field(default_factory=dict)
 
 
@@ -624,6 +630,10 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
     #: по релевантности, значит отказ относится к самому подходящему направлению и его числа
     #: читателю полезнее остальных.
     failures: list[Composition] = []
+    #: направления, где план собрался, но в бюджет не влез ни одним отелем, и числа, почему
+    #: он не сошёл за подходящий; перебор продолжается до первого влезшего
+    over_budget: list[Composition] = []
+    notes: list[Violation] = []
 
     for destination in _finalists(state):
         code = destination.candidate_id
@@ -730,8 +740,9 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
                 now=now,
             )
 
-        hotel, displaced = _within_budget_or_best(hotel_order, build, request=request,
-                                                  includes=includes, guests=guests)
+        hotel, displaced, over_note = _within_budget_or_best(
+            hotel_order, build, request=request, includes=includes, guests=guests,
+            destination=code)
         plan = build(hotel)
         leg, transfer = leg_for(hotel), transfer_for(hotel)
         facts = {
@@ -746,7 +757,7 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
             #: мягкое предпочтение уступило hard-бюджету — это компромисс, и он обязан быть
             #: назван, а не промолчан (инвариант №2 в обратную сторону)
             facts["cheaper_than_relevant"] = displaced.name
-        return Composition(
+        composed = Composition(
             plan=plan,
             lines=_price_lines(plan, includes),
             refs={
@@ -759,9 +770,31 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
             },
             facts=facts,
         )
+        if over_note is not None:
+            #: направление собрано, но в бюджет не влезает ни одним отелем. Оно не становится
+            #: «почти подходящим» планом (инвариант №2): мы отпускаем его дальше по списку
+            #: финалистов, а число превышения уходит в `notes` и переживает отказ
+            notes.append(over_note)
+            over_budget.append(composed)
+            continue
+        return composed.model_copy(update={"notes": list(notes)})
 
+    #: сюда доходят, только когда ни одно направление не дало влезший в бюджет план. Из
+    #: собранных, но дорогих выбираем самое дешёвое: валидатор назовёт по нему превышение и
+    #: «до сколько урезать проживание», и отказ останется с числами, а не с первым попавшимся
+    #: направлением списка. Прочие сбои (нет рейсов, нет отеля, не влезли другие направления)
+    #: идут предупреждениями — они часть ответа, а не только журнал цикла
+    if over_budget:
+        cheapest = min(over_budget, key=lambda item: sum((line.amount.amount
+                                                          for line in item.lines), Decimal(0)))
+        warnings = notes + [violation.model_copy(update={"severity": Severity.WARNING})
+                            for failure in failures for violation in failure.blocking]
+        return cheapest.model_copy(update={"notes": warnings})
     if failures:
-        return failures[0]
+        first = failures[0]
+        rest = [violation.model_copy(update={"severity": Severity.WARNING})
+                for failure in failures[1:] for violation in failure.blocking]
+        return first.model_copy(update={"notes": notes + rest})
     return _empty("destination", "", expected="хотя бы одно направление",
                   actual="финалистов нет", meta=_meta_for("destination", search.meta))
 
@@ -791,7 +824,8 @@ def _within_budget_or_best(
     request: TripRequest,
     includes: list[str],
     guests: int,
-) -> tuple[HotelOffer, HotelOffer | None]:
+    destination: str,
+) -> tuple[HotelOffer, HotelOffer | None, Violation | None]:
     """Первый отель по релевантности, при котором план влезает в бюджет.
 
     Без этого мягкое поле делает выполнимый запрос невыполнимым: самый «атмосферный» отель
@@ -799,25 +833,44 @@ def _within_budget_or_best(
     отказом, хотя совместимый план существовал. Soft-предпочтение имеет право менять только
     порядок перебора, но не превращать hard-ограничение в нарушение (инвариант №2).
 
-    Если в бюджет не влезает ни один отель, берётся лучший по релевантности с
-    `displaced=None`: превышение тогда честно ловит валидатор числами, а не прячется здесь.
+    Третий возврат — `None`, когда план в бюджет влез, и нарушение-предупреждение с суммой
+    самого дешёвого сверхлимитного набора, когда не влез ни один отель. Числом, а не фактом
+    «не влез»: направление, отпущенное из-за цены, обязано остаться названным — именно по
+    этим числам отказ «плана нет» отличается от «мы не смотрели дальше».
     """
 
     #: список непустой: `fitting` проверен вызывающим кодом до обращения сюда
     best = ordered[0]
     budget = request.budget.amount.value
     if budget is None:
-        return best, None
+        return best, None, None
     limit = (budget.times(guests) if request.budget.scope.value is BudgetScope.PER_PERSON
              else budget)
 
+    cheapest: Money | None = None
+    cheapest_hotel: HotelOffer | None = None
     for hotel in ordered:
         lines = _price_lines(build(hotel), includes)
         total = sum((line.amount.amount for line in lines), Decimal(0))
         if total <= limit.amount:
             #: уступили месту более дешёвому — тот, что был выше по теме, и есть компромисс
-            return hotel, None if hotel is best else best
-    return best, None
+            return hotel, None if hotel is best else best, None
+        overage = Money(amount=total, currency=limit.currency)
+        if cheapest is None or overage.amount < cheapest.amount:
+            cheapest, cheapest_hotel = overage, hotel
+    #: ни один отель этого направления не влез: отдаём самый дешёвый набор, а не лучший по
+    #: баллу. План пользователю не достаётся (валидатор ставит `BUDGET_EXCEEDED`), и число,
+    #: которое он увидит в отказе, обязано быть ближайшим к возможному: «превышение 65 200 ₽»
+    #: вместо «превышение 123 300 ₽» — это ещё и подсказка `reduce_lodging_to` от валидатора
+    if cheapest is None or cheapest_hotel is None:
+        #: достижимо только если лимит проставился позже: план без числа превышения не отдаём
+        return best, None, None
+    note = make(ViolationCode.BUDGET_EXCEEDED, "plan",
+                expected=limit.as_display(), actual=cheapest.as_display(),
+                evidence={"destination": destination,
+                          "over_by": (cheapest - limit).as_display(),
+                          "hotels": str(len(ordered))})
+    return cheapest_hotel, None, note.model_copy(update={"severity": Severity.WARNING})
 
 
 def commit_plan(state: TripState, composition: Composition) -> TripState:
@@ -851,6 +904,22 @@ def record_violations(state: TripState, violations: list[Violation]) -> TripStat
     logger.info("validated trip=%s violations=%d blocking=%d", state.trip_id, len(next_state.violations),
                 sum(1 for violation in next_state.violations if violation.is_blocking))
     return next_state
+
+
+def with_notes(violations: Sequence[Violation], notes: Sequence[Violation]) -> list[Violation]:
+    """Собранный план и то, что по дороге от него пришлось отпустить — одним списком.
+
+    Предупреждения цикла сборки (`Composition.notes`) иначе живут только внутри черновика
+    хода: в состоянии остаются только те нарушения, что вернул валидатор, и «Дубай не влез:
+    244 850 ₽ при 150 000 ₽» исчезает из ответа ровно тогда, когда план в другом направлении
+    собрался. Дедуп по подписке `(code, component)`: own `BUDGET_EXCEEDED:plan` валидатора
+    богаче нашего числа (там ещё `reduce_lodging_to`), поэтому наше предупреждение
+    отбрасываем, а не выводим два одинаковых. Нарушение валидатора богаче нашего числа (там
+    ещё `reduce_lodging_to`), поэтому при совпадении подписки остаётся оно.
+    """
+
+    known = {violation.signature() for violation in violations}
+    return list(violations) + [note for note in notes if note.signature() not in known]
 
 
 def set_stage(state: TripState, stage: Stage) -> TripState:

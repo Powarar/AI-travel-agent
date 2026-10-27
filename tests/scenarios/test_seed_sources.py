@@ -183,3 +183,40 @@ class TestReproducibility:
         #: одинаковый заказ: `checkout_mock` идемпотентен по хешу аргументов
         assert first["chosen"]["component_refs"]["order"] == second["chosen"]["component_refs"]["order"]
 
+
+class TestBudgetAcrossDestinations:
+    """Бюджет не имеет права убивать прогон, пока в выдаче есть направление, которое влезает.
+
+    На каталоге это ровно тот случай, который фикстуры не показывают: самые тёплые финалисты
+    дорогие, дешёвый — дальше по списку. Раньше ход заканчивался `infeasible` на первом
+    направлении, и пользователь слышал «плана нет», хотя план был в трёх строках отбора.
+    """
+
+    def test_the_cheaper_finalist_becomes_the_plan(self) -> None:
+        report = trip("хочу к тёплому морю в ноябре вдвоём с ребёнком, 200к, "
+                      "без долгих перелётов")
+        assert report.outcome == Outcome.PLAN_READY
+        assert report.components["destination"] == "pattaya"
+        assert report.violations == []
+        assert report.total == "166 950 ₽"
+
+    def test_when_nothing_fits_the_refusal_names_the_closest_miss(self) -> None:
+        report = trip("хочу к тёплому морю в ноябре вдвоём с ребёнком, 150к, "
+                     "без долгих перелётов")
+        assert report.outcome == Outcome.INFEASIBLE
+        blocking = [row for row in report.violations if row.endswith(":blocking")]
+        assert blocking == ["BUDGET_EXCEEDED:blocking"]
+        #: отказ по самому дешёвому из собранных: 166 950 ₽, а не 244 850 ₽ самого релевантного
+        assert "вышло 166950 RUB" in report.explanation_text
+        assert "reduce_lodging_to" in report.explanation_text
+        #: остальные направления не потерялись: они warnings с своими числами
+        notes = [row for row in report.violations if row.endswith(":warning")]
+        assert len(notes) == 2
+        dropped = [violation for violation in report.state_dump["violations"]
+                   if violation["severity"] == "warning"]
+        dropped = [violation for violation in report.state_dump["violations"]
+                   if violation["severity"] == "warning"]
+        assert all(violation["expected"] and violation["actual"] for violation in dropped)
+        #: каждое отпущенное направление названо кодом, а не «что-то не подошло»
+        assert {violation["evidence"].get("destination") for violation in dropped} == {"dubai", "phuket"}
+
