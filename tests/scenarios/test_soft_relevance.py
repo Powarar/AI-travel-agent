@@ -291,11 +291,12 @@ def golden_run_on(engine: Runtime):
 class TestFinalistReasonKeepsOnlyKnownNumbers:
     """Число в `why` живёт, только если оно уже лежит в `ref` того же кандидата."""
 
-    def _mark(self, reason: str) -> str:
+    def _mark(self, reason: str, extra: dict[str, str] | None = None) -> str:
         state = TripState(trip_id=uuid4())
         source = Candidate(
             candidate_id="AYT", kind="destination",
-            ref={"name": "Анталья", "country": "Турция", "sea_temp_c": "24", "stars": ""},
+            ref={"name": "Анталья", "country": "Турция", "sea_temp_c": "24", "stars": "",
+                 **(extra or {})},
             score=0.92, data_status=DataStatus.SYNTHETIC)
         state.candidates.destinations = [source]
         chosen = source.model_copy(update={"ref": {**source.ref, "why": reason}})
@@ -304,6 +305,17 @@ class TestFinalistReasonKeepsOnlyKnownNumbers:
 
     def test_number_from_the_source_survives(self) -> None:
         assert self._mark("море +24° в ноябре") == "море +24° в ноябре"
+
+    def test_fractional_number_from_the_source_survives(self) -> None:
+        #: дробное число источника резалось: токен «31.6» сравнивался с множествами групп
+        #: цифр («31», «6») и не находилось — а мок SL-4 на каталоге пишет именно «6.7 ч»
+        reason = "Dubai — перелёт 6.7 ч"
+        assert self._mark(reason, {"flight_h": "6.7"}) == reason
+
+    def test_split_between_values_does_not_let_a_number_slip(self) -> None:
+        #: «24» и «6.7» в одном куске дали бы «246.7», и выдуманное «46» прошло бы проверку
+        cleaned = self._mark("46 звёзд", {"flight_h": "6.7"})
+        assert "46" not in cleaned
 
     def test_invented_number_is_cut_out_with_its_unit(self) -> None:
         cleaned = self._mark("море +29°, перелёт 3.5 ч, 5 звёзд")

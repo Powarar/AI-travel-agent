@@ -364,8 +364,7 @@ class MockSlots:
         ordered = sorted(candidates, key=lambda item: -(item.score if item.score is not None else 0.0))
         finalists: list[Candidate] = []
         for candidate in ordered[:3]:
-            name = candidate.ref.get("name", candidate.candidate_id)
-            reason = f"{name} — тёплое море и короткий перелёт"
+            reason = _finalist_reason(candidate)
             finalists.append(candidate.model_copy(update={"ref": {**candidate.ref, "why": reason}}))
         return finalists
 
@@ -437,3 +436,31 @@ def _money_line(explanation: Explanation) -> str:
         if kind in explanation.breakdown
     ]
     return "Разбивка: " + ", ".join(pieces) + "."
+
+
+def _finalist_reason(candidate: Candidate) -> str:
+    """Причина слота №4 из чисел того же кандидата; выдуманной похвалы мок не пишет.
+
+    Прежняя строка «тёплое море и короткий перелёт» была правдой только для фикстур золотого
+    пути: на `data/seeds` морской температуры нет ни у одного направления (`sea_temp_c` пусто),
+    а «короткий перелёт» у Паттайи — 9 с лишним часов. Guard такие слова не ловит:
+    `_without_invented_numbers` вычитает цифры, а утверждения оставляет как есть. Причина
+    собирается по presence-check, и отсутствие числа означает молчание про этот признак.
+    """
+
+    name = candidate.ref.get("name", candidate.candidate_id)
+    parts: list[str] = []
+    sea = candidate.ref.get("sea_temp_c", "")
+    air = candidate.ref.get("day_temp_c", "")
+    month = candidate.ref.get("climate_month", "")
+    if sea:
+        parts.append(f"море +{sea} °C")
+    elif air:
+        parts.append(f"воздух +{air} °C" + (f" в {month}" if month else ""))
+    flight = candidate.ref.get("flight_h", "")
+    if flight:
+        parts.append(f"перелёт {flight} ч")
+    if not parts:
+        #: чисел источника нет — причина обязана быть про фильтр, а не про погоду
+        parts.append("прошёл hard-фильтры подбора")
+    return f"{name} — {', '.join(parts)}"

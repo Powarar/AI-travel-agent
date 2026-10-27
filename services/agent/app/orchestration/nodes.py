@@ -521,17 +521,35 @@ _MEASURE_RE = re.compile(
 _DANGLING_RE = re.compile(r"\s*[+\-–—<>=/и]+\s*(?=[,.;]|\Z)")
 
 
-def _digits_only(text: str) -> set[str]:
-    return set(re.findall(r"\d+", text.replace(" ", "").replace("\u00a0", "")))
+def _known_numbers(known: Mapping[str, str]) -> str:
+    """Значения `ref` одним куском через `;`: сравнение подстрокой, как в guard'е.
+
+    Разделитель обязателен: без него «24» и «6.7» склеились бы в «246.7», и число «46»
+    прошло бы проверку по признаку, которого у кандидата нет.
+    """
+
+    joined = ";".join(str(value) for value in known.values())
+    return joined.replace(" ", "").replace("\u00a0", "")
 
 
 def _without_invented_numbers(text: str, known: Mapping[str, str]) -> str:
-    """Разрешаем только те числа, которые уже лежат в `ref` этого же кандидата."""
+    """Разрешаем только те числа, которые уже лежат в `ref` этого же кандидата.
 
-    allowed = _digits_only(" ".join(str(value) for value in known.values()))
+    Сравнение — подстрокой по нормализованному числу, то есть ровно тем же правилом, что у
+    `unverified_numbers` (runtime): два счётчика честности не должны расходиться. Прежнее
+    множество групп цифр резало дробные: «+31.6 °C» давало токен «316» против групп «31» и
+    «6», и число источника пропадало из причины на ровном месте — а слот №4 на живых моделях
+    пишет именно «море +26.5 °C».
+    """
+
+    haystack = _known_numbers(known)
+
     def keep(match: re.Match[str]) -> str:
-        token = re.sub(r"\D", "", match.group(0))
-        return match.group(0) if token and token in allowed else ""
+        number = re.match(r"\d[\d\s]*(?:[.,]\d+)?", match.group(0))
+        token = re.sub(r"\s", "", number.group(0)) if number else ""
+        if not token:
+            return match.group(0)
+        return match.group(0) if token in haystack or token.replace(",", ".") in haystack else ""
 
     cleaned = _MEASURE_RE.sub(keep, text)
     cleaned = _DANGLING_RE.sub("", re.sub(r"\s+", " ", cleaned))
