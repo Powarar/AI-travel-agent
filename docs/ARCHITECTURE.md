@@ -109,17 +109,24 @@ repair-итерации. По исчерпании выдаётся не оши�
 ```python
 Tool(
   name="hotel_search",
-  inputs={"destination", "dates.start", "dates.end", "party.adults", "party.children",
+  inputs={"destinations", "dates.start", "dates.end", "party.adults", "party.children",
           "party.pets", "lodging.budget_per_night_max", "lodging.must", "soft_preferences"},
-  guard=lambda s: s.destination_resolved,     # Callable, не выражение в DSL
+  guard_fields={"direction.explicit", "destinations", "dates.start", "dates.end"},
+  guard=lambda s: bool(s.candidates.destinations) and not s.request.dates.start.is_unknown,
   cost="high", retries=3, backoff=(0.5, 1.0, 2.0), timeout=3.0,
   breaker=(failures=3, window=60), fallback="stale_cache",
 )
 
 def affected(changed: set[str]) -> set[str]:
-    dirty = {t.name for t in TOOLS if changed & t.inputs}
-    return dirty | downstream(dirty)          # COMPOSE и VALIDATE всегда downstream
+    # грязнит и запрос, и готовность: watched = inputs | guard_fields
+    dirty = {t.name for t in TOOLS if t.hits_source and changed & t.watched}
+    return closure_downward(dirty) | {"compose", "validate"}
 ```
+
+Поле уровня источника (`destinations`, `transport.arrival_time`) и три правила замыкания
+зафиксированы в `services/agent/docs/CONTRACTS.md`, раздел «Реестр инструментов»:
+инструменты без сети (`cost="none"`) в грязное множество не попадают — их пересчёт и есть
+`validate`.
 
 Почему не JEXL/CEL/JSON-Logic: условие `guard` — это Python-лямбда над типизированным
 state. Свой язык выражений за эти сроки стоит дороже, чем весь выигрыш от декларативности,
