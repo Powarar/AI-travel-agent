@@ -353,6 +353,14 @@ _THEME_RU: dict[str, str] = {
 #: отелями — нет, и порядок кандидатов начал бы переворачиваться на шуме модели.
 RELEVANCE_STEP = 0.05
 
+#: Границы нормализации балла в пределах одного вызова и нейтральное значение, когда
+#: различить нечего. 0.05 как нижняя граница — не «самый плохой отель», а гарантия, что
+#: оценённый кандидат остаётся выше неоценённого (у того нет `relevance`, и ключ за него
+#: берёт 0.0).
+RELEVANCE_FLOOR = 0.05
+RELEVANCE_TOP = 1.00
+RELEVANCE_NEUTRAL = 0.50
+
 
 def relevance_query(request: TripRequest) -> str:
     """Запрос слота №3: `" ".join(soft values)` (ARCHITECTURE.md §5), темы — переводом."""
@@ -406,23 +414,53 @@ def apply_relevance(state: TripState, scores: Mapping[str, float]) -> TripState:
     """
 
     next_state = state.next_version()
+    buckets = _relevance_buckets(scores)
     next_state.candidates.hotels = [
         candidate.model_copy(update={
-            "ref": {**candidate.ref, "relevance": _bucketed(scores[candidate.candidate_id])}})
-        if candidate.candidate_id in scores else candidate
+            "ref": {**candidate.ref, "relevance": buckets[candidate.candidate_id]}})
+        if candidate.candidate_id in buckets else candidate
         for candidate in next_state.candidates.hotels
     ]
     return next_state
 
 
-def _bucketed(score: float) -> str:
-    """Балл, округлённый до шага 0.05, строкой: 0.833 → «0.85».
+def _relevance_buckets(scores: Mapping[str, float]) -> dict[str, str]:
+    """Скоры одного вызова реранкера → баллы `ref["relevance"]` (CONTRACTS.md, слот №3).
+
+    Нормализация по минимуму/максимуму вызова, а не по сырому числу: шкала у
+    cross-encoder'ов своя. Измерено 2026-10-27 живым прогоном — `qwen3-reranker-8b` на
+    русских документах отдаёт 0.0013–0.0192, `rerank-3-lite` — 0.30–0.49. Без приведения
+    весь набор ложился в bucket'ы «0.00»/«0.05», и оплаченный слот не менял план.
+
+    Порядок сохраняется (отображение монотонное), зато различие становится видимым по шагу.
+    Нижняя граница — 0.05, не 0.00: у неоценённого кандидата балла нет и `_hotel_order`
+    читает за него 0.0, поэтому оценённый обязан остаться выше.
+    """
+
+    if not scores:
+        return {}
+    values = list(scores.values())
+    low, high = min(values), max(values)
+    span = high - low
+
+    def scaled(score: float) -> float:
+        #: все скоры равны — сигнала нет, нейтральный балл, и решает стоимость ночи
+        if span <= 0:
+            return RELEVANCE_NEUTRAL
+        ratio = (score - low) / span
+        return RELEVANCE_FLOOR + ratio * (RELEVANCE_TOP - RELEVANCE_FLOOR)
+
+    return {candidate_id: _bucketed(scaled(score)) for candidate_id, score in scores.items()}
+
+
+def _bucketed(value: float) -> str:
+    """Нормализованный балл, округлённый до шага 0.05, строкой: 0.367 → «0.35».
 
     Хранится строкой, потому что `ref` — `dict[str, str]` (контраст с числами источника
     ровно там же, где они лежат), и `_hotel_order` читает это число обратно.
     """
 
-    steps = round(score / RELEVANCE_STEP)
+    steps = round(value / RELEVANCE_STEP)
     return f"{steps * RELEVANCE_STEP:.2f}"
 
 
@@ -778,7 +816,9 @@ def _hotel_order(state: TripState) -> Callable[[HotelOffer], tuple[float, Decima
 
     Совпадение по релевантности до шага 0.05 даёт равенство ключей, поэтому среди «одинаково
     атмосферных» снова решает цена — детерминизм трейса не зависит от того, сколько знаков
-    вернул cross-encoder.
+    вернул cross-encoder. Нормализованный балл зависит от состава вызова (минимум и максимум
+    этого набора), поэтому один и тот же список кандидатов даёт одно и то же число: вход
+    прогона фиксирован, и повтор вызова на том же входе воспроизводим.
 
     Когда `relevance` не проставлен ни у кого, ключ сводится к `(_stay_total,)`: то есть
     поведение ровно такое, как до врезки слота №3. Офлайн-прогон и прогон с выключенным или

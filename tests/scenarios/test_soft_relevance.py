@@ -125,10 +125,59 @@ class TestApplyRelevance:
         ]
         updated = apply_relevance(state, {"A": 0.833, "B": 0.674})
         scores = {c.candidate_id: c.ref["relevance"] for c in updated.candidates.hotels}
-        #: шаг 0.05: 0.833 → 0.85, 0.674 → 0.65 — различие ниже шага выбор менять не должно
-        assert scores == {"A": "0.85", "B": "0.65"}
+        #: нормализация в пределах вызова: максимум набора → 1.00, минимум → 0.05
+        assert scores == {"A": "1.00", "B": "0.05"}
         #: `score` источника — отдельное число, слот №3 его не перезаписывает
         assert [c.score for c in updated.candidates.hotels] == [0.5, 0.4]
+
+    def test_live_scale_still_spreads_over_buckets(self) -> None:
+        """Регрессия на съеденном сигнале: шкала 0.001–0.02 — не «всем ноль».
+
+        Снято живым прогоном 2026-10-27: `qwen3-reranker-8b` на русских документах отдаёт
+        0.0013–0.0192. До нормализации пять таких чисел округлялись в «0.00»/«0.05», и
+        оплаченный слот не менял план.
+        """
+
+        state = TripState(trip_id=uuid4())
+        state.candidates.hotels = [
+            Candidate(candidate_id=cid, kind="hotel", ref={"name": cid}, score=0.5,
+                      data_status=DataStatus.SYNTHETIC)
+            for cid in ("A", "B", "C", "D", "E")
+        ]
+        updated = apply_relevance(state, {"A": 0.0013, "B": 0.0041, "C": 0.0077,
+                                          "D": 0.0124, "E": 0.0192})
+        buckets = [c.ref["relevance"] for c in updated.candidates.hotels]
+        #: минимум вызова — на границе 0.05, максимум — 1.00, промежуточные — distinct
+        assert buckets == ["0.05", "0.20", "0.40", "0.65", "1.00"]
+        assert len(set(buckets)) == 5, "округление не должно схлопывать различимый порядок"
+
+    def test_identical_scores_leave_the_choice_to_price(self) -> None:
+        state = TripState(trip_id=uuid4())
+        state.candidates.hotels = [
+            Candidate(candidate_id="A", kind="hotel", ref={"name": "A"}, score=0.5,
+                      data_status=DataStatus.SYNTHETIC),
+            Candidate(candidate_id="B", kind="hotel", ref={"name": "B"}, score=0.4,
+                      data_status=DataStatus.SYNTHETIC),
+        ]
+        updated = apply_relevance(state, {"A": 0.42, "B": 0.42})
+        assert [c.ref["relevance"] for c in updated.candidates.hotels] == ["0.50", "0.50"]
+
+    def test_scored_hotel_outranks_unscored_one(self) -> None:
+        """Худший скор вызова — 0.05, а у неоценённого балла нет и ключ берёт за него 0.0."""
+
+        state = TripState(trip_id=uuid4())
+        state.candidates.hotels = [
+            Candidate(candidate_id="A", kind="hotel", ref={"name": "A"}, score=0.5,
+                      data_status=DataStatus.SYNTHETIC),
+            Candidate(candidate_id="B", kind="hotel", ref={"name": "B"}, score=0.4,
+                      data_status=DataStatus.SYNTHETIC),
+            Candidate(candidate_id="C", kind="hotel", ref={"name": "C"}, score=0.3,
+                      data_status=DataStatus.SYNTHETIC),
+        ]
+        updated = apply_relevance(state, {"A": 0.0013, "B": 0.0192})
+        buckets = {c.candidate_id: c.ref.get("relevance") for c in updated.candidates.hotels}
+        #: A — минимум вызова, и всё равно выше C, которому реранкер не ответил
+        assert buckets == {"A": "0.05", "B": "1.00", "C": None}
 
     def test_unknown_candidate_is_ignored(self) -> None:
         state = TripState(trip_id=uuid4())
@@ -181,7 +230,8 @@ class TestRuntimeWiring:
         assert sorted(documents) == ["AYT-FAM", "AYT-LUX", "AYT-STD", "HER-ONE", "HKT-ONE"]
         #: AYT-STD не получил балл (его нет в `scores`) — он отсеян по вместимости, и в
         #: состоянии у него остаётся пустая релевантность, а не ноль от нас
-        assert relevance_of(run)["AYT-LUX"] == "0.50"
+        #: нормализация вызова {0.9, 0.5, 0.4, 0.3}: 0.5 между 0.3 и 0.9 → 0.35
+        assert relevance_of(run)["AYT-LUX"] == "0.35"
         assert run.state.outcome is not None
 
     def test_rerank_is_not_an_llm_call_but_is_a_cost(self) -> None:
