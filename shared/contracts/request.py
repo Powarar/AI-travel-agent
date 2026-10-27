@@ -177,6 +177,7 @@ class TripRequest(BaseModel):
         flat.append(("budget.scope", self.budget.scope))
         flat.append(("budget.includes", self.budget.includes))
         flat.append(("themes", self.themes))
+        flat.append(("soft_preferences", self.soft_preferences))
         return flat
 
     def field_value(self, path: str) -> object | None:
