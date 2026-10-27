@@ -183,7 +183,7 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 
 **Статус:** ✅ done 2026-10-27 (П1) — `REGISTRY` (7 инструментов с политикой ретраев),
 `graph.affected()` = реверс-индекс + замыкание вниз, `ToolCache` по content-hash со
-счётчиком обращений; `tests/unit/test_invalidation.py` — 24 теста.
+счётчиком обращений; `tests/unit/test_invalidation.py` — 25 тестов.
 Две осознанные правки к тексту приёмки: (а) `transfer_search` попадает в результат
 `dates.start` — замыкание по `transport.arrival_time`, иначе трансфер остался бы с оценкой
 под старый прилёт; (б) `coherence_check` и `checkout_mock` (`cost="none"`) в грязное
