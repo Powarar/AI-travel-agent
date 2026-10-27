@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import re
+from calendar import monthrange
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from typing import Any, Literal, cast
@@ -261,8 +262,8 @@ def _date_traceable(raw: str, message: str) -> bool:
         return False
     if month is not None:
         # месяц либо цифрой в сообщении, либо словом («ноября» → 11) — иначе это додумка
-        return month in tokens or _month_of(message) is not None
-    return _month_of(raw) is not None or _month_of(message) is not None
+        return month in tokens or month_of(message) is not None
+    return month_of(raw) is not None or month_of(message) is not None
 
 
 def _traceable(delta: ParsedDelta, message: str) -> bool:
@@ -304,14 +305,101 @@ _THEME_WORDS = {
 }
 
 
-def _month_of(text: str) -> int | None:
-    """Месяц из названия («ноябре») или из цифры `дд.мм`; ищем по переданному тексту."""
+def month_positions(text: str) -> list[int]:
+    """Месяцы текста по порядку появления: «с 28 октября по 5 ноября» → [10, 11].
+
+    Порядок важен: `_MONTHS` — словарь, и перебор по его ключам достал бы «октябрь» раньше
+    «ноября» только потому, что его ключ стоит выше, а не потому, что он в цитате первый.
+    Публичная: ответ на вопрос про даты разбирает `orchestration.nodes`, и второй месяц там
+    нужен так же, как здесь.
+    """
 
     lowered = text.lower()
-    for stem, number in _MONTHS.items():
-        if stem in lowered:
-            return number
-    match = re.search(r"\b(\d{1,2})\.(\d{1,2})\b", lowered)
+    found = [(lowered.find(stem), number) for stem, number in _MONTHS.items()
+             if lowered.find(stem) >= 0]
+    found.sort()
+    return [number for _, number in found]
+
+
+def day_in_month(year: int, month: int, day: int) -> date:
+    """День в месяце: перенос года и сжатие на реальную границу месяца.
+
+    Нужен всем трём разборщикам — моку T-05, коэрсеру живой цитаты и узлу ответа в
+    `orchestration.nodes`, — иначе «с 28 по 5» дало бы три разных поведения на одном входе.
+    «31 февраля» не выдумывается: день прижимается к 28/29, а не роняет ход — ответ
+    пользователя не обязан быть календарно грамотным.
+    """
+
+    if month > 12:
+        year, month = year + 1, month - 12
+    elif month < 1:
+        year, month = year - 1, month + 12
+    return date(year, month, min(day, monthrange(year, month)[1]))
+
+
+#: Слова, после которых число — длительность или количество, а не день месяца. `ч\b` нужен
+#: «3 - 4 ч в дороге», а `час\w*` — «часах»; «число» под них не попадает, и «по 5 числа»
+#: остаётся датой.
+_UNIT_AFTER_NUMBER = re.compile(
+    r"\s*(?:час\w*|ч\b|ноч\w*|минут\w*|звёзд\w*|звезд\w*|дн[ея]\w*|нед[ея]\w*|км\b|тыс\b)"
+)
+
+
+def _unit_after(text: str, position: int) -> re.Match[str] | None:
+    """Единица сразу за вторым числом диапазона: «3 - 4 часов» — это не календарь.
+
+    Отдельная проверка, а не часть рамки: «в ноябре 3 - 4 часа в дороге» содержит слово
+    месяца, и без неё ноябрьские даты родились бы из длительности перелёта.
+    """
+
+    return _UNIT_AFTER_NUMBER.match(text, position)
+
+
+def range_days(text: str, *, year: int, month: int | None = None) -> tuple[date, date] | None:
+    """Диапазон дат из одной строки: ISO, `дд.мм` или «с 28 октября по 5 ноября».
+
+    Пересечение месяца — не пустой диапазон: если день выезда меньше дня заезда, выезд
+    относится к следующему месяцу (а когда названы два месяца — каждый к своему).
+    `month` — якорь, когда месяц в строке не звучал вовсе («с 28 по 5» при известном ноябре);
+    без якоря возвращаем `None`, и решение переспросить остаётся за вызывающим.
+    Промежуток по времени («не больше 3 - 4 часов») — не диапазон дат.
+    """
+
+    iso = re.findall(r"\b\d{4}-\d{2}-\d{2}\b", text)
+    if len(iso) >= 2:
+        return date.fromisoformat(iso[0]), date.fromisoformat(iso[1])
+    dotted = re.findall(r"\b(\d{1,2})[./](\d{1,2})(?:[./](\d{4}))?\b", text)
+    if len(dotted) >= 2:
+        first, last = dotted[0], dotted[-1]
+        return (day_in_month(int(first[2]) if first[2] else year, int(first[1]), int(first[0])),
+                day_in_month(int(last[2]) if last[2] else year, int(last[1]), int(last[0])))
+    #: разделитель обязателен с обеими сторонами пробелом: «3-4 звезды» и «2-3 часа» не
+    #: должны притворяться диапазоном дат, а «с 14 по 21» и «28 октября по 5» — должны
+    window = re.search(r"(\d{1,2})(?:\s+[а-яё]+)?\s+(?:по|—|–|-)\s+(\d{1,2})", text)
+    if window is None or _unit_after(text, window.end()) is not None:
+        return None
+    months = month_positions(text)
+    #: месяц либо назван, либо задан якорем: «2 - 3» без контекста — не дата, и придумывать
+    #: за пользователя месяц мы не правомочны
+    start_month = months[0] if months else month
+    if start_month is None:
+        return None
+    start_day, end_day = int(window.group(1)), int(window.group(2))
+    end_month = months[-1] if len(months) >= 2 else start_month
+    #: месяц не назван второй раз, но дни убывают — значит граница в следующем месяце
+    if end_month == start_month and end_day < start_day:
+        end_month += 1
+    return (day_in_month(year, start_month, start_day),
+            day_in_month(year + 1 if end_month > 12 else year, end_month, end_day))
+
+
+def month_of(text: str) -> int | None:
+    """Месяц из названия («ноябре») или из цифры `дд.мм`; ищем по переданному тексту."""
+
+    months = month_positions(text)
+    if months:
+        return months[0]
+    match = re.search(r"\b(\d{1,2})\.(\d{1,2})\b", text.lower())
     if match is not None:
         return int(match.group(2))
     return None
@@ -400,17 +488,25 @@ def _to_money(raw: str) -> Money:
 
 def _to_date(raw: str, *, year: int, message: str = "", inferred: bool = False,
              latest: bool = False) -> date:
-    """Дата из цитаты. `latest` — для выезда: из «с 1 по 10 августа» брать последнее число.
+    """Дата из цитаты. `latest` — для выезда: из «с 1 по 10 августа» брать вторую границу.
 
     Модель отдаёт одну и ту же цитату диапазона на обе даты (диапазон один, и это правильно),
     а без различия start/end обе даты становились 1 августа — поездка нулевой длины.
+
+    Диапазон читает общий `range_days` — тот же, что у мока T-05 и у узла ответа: на одном
+    входе все три обязаны дать одну дату, иначе метрика живого пути сравнивает
+    несравниваемое. Граница берётся по позиции, а не `min`/`max`: в «с 28 октября по 5 ноября»
+    минимум — 5, и `min` для заезда давал 5 октября, а `max` для выезда — 28 ноября.
     """
 
+    span = range_days(raw, year=year, month=month_of(raw) or month_of(message))
+    if span is not None:
+        return span[1] if latest else span[0]
     iso = re.search(r"\b(\d{4})-(\d{2})-(\d{2})\b", raw)
     if iso is not None:
         return date(int(iso.group(1)), int(iso.group(2)), int(iso.group(3)))
     days = [int(item) for item in re.findall(r"\b(\d{1,2})\b", raw) if 1 <= int(item) <= 31]
-    month = _month_of(raw) or _month_of(message)
+    month = month_of(raw) or month_of(message)
     if month is None:
         raise ValueError(f"month missing: raw={raw!r} message={message[:60]!r}")
     if not days:
@@ -421,12 +517,15 @@ def _to_date(raw: str, *, year: int, message: str = "", inferred: bool = False,
             raise ValueError(f"day missing in a field claimed as spoken: {raw!r}")
         day_number = 1
     else:
-        day_number = max(days) if latest else min(days)
+        #: одна граница в цитате — тот же день, что и брался раньше; `latest` влияет только
+        #: когда диапазона не было и день задан один
+        day_number = days[-1] if latest else days[0]
     guessed = year
     iso_year = re.search(r"\b(20\d{2})\b", raw)
     if iso_year is not None:
         guessed = int(iso_year.group(1))
-    return date(guessed, month, day_number)
+    #: 31 февраля модель может выдать и здесь — день прижимается к границе месяца, а не роняет ход
+    return day_in_month(guessed, month, day_number)
 
 
 def _to_list_of_int(raw: str) -> list[int]:

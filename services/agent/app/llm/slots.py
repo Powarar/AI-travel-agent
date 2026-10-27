@@ -21,7 +21,9 @@ from pydantic import BaseModel, Field
 from services.agent.app.llm.schemas import (
     CHILD_WORD_RE,
     DEFAULT_CHILD_AGE,
+    month_of,
     number_from_words,
+    range_days,
 )
 from services.agent.app.orchestration.policy import QuestionSpec
 from shared.contracts.enums import (
@@ -51,13 +53,9 @@ _THEME_WORDS = {
     Theme.CULTURE: ("музе", "культур", "истори"),
     Theme.FOOD: ("гастро", "еда", "ресторан"),
 }
-#: Предложный («в ноябре») и родительный («с 14 по 21 ноября») — оба способа назвать месяц.
-_MONTHS = {
-    "январе": 1, "феврале": 2, "марте": 3, "апреле": 4, "мае": 5, "июне": 6,
-    "июле": 7, "августе": 8, "сентябре": 9, "октябре": 10, "ноябре": 11, "декабре": 12,
-    "января": 1, "февраля": 2, "марта": 3, "апреля": 4, "мая": 5, "июня": 6,
-    "июля": 7, "августа": 8, "сентября": 9, "октября": 10, "ноября": 11, "декабря": 12,
-}
+#: Таблица месяцев живёт в `schemas.month_of`: со своими окончаниями здесь она
+#: разошлась бы с живой строкой ровно на «с 28 октября по 5 ноября», а два разборщика
+#: обязаны давать одну дату.
 _NOT_A_PLACE = (
     "янв", "фев", "мар", "апр", "мае", "июн", "июл", "авг", "сен", "окт", "ноя", "дек",
     "зим", "весн", "лет", "осен", "отпуск", "командировк", "выходн", "праздник",
@@ -297,23 +295,26 @@ class MockSlots:
                 True, kind=ConstraintKind.SOFT, source="user"
             )
 
-        month = next((number for word, number in _MONTHS.items() if word in lowered), None)
-        if month is not None:
-            anchor = DemoMonth.replace(month=month, day=1)
-            window = re.search(r"с (\d{1,2}) по (\d{1,2})", lowered)
-            if window is not None:
-                start = anchor.replace(day=int(window.group(1)))
-                end = anchor.replace(day=int(window.group(2)))
-                request.dates.start = FieldValue[date].known(start, kind=ConstraintKind.HARD, source="user")
-                request.dates.end = FieldValue[date].known(end, kind=ConstraintKind.HARD, source="user")
-                request.nights = FieldValue[int].inferred(
-                    (end - start).days, kind=ConstraintKind.HARD, source="dates", confidence=1.0
-                )
-            else:
-                # «в ноябре» — это не дата: вывели мы, значит поле требует подтверждения
-                request.dates.start = FieldValue[date].inferred(
-                    anchor, kind=ConstraintKind.HARD, source="context", confidence=0.5
-                )
+        #: разборщик один на все три пути (мок T-05, живой коэрсер, ответ на вопрос):
+        #: `range_days` видит и «с 28 октября по 5 ноября», и `дд.мм`, и ISO. Вилку читаем
+        #: до слова месяца: ISO-даты человек называет без «ноября», и требовать его значит
+        #: потерять даты, которые живой путь находит.
+        month = month_of(lowered)
+        span = range_days(lowered, year=DemoMonth.year, month=month)
+        if span is not None:
+            start, end = span
+            request.dates.start = FieldValue[date].known(start, kind=ConstraintKind.HARD, source="user")
+            request.dates.end = FieldValue[date].known(end, kind=ConstraintKind.HARD, source="user")
+            request.nights = FieldValue[int].inferred(
+                (end - start).days, kind=ConstraintKind.HARD, source="dates", confidence=1.0
+            )
+            request.dates.flexibility_days = FieldValue[int].defaulted(0, kind=ConstraintKind.SOFT)
+        elif month is not None:
+            # «в ноябре» — это не дата: вывели мы, значит поле требует подтверждения
+            request.dates.start = FieldValue[date].inferred(
+                DemoMonth.replace(month=month, day=1),
+                kind=ConstraintKind.HARD, source="context", confidence=0.5
+            )
             request.dates.flexibility_days = FieldValue[int].defaulted(0, kind=ConstraintKind.SOFT)
 
         if match := re.search(r"(\d{1,2})\s*(?:ноч|ночей)", lowered):

@@ -42,6 +42,7 @@ from services.agent.app.llm.schemas import (
     ParsedDelta,
     ParseSchema,
     apply_deltas,
+    range_days,
 )
 from services.agent.app.llm.slots import Explanation, MockSlots
 from shared.contracts.enums import BudgetScope, ConstraintKind, DirectionMode, Theme
@@ -468,6 +469,62 @@ class TestContractOverModelJudgement:
         assert result.rejected == []
         assert _to_money("120 000").amount == Decimal(120000)
         assert _to_money("90 тысяч").amount == Decimal(90000)
+
+
+class TestSharedDateReader:
+    """Один разборщик дат на три пути: мок T-05, цитата живой модели, ответ на вопрос.
+
+    Разные копии давали три разных плана на одной фразе: «с 28 по 5» мок собирал в ноябре
+    и получал пустую вилку, коэрсер брал `min`/`max` по дням (5 октября → 28 ноября), узел
+    ответа ронял ход. Метрика живого слота №1 сравнивает мока и модель, поэтому паритет
+    здесь — часть приёмки, а не рефакторинг.
+    """
+
+    #: (фраза, заезд, выезд) — пересечение месяца, два названных месяца, `дд.мм`, ISO
+    RANGES = [
+        ("с 28 октября по 5 ноября", date(YEAR, 10, 28), date(YEAR, 11, 5)),
+        ("с 28 по 5 ноября", date(YEAR, 11, 28), date(YEAR, 12, 5)),
+        ("28.10 - 05.11", date(YEAR, 10, 28), date(YEAR, 11, 5)),
+        ("с 2026-11-01 по 2026-11-08", date(YEAR, 11, 1), date(YEAR, 11, 8)),
+    ]
+
+    @pytest.mark.parametrize("phrase, start, end", RANGES)
+    def test_mock_and_coercer_agree(self, phrase: str, start: date, end: date) -> None:
+        message = f"еду в сочи из Москвы, {phrase}, нас двое"
+
+        mock = MockSlots().parse(message)
+        assert (mock.dates.start.value, mock.dates.end.value) == (start, end)
+        assert mock.nights.value == (end - start).days
+
+        deltas = [
+            ParsedDelta(path="dates.start", raw=phrase, kind=ConstraintKind.HARD),
+            ParsedDelta(path="dates.end", raw=phrase, kind=ConstraintKind.HARD),
+        ]
+        result = apply_deltas(deltas, message, year=YEAR)
+        assert (result.request.dates.start.value, result.request.dates.end.value) == (start, end)
+        assert result.rejected == []
+
+    @pytest.mark.parametrize("phrase", [
+        "не больше 3 - 4 часов в дороге",
+        "на 2-3 ночи",
+        "в отеле 3 - 4 звезды",
+    ])
+    def test_a_duration_is_not_a_date_range(self, phrase: str) -> None:
+        """Промежуток по времени не становится датами: якорь-месяц в этих строках есть.
+
+        «не больше 3 - 4 часов» при известном ноябре давало 3–4 ноября, и пользователь
+        получал план на выдуманную поездку вместо переспроса про даты.
+        """
+
+        assert range_days(phrase, year=YEAR, month=11) is None
+
+    def test_mock_keeps_asking_when_only_a_duration_is_said(self) -> None:
+        """Мок на «в ноябре, не больше 3 - 4 часов в дороге» оставляет месяц, но не дни."""
+
+        request = MockSlots().parse("хочу к морю в ноябре, не больше 3 - 4 часов в дороге")
+        assert request.dates.start.value == date(YEAR, 11, 1)
+        assert request.dates.start.status.value == "inferred"
+        assert request.dates.end.is_unknown
 
 
 class TestStructuredCaller:

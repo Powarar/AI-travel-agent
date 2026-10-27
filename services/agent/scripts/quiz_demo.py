@@ -15,7 +15,6 @@
 from __future__ import annotations
 
 import argparse
-import re
 import sys
 from datetime import date
 from pathlib import Path
@@ -24,6 +23,7 @@ from uuid import uuid4
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
+from services.agent.app.llm.schemas import range_days
 from services.agent.app.llm.slots import MockSlots
 from shared.contracts.enums import (
     ConstraintKind,
@@ -113,15 +113,14 @@ def apply_answer(request: TripRequest, field: str, raw: str) -> TripRequest:
             request.dates.flexibility_days = FieldValue[int].defaulted(3, kind=ConstraintKind.SOFT)
             request.nights = FieldValue[int].defaulted(7, kind=ConstraintKind.HARD)
         else:
-            iso = re.findall(r"\d{4}-\d{2}-\d{2}", answer)
-            if len(iso) >= 2:
-                start, end = date.fromisoformat(iso[0]), date.fromisoformat(iso[1])
-            else:
-                days = [int(n) for n in re.findall(r"\d{1,2}", answer)]
-                if len(days) < 2:
-                    raise ValueError(f"cannot read a date range from {answer!r}")
-                start = DEMO_MONTH.replace(day=days[0])
-                end = DEMO_MONTH.replace(day=days[1])
+            #: разборщик общий с моком T-05, коэрсером живой цитаты и узлом ответа:
+            #: «с 28 по 5» даёт ноябрь→декабрь, а не пустой диапазон, и «3 - 4 часа»
+            #: не притворяется датами. Своя копия здесь расходилась с прод-путём.
+            said_start = request.dates.start.value or DEMO_MONTH
+            span = range_days(answer, year=said_start.year, month=said_start.month)
+            if span is None:
+                raise ValueError(f"cannot read a date range from {answer!r}")
+            start, end = span
             if end <= start:
                 raise ValueError(f"date range is empty: {start} → {end}")
             request.dates.start = FieldValue[date].known(start, kind=ConstraintKind.HARD, source="user")

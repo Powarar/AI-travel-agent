@@ -23,6 +23,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel, Field
 
+from services.agent.app.llm.schemas import range_days
 from services.agent.app.orchestration.policy import QuestionSpec
 from services.agent.app.validation.coherence import make
 from services.agent.app.validation.inputs import (
@@ -998,24 +999,25 @@ def _require_not_skipped(path: str, raw: str) -> None:
 
 
 def _apply_dates(request: TripRequest, raw: str) -> None:
-    """Один вопрос про вилку дат закрывает `dates.start`, `dates.end` и `nights`."""
+    """Один вопрос про вилку дат закрывает `dates.start`, `dates.end` и `nights`.
+
+    Диапазон читает общий `range_days` — тот же разборщик, что у мока T-05 и у коэрсера
+    живой цитаты. Раньше здесь был свой `month.replace(day=...)`, и он не умел ни пересечение
+    месяца («с 28 по 5» → `end <= start` → ход падал на втором вопросе), ни `дд.мм`
+    («28.10 - 05.11» читалось как дни 28 и 10 того же месяца).
+    """
 
     if raw.strip().lower() in {"", "пропустить", "skip", "-"}:
         anchor = date(2026, 11, 1)
         request.dates.start = FieldValue[date].defaulted(anchor.replace(day=14), kind=ConstraintKind.HARD)
         request.dates.end = FieldValue[date].defaulted(anchor.replace(day=21), kind=ConstraintKind.HARD)
         return
-    iso = re.findall(r"\d{4}-\d{2}-\d{2}", raw)
-    if len(iso) >= 2:
-        start, end = date.fromisoformat(iso[0]), date.fromisoformat(iso[1])
-    else:
-        days = [int(number) for number in re.findall(r"\d{1,2}", raw)]
-        if len(days) < 2:
-            raise ValueError(f"cannot read a date range from {raw!r}")
-        said_start = request.dates.start.value
-        month = said_start if said_start is not None else date(2026, 11, 1)
-        start = month.replace(day=days[0])
-        end = month.replace(day=days[1])
+    said_start = request.dates.start.value
+    span = range_days(raw, year=(said_start or date(2026, 11, 1)).year,
+                      month=(said_start or date(2026, 11, 1)).month)
+    if span is None:
+        raise ValueError(f"cannot read a date range from {raw!r}")
+    start, end = span
     if end <= start:
         raise ValueError(f"date range is empty: {start} → {end}")
     request.dates.start = FieldValue[date].known(start, kind=ConstraintKind.HARD)

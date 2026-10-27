@@ -103,8 +103,50 @@ class TestInterrupt:
         assert state.request.nights.value == 7
 
     def test_empty_date_range_is_rejected(self):
-        with pytest.raises(ValueError):
-            apply_answer(fresh_state().request, "dates.start", "с 27 по 20")
+        """Пустая вилка — это «с 10 по 10»: равные границы, а не убывающие дни.
+
+        «с 27 по 20» раньше падало на этом же страже и выглядело правильным отказом, но тот
+        же ответ в форме «с 28 по 5» — обычная поездка через месяц. Разборщик один на весь
+        контур (`schemas.range_days`), и он трактует убывание дней как переход в следующий
+        месяц; различает два случая только равенство границ.
+        """
+
+        with pytest.raises(ValueError, match="empty"):
+            apply_answer(fresh_state().request, "dates.start", "с 10 по 10")
+
+    def test_range_crossing_the_month_extends_into_the_next(self):
+        """Ответ на вопрос про даты в форме «с 28 по 5» — ноябрь и декабрь, 7 ночей.
+
+        Своя копия разборщика в этом скрипте подставляла оба дня в один месяц и на таком
+        ответе роняла ход: вопрос израсходован, плана нет.
+        """
+
+        request = apply_answer(fresh_state().request, "dates.start", "с 28 по 5")
+        assert request.dates.start.value == date(2026, 11, 28)
+        assert request.dates.end.value == date(2026, 12, 5)
+        assert request.nights.value == 7
+
+    def test_two_named_months_take_their_own(self):
+        request = apply_answer(fresh_state().request, "dates.start", "с 30 октября по 3 ноября")
+        assert request.dates.start.value == date(2026, 10, 30)
+        assert request.dates.end.value == date(2026, 11, 3)
+
+    def test_dotted_dates_are_day_and_month(self):
+        """`дд.мм` читается как дата, а не как два дня ноября: «28.10 - 05.11» — октябрь и ноябрь."""
+
+        request = apply_answer(fresh_state().request, "dates.start", "28.10 - 05.11")
+        assert request.dates.start.value == date(2026, 10, 28)
+        assert request.dates.end.value == date(2026, 11, 5)
+
+    def test_duration_phrase_is_not_a_date_range(self):
+        """«не больше 3 - 4 часов в дороге» — длительность: на ней спрашиваем дату дальше.
+
+        Тире с пробелами выглядит как диапазон, и прошлый разборщик доставал из него
+        3–4 ноября: пользователь получал план на выдуманную поездку вместо переспроса.
+        """
+
+        with pytest.raises(ValueError, match="cannot read a date range"):
+            apply_answer(fresh_state().request, "dates.start", "не больше 3 - 4 часов в дороге")
 
     def test_month_without_a_date_is_inferred_not_user(self):
         request = mock_parse("уедем в ноябре на неделю")
