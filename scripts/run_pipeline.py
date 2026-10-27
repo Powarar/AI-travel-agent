@@ -29,6 +29,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import os
 import statistics
@@ -169,6 +170,7 @@ class TurnReport:
     breakdown: list[tuple[str, str]] = field(default_factory=list)
     order_id: str | None = None
     failed: str | None = None
+    state_dump: dict[str, Any] = field(default_factory=dict)
 
 
 def walk(runtime: Runtime, message: str, answers: Mapping[str, str], *, now: datetime,
@@ -199,6 +201,10 @@ def _fill(run: Any, runtime: Runtime, report: TurnReport) -> None:
 
     state: TripState = run.state
     budget = state.budgets
+    #: состояние целиком — то, что ждёт фронт (T-06): план, кандидаты, provenance, счётчики.
+    #: Сериализуется до `_fill`, а не в самом конце: прогон обязан отдавать JSON и когда
+    #: денег в плане нет, и когда до плана не дошли.
+    report.state_dump = json.loads(state.model_dump_json())
     report.trace = list(run.trace)
     report.outcome = state.outcome
     report.stage = state.stage.value
@@ -244,15 +250,18 @@ def _percentile(values: Sequence[float], q: float) -> float:
     return ordered[min(len(ordered) - 1, max(0, int(round(q * (len(ordered) - 1)))))]
 
 
-def print_routing(slots: LLMSlots) -> None:
-    """Какая модель стоит на каждом слоте — до первого вызова, чтобы цену видно было до того,
-    как она потрачена."""
+def slot_models(slots: LLMSlots) -> dict[str, str]:
+    """Какая модель стоит на каждом слоте — из окружения, а не из памяти провайдера.
 
-    print(f"провайдер: {type(slots).__name__}")
+    Одно и то же число читает и таблица в консоли, и `--json`: два маршрута по окружению
+    разошлись бы на первом же прогоне с `LLM_MODEL_PARSE`, и таблица вёрстки стала бы
+    враньём ровно тогда, когда мы считаем цену.
+    """
+
     if isinstance(slots, MockSlots):
-        print("  все слоты — моки T-05: сеть не трогается, денег нет")
-        return
+        return {label: "mock (T-05)" for _, label, _ in SLOTS}
     base = os.environ.get("LLM_MODEL", "")
+    models: dict[str, str] = {}
     for name, label, env_name in SLOTS:
         chosen = os.environ.get(env_name, "").strip()
         if name == "diff":
@@ -261,7 +270,21 @@ def print_routing(slots: LLMSlots) -> None:
             chosen = chosen or "(слот выключен: RERANK_MODEL не задан)"
         elif not chosen:
             chosen = base or "(LLM_MODEL не задан)"
-        print(f"  {label:<16} {env_name:<20} {chosen}")
+        models[label] = chosen
+    return models
+
+
+def print_routing(slots: LLMSlots) -> None:
+    """Какая модель стоит на каждом слоте — до первого вызова, чтобы цену видно было до того,
+    как она потрачена."""
+
+    print(f"провайдер: {type(slots).__name__}")
+    if isinstance(slots, MockSlots):
+        print("  все слоты — моки T-05: сеть не трогается, денег нет")
+        return
+    models = slot_models(slots)
+    for name, label, env_name in SLOTS:
+        print(f"  {label:<16} {env_name:<20} {models[label]}")
     print("  на ход: 1 чат-вызов на parse, по одному на каждый вопрос (лимит 2), 1 на finalists, "
           "1 на explain + 1 /rerank, если слот №3 включён")
 
@@ -330,6 +353,77 @@ def summarize(reports: Sequence[TurnReport]) -> None:
     print(f"  guard: чист на {len(clean)} из {len(done)}")
 
 
+def json_payload(reports: Sequence[TurnReport], measured: MeasuredSlots, *,
+                 provider: str, message: str, answers: Mapping[str, str],
+                 slots: LLMSlots) -> dict[str, Any]:
+    """Ответ прогона одним объектом: метрика, план, состояние и маршрут моделей.
+
+    Фронту (T-06) и замеру слотов нужен один и тот же результат в машиночитаемом виде:
+    человек читает таблицу, а `--repeat` по 12 фразам никто таблицей не разберёт. Поля
+    названы как в состоянии, и `state` лежит целиком — пересобирать numbers из строк
+    объяснения значило бы иметь два источника чисел (инвариант №1).
+
+    Слот №3 без `RERANK_MODEL` отдаёт `None`, и в JSON это видно как `"relevance": null`,
+    а не как пропущенный ключ: «не ранжировали» и «не замеряли» — разные исходы прогона.
+    """
+
+    done = [report for report in reports if report.failed is None]
+    walls = [report.wall_clock_ms for report in done]
+    runs: list[dict[str, Any]] = []
+    for report in reports:
+        runs.append({
+            "answers": [dict(zip(("path", "value"), pair)) for pair in report.answers],
+            "trace": report.trace,
+            "outcome": report.outcome.value if report.outcome is not None else None,
+            "stage": report.stage,
+            "failed": report.failed,
+            "order_id": report.order_id,
+            "explanation": report.explanation_text,
+            "violations": report.violations,
+            "invented_numbers": report.invented_numbers,
+            "finalists": report.finalists,
+            "relevance": [{"candidate_id": cid, "relevance": None if score == "-" else score,
+                           "name": name}
+                          for cid, score, name in report.relevance],
+            "components": report.components,
+            "money": {"total": report.total, "budget": report.budget,
+                      "remaining": report.remaining, "over_budget": report.over_budget,
+                      "breakdown": [dict(zip(("kind", "amount"), row))
+                                    for row in report.breakdown]},
+            "metrics": {"tool_calls": report.tool_calls, "llm_calls": report.llm_calls,
+                        "questions": report.questions, "tokens": report.tokens,
+                        "wall_clock_ms": report.wall_clock_ms,
+                        "source_calls": report.source_calls, "cache_hits": report.cache_hits},
+            "state": report.state_dump,
+        })
+    return {
+        "provider": provider,
+        "message": message,
+        "answers": dict(answers),
+        "models": slot_models(slots),
+        "runs": runs,
+        "slots": [
+            {"slot": label, "env": env_name, "calls": len(measured.ms[name]),
+             "p50_ms": round(_percentile(measured.ms[name], 0.5)),
+             "p95_ms": round(_percentile(measured.ms[name], 0.95)),
+             "notes": measured.notes[name]}
+            for name, label, env_name in SLOTS
+        ],
+        "failures": list(getattr(measured.inner, "failures", [])),
+        "rerank_failures": list(getattr(
+            getattr(measured.inner, "reranker", None), "failures", []) or []),
+        "summary": {
+            "runs": len(reports),
+            "reached_plan": len(done),
+            "wall_clock_ms_p50": int(statistics.median(walls)) if walls else 0,
+            "wall_clock_ms_max": max(walls) if walls else 0,
+            "tokens": sum(report.tokens for report in done),
+            "tokens_by_provider": measured.tokens_used,
+            "guard_clean": sum(1 for report in done if not report.invented_numbers),
+        },
+    }
+
+
 def build_slots(provider: str) -> LLMSlots:
     """Слоты из флага или окружения: `mock` — моки T-05, иначе живой провайдер.
 
@@ -380,6 +474,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                         help="только маршрутинг моделей и план вызовов; ни одного запроса к шлюзу")
     parser.add_argument("--verbose", action="store_true",
                         help="INFO-логи рантайма и провайдера в stderr")
+    parser.add_argument("--json", action="store_true",
+                        help="ответ одним JSON в stdout вместо таблиц (для фронта и замеров)")
     args = parser.parse_args(argv)
 
     load_env_file()
@@ -387,7 +483,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                         format="%(levelname)s %(name)s: %(message)s", stream=sys.stderr)
 
     answers = _answers_from_args(args.answer)
-    ask = _ask_terminal if sys.stdin.isatty() else _ask_refuse
+    #: в `--json` ответ берём только из флага: печатать вопрос в stdout значит испортить
+    #: JSON, а молча подставить ответ — значит сфабриковать прогон
+    ask = _ask_refuse if args.json or not sys.stdin.isatty() else _ask_terminal
     try:
         slots = MeasuredSlots(build_slots(args.provider))
     except ValueError as error:
@@ -398,14 +496,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
     sources: Mapping[str, Source] = build_sources()
     now = datetime.now(timezone.utc) if args.real_now else FIXTURE_NOW
-    print_routing(slots.inner)
+    if not args.json:
+        print_routing(slots.inner)
     if args.dry_run:
         # конструирование провайдера сети не трогает, а клиент надо закрыть: незакрытый
         # `httpx.Client` переживает процесс только в тестах
         close = getattr(slots.inner, "close", None)
         if callable(close):
             close()
-        print("\n--dry-run: прогон не начат, запросов к шлюзу не было")
+        if args.json:
+            print(json.dumps({"provider": args.provider, "dry_run": True,
+                              "models": slot_models(slots.inner)},
+                             ensure_ascii=False, indent=2))
+        else:
+            print("\n--dry-run: прогон не начат, запросов к шлюзу не было")
         return 0
 
     reports: list[TurnReport] = []
@@ -417,14 +521,23 @@ def main(argv: Sequence[str] | None = None) -> int:
             report = TurnReport()
             walk(runtime, args.message, answers, now=now, ask=ask, report=report)
             reports.append(report)
-            print_turn(report, args.message, index)
+            if not args.json:
+                print_turn(report, args.message, index)
     finally:
         close = getattr(slots.inner, "close", None)
         if callable(close):
             close()
 
-    print_slots(slots)
-    summarize(reports)
+    if args.json:
+        # один объект на stdout: `--json | jq` и запись замеров в файл работают без
+        # зачистки таблиц, а логи провайдера уже идут в stderr
+        print(json.dumps(json_payload(reports, slots, provider=args.provider,
+                                      message=args.message, answers=answers,
+                                      slots=slots.inner),
+                         ensure_ascii=False, indent=2))
+    else:
+        print_slots(slots)
+        summarize(reports)
     bad = [report for report in reports
            if report.failed is not None or report.invented_numbers
            or report.outcome not in {Outcome.PLAN_READY, Outcome.BEST_EFFORT}]

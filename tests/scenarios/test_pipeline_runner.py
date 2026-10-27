@@ -11,6 +11,8 @@
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from scripts import run_pipeline as rp
@@ -79,6 +81,39 @@ class TestOfflineWalk:
         # 125 200 ₽ из ассертов T-05 посчитаны для этой даты; на реальной дате цены фикстур
         # разошлись бы с тестом, и прогон перестал бы быть тем же самым сценарием
         assert (rp.FIXTURE_NOW.year, rp.FIXTURE_NOW.month) == (2026, 11)
+
+
+    def test_json_answer_is_one_machine_readable_object(self, capsys,
+                                                         monkeypatch) -> None:
+        """`--json` — ответ фронту и замеру: на stdout только JSON, таблицы молчат.
+
+        Проверяем то, что ломается в первую очередь: сериализуемость состояния целиком
+        (`TripState` знает про `Decimal` и `date`), счётчик провайдера на уровне обёртки
+        (`tokens_used` проброшен, а не потерян) и `null` там, где слот №3 не отвечал.
+        """
+
+        monkeypatch.delenv("LLM_PROVIDER", raising=False)
+        monkeypatch.delenv("RERANK_MODEL", raising=False)
+        code = rp.main(["--provider", "mock", "--json", "--answer", "origin=Москва",
+                        "--answer", "dates.start=с 14 по 21"])
+        out = capsys.readouterr().out
+        assert code == 0
+        payload = json.loads(out)
+        run = payload["runs"][0]
+        assert run["outcome"] == "plan_ready"
+        assert run["order_id"] == "ord-AYT-AYT-FAM"
+        assert run["money"]["total"] == "125 200 ₽"
+        assert run["state"]["request"]["nights"]["value"] == 7
+        assert run["metrics"]["llm_calls"] == 5
+        assert [item["relevance"] for item in run["relevance"][:1]] == [None]
+        assert payload["summary"]["tokens_by_provider"] == 0  # моки не считают токены
+        assert "guard: чист" not in out
+
+    def test_dry_run_under_json_does_not_touch_the_gateway(self, capsys) -> None:
+        code = rp.main(["--provider", "mock", "--json", "--dry-run"])
+        out = capsys.readouterr().out
+        assert code == 0
+        assert json.loads(out)["dry_run"] is True
 
 
 class TestCostVisibility:
