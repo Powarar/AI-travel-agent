@@ -221,7 +221,7 @@ def build_sources(kind: str = "fixture") -> dict[str, Source]:
     if kind == "seed":
         from services.agent.app.tools.seed_sources import seed_sources
 
-        return cast("dict[str, Source]", seed_sources())
+        return seed_sources()
     from tests.scenarios.test_golden_path import SOURCES
 
     return cast("dict[str, Source]", dict(SOURCES))
@@ -347,10 +347,10 @@ def slot_models(slots: LLMSlots) -> dict[str, str]:
         return {label: "mock (T-05)" for _, label, _ in SLOTS}
     if isinstance(slots, ChatMockRerankLive):
         #: чат остаётся моком, и врать в таблице про пять слотов, которые не вызывались, нельзя
-        models = {label: "mock (T-05)" for _, label, _ in SLOTS}
-        models["SL-3 relevance"] = (slots.reranker.model if slots.reranker is not None
-                                    else "(слот выключен: RERANK_MODEL не задан)")
-        return models
+        hybrid = {label: "mock (T-05)" for _, label, _ in SLOTS}
+        hybrid["SL-3 relevance"] = (slots.reranker.model if slots.reranker is not None
+                                     else "(слот выключен: RERANK_MODEL не задан)")
+        return hybrid
     base = os.environ.get("LLM_MODEL", "")
     models: dict[str, str] = {}
     for name, label, env_name in SLOTS:

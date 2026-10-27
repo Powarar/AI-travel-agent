@@ -182,8 +182,8 @@ def suggest_destinations(args: Mapping[str, object]) -> SearchResult:
     return SearchResult(
         destinations=[
             DestinationFact(
-                code=code, name=name, country=country, sea_temp_c=sea, flight_h=flight_h,
-                est_total=_money(est), source_id="ideas-fixture", score=score,
+                code=code, name=name, country=country, sea_temp_c=Decimal(sea),
+                flight_h=flight_h, est_total=_money(est), source_id="ideas-fixture", score=score,
             )
             for code, name, country, sea, flight_h, est, score in DESTINATIONS
         ]
@@ -197,8 +197,8 @@ def weather_climate(args: Mapping[str, object]) -> SearchResult:
     month = str(args.get("dates.month", ""))
     return SearchResult(
         climate=[
-            ClimateFact(code=code, month=month, sea_temp_c=sea[code], day_temp_c=sea[code] + 2,
-                        source_id=CLIMATE_SOURCE)
+            ClimateFact(code=code, month=month, sea_temp_c=Decimal(sea[code]),
+                        day_temp_c=Decimal(sea[code] + 2), source_id=CLIMATE_SOURCE)
             for code in _codes(args)
         ]
     )
