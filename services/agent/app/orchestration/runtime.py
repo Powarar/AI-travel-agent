@@ -600,7 +600,7 @@ class Runtime:
         if path == "transport.arrival_time":
             return nodes.arrival_time(state)
         if path == "dates.month":
-            return nodes.departure_month(state.request)
+            return nodes.stay_month(state.request)
         if path == "basket":
             return dict(sorted(state.chosen.component_refs.items()))
         raise ValueError(f"no derived argument for {path}")

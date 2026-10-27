@@ -18,7 +18,7 @@ from __future__ import annotations
 import logging
 import re
 from collections.abc import Callable, Mapping, Sequence
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 from pydantic import BaseModel, Field
@@ -801,7 +801,7 @@ def derive_defaults(request: TripRequest) -> TripRequest:
 def changed_fields(old: TripRequest, new: TripRequest) -> set[str]:
     """Пути полей, которые дельта правда поменяла; имена — из `iter_fields()`.
 
-    Дельту по датам собирает рантайм: если месяц выезда сдвинулся, добавляется
+    Дельту по датам собирает рантайм: если сдвинулся хотя бы один месяц вилки, добавляется
     `dates.month`, иначе подбор направлений и климат ошибутся (сдвиг внутри месяца трогает
     только перелёты и отели).
     """
@@ -811,9 +811,11 @@ def changed_fields(old: TripRequest, new: TripRequest) -> set[str]:
         before = old.field_value(path)
         if _carries(field_value) and before != field_value:
             paths.add(path)
-    month_before = _departure_month(old)
-    month_after = _departure_month(new)
-    if month_after is not None and month_before != month_after:
+    #: климат и подбор направлений берут один месяц на всю вилку (`dates.month`), поэтому
+    #: сравниваем множество месяцев поездки, а не один месяц выезда: сдвиг «28.10–05.11» →
+    #: «01.11–08.11» выездной месяц не меняет, а погода за окном — меняет
+    months_before, months_after = stay_months(old), stay_months(new)
+    if months_after and months_before != months_after:
         paths.add("dates.month")
     return paths
 
@@ -932,21 +934,40 @@ def _differs(old: FieldValue[object], new: FieldValue[object]) -> bool:
     return old.value != new.value
 
 
-def _departure_month(request: TripRequest) -> int | None:
-    end = request.dates.end.value
-    return None if end is None else end.month
+def stay_months(request: TripRequest) -> set[tuple[int, int]]:
+    """Месяцы, которые поездка правда задевает: `(год, месяц)` каждой ночи."""
+
+    return set(_month_nights(request))
 
 
-def departure_month(request: TripRequest) -> str:
-    """Производный аргумент реестра (`dates.month`): месяц выезда, а не сказанное поле.
+def _month_nights(request: TripRequest) -> dict[tuple[int, int], int]:
+    counts: dict[tuple[int, int], int] = {}
+    start, end = request.dates.start.value, request.dates.end.value
+    if start is None or end is None or end <= start:
+        return counts
+    day = start
+    while day < end:
+        key = (day.year, day.month)
+        counts[key] = counts.get(key, 0) + 1
+        day += timedelta(days=1)
+    return counts
 
-    Дата берётся один раз в локальную переменную: `request.dates.end.value` сужается mypy
-    до `date`, а повторное обращение к тому же полю — уже `date | None`, и `.year` на нём
-    формально падает.
+
+def stay_month(request: TripRequest) -> str:
+    """Производный аргумент реестра (`dates.month`): месяц, в котором больше всего ночей.
+
+    Источник климата ключуется одной парой `(dest_code, month)` — `data/seeds/climate.json`,
+    — а вилка «с 28 октября по 5 ноября» лежит в двух месяцах. Раньше брался месяц выезда,
+    и семидневная октябрьская поездка получала ноябрьскую температуру; при равенстве ночей
+    берётся более ранний месяц, потому что пользователь называет именно его («в октябре»).
     """
 
-    end = request.dates.end.value
-    return "" if end is None else f"{end.year:04d}-{end.month:02d}"
+    counts = _month_nights(request)
+    if not counts:
+        end = request.dates.end.value
+        return "" if end is None else f"{end.year:04d}-{end.month:02d}"
+    year, month = min(counts, key=lambda key: (-counts[key], key))
+    return f"{year:04d}-{month:02d}"
 
 
 def destination_codes(state: TripState) -> list[str]:

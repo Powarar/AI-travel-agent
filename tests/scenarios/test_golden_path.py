@@ -752,3 +752,31 @@ class TestZeroNights:
         spoken = run.state.request.model_copy(deep=True)
         spoken.nights = FieldValue[int].known(10, kind=ConstraintKind.HARD, source="user")
         assert derive_defaults(spoken).nights.value == 10
+
+
+class TestClimateMonth:
+    """Климат и подбор направлений спрашиваются по месяцу поездки, а не по месяцу выезда."""
+
+    def test_crossing_stay_pulls_the_month_with_most_nights(self) -> None:
+        """«с 28 октября по 5 ноября» → источник зовётся с `dates.month=2026-10`.
+
+        Ночей поровну в двух месяцах, и `stay_month` берёт более ранний — тот, который
+        пользователь назвал. Фикстура погоды месяц не читает (климат у неё один на все
+        месяцы), поэтому проверяем именно аргумент запроса: он и есть то, что в бою
+        выбирает строку в `climate.json`.
+        """
+
+        asked: list[str] = []
+
+        def spy(args: Mapping[str, object]) -> SearchResult:
+            asked.append(str(args["dates.month"]))
+            return weather_climate(args)
+
+        engine = Runtime({**SOURCES, "weather_climate": spy})  # type: ignore[dict-item]
+        run = engine.start(MESSAGE, now=NOW)
+        run = engine.answer(run, "origin", "Москва", now=NOW)
+        run = engine.answer(run, "dates.start", "с 28 октября по 5 ноября", now=NOW)
+
+        assert run.state.request.dates.start.value == date(2026, 10, 28)
+        assert run.state.request.dates.end.value == date(2026, 11, 5)
+        assert asked and set(asked) == {"2026-10"}

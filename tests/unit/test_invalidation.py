@@ -4,6 +4,7 @@ from datetime import date, datetime, timezone
 from decimal import Decimal
 from uuid import uuid4
 
+from services.agent.app.orchestration import nodes
 from services.agent.app.orchestration.graph import (
     DOWNSTREAM,
     affected,
@@ -20,7 +21,7 @@ from shared.contracts.enums import (
     PriceKind,
 )
 from shared.contracts.money import Money, PriceLine
-from shared.contracts.request import FieldValue
+from shared.contracts.request import FieldValue, TripRequest
 from shared.contracts.state import Candidate, TripState
 
 UTC = timezone.utc
@@ -284,3 +285,40 @@ def test_local_tools_wait_for_candidates_not_for_a_source():
         )
     ]
     assert REGISTRY["checkout_mock"].ready(state)
+
+
+def dated(start: date, end: date) -> TripRequest:
+    request = TripRequest()
+    request.dates.start = FieldValue[date].known(start, kind=ConstraintKind.HARD, source="user")
+    request.dates.end = FieldValue[date].known(end, kind=ConstraintKind.HARD, source="user")
+    return request
+
+
+def test_stay_month_is_the_month_the_trip_sleeps_in():
+    """`dates.month` — один месяц на всю вилку, и брать надо тот, где больше ночей.
+
+    Источник климата ключуется парой `(dest_code, month)`, а «с 28 октября по 5 ноября»
+    ночует в двух месяцах. Месяц выезда давал ноябрьскую погоду октябрьской поездке; при
+    равном числе ночей берётся более ранний месяц — его и называет пользователь.
+    """
+
+    assert nodes.stay_month(dated(date(2026, 11, 28), date(2026, 12, 5))) == "2026-12"
+    assert nodes.stay_month(dated(date(2026, 10, 28), date(2026, 11, 5))) == "2026-10"
+    assert nodes.stay_month(dated(date(2026, 11, 14), date(2026, 11, 21))) == "2026-11"
+    assert nodes.stay_month(dated(date(2026, 10, 30), date(2026, 11, 6))) == "2026-11"
+    assert nodes.stay_month(TripRequest()) == ""
+
+
+def test_month_shift_without_a_new_departure_month_still_dirty():
+    """Сдвиг вилки, не тронувший месяц выезда, всё равно пересобирает климат.
+
+    «28.10–05.11» → «01.11–08.11»: выезд остался в ноябре, а половина поездки переехала в
+    другой месяц. Сравнение одного месяца это пропускало, и подбор направлений показывал
+    погоду по старым датам.
+    """
+
+    before = dated(date(2026, 10, 28), date(2026, 11, 5))
+    after = dated(date(2026, 11, 1), date(2026, 11, 8))
+    assert "dates.month" in nodes.changed_fields(before, after)
+    same_months = dated(date(2026, 10, 29), date(2026, 11, 6))
+    assert "dates.month" not in nodes.changed_fields(before, same_months)
