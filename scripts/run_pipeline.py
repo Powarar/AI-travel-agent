@@ -11,14 +11,16 @@
     env -u LLM_API_KEY .venv/bin/python scripts/run_pipeline.py                  # моки, без сети
     env -u LLM_API_KEY .venv/bin/python scripts/run_pipeline.py --provider aitunnel
     env -u LLM_API_KEY .venv/bin/python scripts/run_pipeline.py --repeat 5
+    env -u LLM_API_KEY .venv/bin/python scripts/run_pipeline.py --sources seed \\
+        --message "хочу в сочи на неделю в ноябре, с 14 по 21, из Москвы, бюджет 150к"
     env -u LLM_API_KEY .venv/bin/python scripts/run_pipeline.py \\
         --answer origin=Москва --answer "dates.start=с 14 по 21"
 
 Три границы, которые скрипт не переступает:
 
-* источники — фикстуры сценария из `tests/scenarios/test_golden_path.py`, а не БД: retrieval за
-  П2 (T-10), и подменять его здесь значило бы мерить свой фильтр вместо чужого. Точка замены —
-  `build_sources()`;
+* источники — фикстуры сценария из `tests/scenarios/test_golden_path.py` (по умолчанию) или
+  каталог `data/seeds` (`--sources seed`), но не БД: retrieval за П2 (T-10), и подменять его
+  здесь значило бы мерить свой фильтр вместо чужого. Точка замены — `build_sources()`;
 * слот №6 (`diff`) не вызывается: у него пока нет места в контуре, он появляется вместе с
   дельта-пересборкой в T-08. Пустая строка в таблице честнее фиктивного вызова;
 * живые вызовы только когда `--provider` (или `LLM_PROVIDER`) не `mock`. Прогон по умолчанию
@@ -129,14 +131,19 @@ class MeasuredSlots:
         return cast(str, self._measured("diff", lambda: self._inner.diff(old_plan, new_plan)))
 
 
-def build_sources() -> dict[str, Source]:
-    """Источники сценария. Заменятся HTTP/retrieval-клиентом (T-06, T-10) — больше нигде.
+def build_sources(kind: str = "fixture") -> dict[str, Source]:
+    """Источники прогона: `fixture` — фикстуры сценария, `seed` — каталог `data/seeds`.
 
     Импорт из тестового модуля осознанный: фикстуры золотого пути — единственный набор, на
-    котором ассерты T-05 сходятся до копейки. Копировать их в скрипт значило бы получить два
-    набора цифр, расходящихся между собой.
+    котором ассерты T-05 сходятся до копейки, и остаются значением по умолчанию. `seed` —
+    тот же интерфейс над реальными строками сида: он нужен ровно для проверки честности
+    исходов («не нашли» должно означать «не нашли», а не «в фикстуре нет строчки»).
     """
 
+    if kind == "seed":
+        from services.agent.app.tools.seed_sources import seed_sources
+
+        return cast("dict[str, Source]", seed_sources())
     from tests.scenarios.test_golden_path import SOURCES
 
     return cast("dict[str, Source]", dict(SOURCES))
@@ -274,11 +281,14 @@ def slot_models(slots: LLMSlots) -> dict[str, str]:
     return models
 
 
-def print_routing(slots: LLMSlots) -> None:
-    """Какая модель стоит на каждом слоте — до первого вызова, чтобы цену видно было до того,
-    как она потрачена."""
+def print_routing(slots: LLMSlots, sources: str = "fixture") -> None:
+    """Какая модель стоит на каждом слоте и откуда берутся данные — до первого вызова,
+    чтобы цену видно было до того, как она потрачена."""
 
     print(f"провайдер: {type(slots).__name__}")
+    print(f"  источники: {sources}"
+          + (" — фикстуры золотого пути, офлайн" if sources == "fixture"
+             else " — каталог data/seeds"))
     if isinstance(slots, MockSlots):
         print("  все слоты — моки T-05: сеть не трогается, денег нет")
         return
@@ -354,7 +364,7 @@ def summarize(reports: Sequence[TurnReport]) -> None:
 
 
 def json_payload(reports: Sequence[TurnReport], measured: MeasuredSlots, *,
-                 provider: str, message: str, answers: Mapping[str, str],
+                 provider: str, sources: str, message: str, answers: Mapping[str, str],
                  slots: LLMSlots) -> dict[str, Any]:
     """Ответ прогона одним объектом: метрика, план, состояние и маршрут моделей.
 
@@ -398,6 +408,7 @@ def json_payload(reports: Sequence[TurnReport], measured: MeasuredSlots, *,
         })
     return {
         "provider": provider,
+        "sources": sources,
         "message": message,
         "answers": dict(answers),
         "models": slot_models(slots),
@@ -476,6 +487,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                         help="INFO-логи рантайма и провайдера в stderr")
     parser.add_argument("--json", action="store_true",
                         help="ответ одним JSON в stdout вместо таблиц (для фронта и замеров)")
+    parser.add_argument("--sources", choices=("fixture", "seed"), default="fixture",
+                        help="откуда данные: фикстуры золотого пути (по умолчанию) "
+                             "или каталог data/seeds")
     args = parser.parse_args(argv)
 
     load_env_file()
@@ -494,10 +508,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("нужно в .env: LLM_PROVIDER=aitunnel, LLM_MODEL=<чат-модель>, LLM_API_KEY; "
               "слот №3 включается переменной RERANK_MODEL", file=sys.stderr)
         return 2
-    sources: Mapping[str, Source] = build_sources()
+    sources: Mapping[str, Source] = build_sources(args.sources)
     now = datetime.now(timezone.utc) if args.real_now else FIXTURE_NOW
     if not args.json:
-        print_routing(slots.inner)
+        print_routing(slots.inner, args.sources)
     if args.dry_run:
         # конструирование провайдера сети не трогает, а клиент надо закрыть: незакрытый
         # `httpx.Client` переживает процесс только в тестах
@@ -505,8 +519,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         if callable(close):
             close()
         if args.json:
-            print(json.dumps({"provider": args.provider, "dry_run": True,
-                              "models": slot_models(slots.inner)},
+            print(json.dumps({"provider": args.provider, "sources": args.sources,
+                              "dry_run": True, "models": slot_models(slots.inner)},
                              ensure_ascii=False, indent=2))
         else:
             print("\n--dry-run: прогон не начат, запросов к шлюзу не было")
@@ -532,8 +546,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         # один объект на stdout: `--json | jq` и запись замеров в файл работают без
         # зачистки таблиц, а логи провайдера уже идут в stderr
         print(json.dumps(json_payload(reports, slots, provider=args.provider,
-                                      message=args.message, answers=answers,
-                                      slots=slots.inner),
+                                      sources=args.sources, message=args.message,
+                                      answers=answers, slots=slots.inner),
                          ensure_ascii=False, indent=2))
     else:
         print_slots(slots)

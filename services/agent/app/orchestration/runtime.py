@@ -511,6 +511,10 @@ class Runtime:
             violation for violation in run.state.violations if violation.is_blocking
         ])
         outcome = policy.terminal_outcome(run.state.violations)
+        if outcome == Outcome.INFEASIBLE:
+            # отказ обязан называться словами с числами (CONTRACTS.md, «Названное
+            # направление», исход 3): строку собирает код из нарушений состояния
+            run.explanation = nodes.refusal_text(run.state.violations)
         logger.info("blocking left trip=%s outcome=%s unresolved=%s", run.state.trip_id,
                     outcome.value, run.unresolved)
         run.state = nodes.finish(run.state, outcome, wall_clock_ms=self._elapsed_ms(run))

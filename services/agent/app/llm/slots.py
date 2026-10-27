@@ -383,9 +383,21 @@ class MockSlots:
             f"Заезд {explanation.check_in:%d.%m}, выезд {explanation.check_out:%d.%m} — "
             f"{explanation.nights} ночей.",
         ]
-        if explanation.facts.get("sea_temp_c"):
-            parts.append(f"Море +{explanation.facts['sea_temp_c']} °C, "
-                         f"перелёт {explanation.facts['flight_h']} ч в одну сторону.")
+        sea = explanation.facts.get("sea_temp_c")
+        air = explanation.facts.get("day_temp_c")
+        flight = explanation.facts.get("flight_h")
+        weather = (f"Море +{sea} °C" if sea else
+                   #: морской воды в сиде климата нет ни у одного направления: карточка
+                   #: называет воздух и промолчит про море (CONTRACTS.md, «Климат: месяц
+                   #: поездки и отсутствующее число») — молчание не ошибка прогона, а
+                   #: статус `unknown`
+                   f"Воздух +{air} °C" if air else "")
+        if weather:
+            month = explanation.facts.get("climate_month")
+            tail = f" в {month}" if month else ""
+            parts.append(f"{weather}{tail}" + (f", перелёт {flight} ч в одну сторону." if flight else "."))
+        elif flight:
+            parts.append(f"Перелёт {flight} ч в одну сторону.")
         parts.append(
             f"Итого {display(explanation.total)} из {display(explanation.budget)}, "
             f"остаток {display(explanation.remaining)}."

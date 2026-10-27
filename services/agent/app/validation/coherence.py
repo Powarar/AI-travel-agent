@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import itertools
 import re
+from collections.abc import Sequence
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 
@@ -174,11 +175,29 @@ def _name_forms(text: str) -> set[str]:
 def _catalog_forms(candidate: Candidate) -> set[str]:
     """Формы направления из каталога: код, название и страна — что дал источник."""
 
+    return row_forms(candidate.candidate_id, candidate.ref.get("name", ""),
+                     candidate.ref.get("country", ""))
+
+
+def row_forms(*texts: str) -> set[str]:
+    """Все формы сравнения для набора строк каталога (код, название, страна)."""
+
     forms: set[str] = set()
-    for value in (candidate.candidate_id, candidate.ref.get("name", ""),
-                  candidate.ref.get("country", "")):
-        forms |= _name_forms(value)
+    for text in texts:
+        forms |= _name_forms(text)
     return forms
+
+
+def named_matches(named: str, row_texts: Sequence[str]) -> bool:
+    """Совпадает ли названное пользователем слово со строкой каталога — то же правило, что
+    у проверки плана.
+
+    Публично, потому что фильтр источника и валидатор обязаны расходиться ровно на ноль
+    строк: «сочи» в запросе и «сочи» в проверке — один и тот же разбор, иначе источник
+    отдаст один набор, проверка — другой, и подмену ловил бы уже пользователь.
+    """
+
+    return _matches(_name_forms(named), row_forms(*row_texts))
 
 
 def _matches(named: set[str], catalog: set[str]) -> bool:

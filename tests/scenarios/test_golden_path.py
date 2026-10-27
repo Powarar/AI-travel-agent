@@ -192,9 +192,12 @@ def suggest_destinations(args: Mapping[str, object]) -> SearchResult:
 
 def weather_climate(args: Mapping[str, object]) -> SearchResult:
     sea = {row[0]: row[3] for row in DESTINATIONS}
+    #: месяц — часть ответа источника: строка погоды ключуется парой `(code, month)`,
+    #: и карточка обязана показывать температуру именно того месяца, в котором ночует поездка
+    month = str(args.get("dates.month", ""))
     return SearchResult(
         climate=[
-            ClimateFact(code=code, sea_temp_c=sea[code], day_temp_c=sea[code] + 2,
+            ClimateFact(code=code, month=month, sea_temp_c=sea[code], day_temp_c=sea[code] + 2,
                         source_id=CLIMATE_SOURCE)
             for code in _codes(args)
         ]

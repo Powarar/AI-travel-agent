@@ -66,23 +66,36 @@ SAFE_INCLUDES: list[BudgetInclude] = [BudgetInclude.TRANSPORT, BudgetInclude.LOD
 
 
 class DestinationFact(BaseModel):
-    """Строка источника про направление: числа идут данными, а не текстом."""
+    """Строка источника про направление: числа идут данными, а не текстом.
+
+    `sea_temp_c` и `est_total` — `None` там, где источник не дал числа: в реальном каталоге
+    `data/seeds` морской температуры нет ни у одного из 61 направлений, и подставлять вместо
+    неё выдумку (или ноль) запрещено контрактом «Климат: месяц поездки и отсутствующее число».
+    """
 
     code: str
     name: str
     country: str
-    sea_temp_c: int
+    sea_temp_c: Decimal | None
     flight_h: str
-    est_total: Money
+    est_total: Money | None
     source_id: str
     score: float
     data_status: DataStatus = DataStatus.SYNTHETIC
 
 
 class ClimateFact(BaseModel):
+    """Погода направления за конкретный месяц.
+
+    `month` — обязательная часть ключа: сида климат ключуется парой `(dest_code, month)`, и
+    карточка октября не имеет права показывать ноябрьское число. Отсутствующее число
+    (`sea_temp_c=None`) — это статус `unknown`, а не «холодно» и не ноль.
+    """
+
     code: str
-    sea_temp_c: int
-    day_temp_c: int
+    month: str
+    sea_temp_c: Decimal | None
+    day_temp_c: Decimal | None
     source_id: str
     data_status: DataStatus = DataStatus.SYNTHETIC
 
@@ -122,6 +135,11 @@ class TransferOffer(BaseModel):
     destination_code: str
     arrival: TransferLeg
     departure: TransferLeg
+    #: к какому отелю относится трансфер: в `data/seeds/transfers.json` одна строка на отель
+    #: (`transfer_id = "trf-<hotel_id>"`), и брать первую из списка для выбранного отеля —
+    #: значит пришить гостинице чужой путь от аэропорта. Пусто, когда источник не связывает
+    #: строки (офлайн-фикстура золотого пути): там сохраняется прежний выбор по порядку.
+    hotel_id: str = ""
     data_status: DataStatus = DataStatus.SYNTHETIC
 
 
@@ -138,6 +156,10 @@ class SearchResult(BaseModel):
     hotels: list[HotelOffer] = Field(default_factory=list)
     transfers: list[TransferOffer] = Field(default_factory=list)
     order_id: str = ""
+    #: счётчики самого источника: сколько строк каталога он рассмотрел и сколько отсек по
+    #: каждой причине. Пустая выдача без них — это «финалистов нет» без объяснения, а отказ
+    #: по контракту обязан быть с числами (CONTRACTS.md, «Названное направление», исход 3).
+    meta: dict[str, str] = Field(default_factory=dict)
 
 
 def merge_results(results: Sequence[SearchResult]) -> SearchResult:
@@ -150,6 +172,7 @@ def merge_results(results: Sequence[SearchResult]) -> SearchResult:
         merged.transport.extend(result.transport)
         merged.hotels.extend(result.hotels)
         merged.transfers.extend(result.transfers)
+        merged.meta.update(result.meta)
     return merged
 
 
@@ -279,8 +302,11 @@ def absorb(state: TripState, tool: str, result: SearchResult) -> TripState:
         candidates.destinations = [
             candidate.model_copy(update={"ref": {
                 **candidate.ref,
-                "sea_temp_c": str(facts[candidate.candidate_id].sea_temp_c),
-                "day_temp_c": str(facts[candidate.candidate_id].day_temp_c),
+                # отсутствие числа — пустая строка, а не «None»: карточка по такому ключу
+                # промолчит про море, а `unverified_numbers` не найдёт в тексте выдумку
+                "sea_temp_c": _shown(facts[candidate.candidate_id].sea_temp_c),
+                "day_temp_c": _shown(facts[candidate.candidate_id].day_temp_c),
+                "climate_month": facts[candidate.candidate_id].month,
             }})
             if candidate.candidate_id in facts else candidate
             for candidate in candidates.destinations
@@ -573,6 +599,14 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
     max_hours = request.transport.max_hours_direct.value
     includes = [include.value for include in (request.budget.includes.value or [])]
 
+    #: отказ по первому же финалисту означал бы «направления кончились», хотя в выдаче их
+    #: трое: фикстура `transport_search` обещает пропускать направление без данных и брать
+    #: следующего, и сид держит 12 направлений без единого рейса. Каждый сбой копится в
+    #: `failures`; если план не собрался нигде, отдаём первый из них — финалисты упорядочены
+    #: по релевантности, значит отказ относится к самому подходящему направлению и его числа
+    #: читателю полезнее остальных.
+    failures: list[Composition] = []
+
     for destination in _finalists(state):
         code = destination.candidate_id
         offers = [offer for offer in search.transport if offer.destination_code == code]
@@ -584,10 +618,12 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
         ]
 
         if not offers:
-            return _empty("transport", code, expected="рейсы на эти даты", actual="ни одного")
+            failures.append(_empty("transport", code, expected="рейсы на эти даты",
+                                   actual="ни одного", meta=_meta_for("transport", search.meta)))
+            continue
         if not within_limit:
             shortest = min(offer.hours for offer in offers)
-            return Composition(
+            failures.append(Composition(
                 plan=None,
                 blocking=[make(
                     ViolationCode.HARD_CONSTRAINT_UNSATISFIED, "transport",
@@ -595,18 +631,73 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
                     field_path="transport.max_hours_direct",
                     evidence={"destination": code, "shortest_available": f"{shortest} ч"},
                 )],
-            )
+            ))
+            continue
         if not fitting:
-            return _empty("hotel", code, expected=f"номер на {guests} гостей и {nights} ночей",
-                          actual=f"не подошёл ни один из {len(hotels)}")
+            failures.append(_empty(
+                "hotel", code, expected=f"номер на {guests} гостей и {nights} ночей",
+                actual=f"не подошёл ни один из {len(hotels)}", meta=_meta_for("hotel", search.meta)))
+            continue
         if not transfers:
-            return _empty("transfer", code, expected="трансфер от прилёта", actual="ни одного")
+            failures.append(_empty("transfer", code, expected="трансфер от прилёта",
+                                   actual="ни одного", meta=_meta_for("transfer", search.meta)))
+            continue
+        #: источник привязал трансферы к отелям (`data/seeds/transfers.json` = одна строка на
+        #: гостиницу) — отель без своего трансфера несовместим: пришить ему путь от аэропорта
+        #: соседней гостиницы значит собрать план из двух разных поездок
+        linked = {offer.hotel_id for offer in transfers if offer.hotel_id}
+        if linked:
+            own_transfer = [offer for offer in fitting if offer.specs.hotel_id in linked]
+            if not own_transfer:
+                failures.append(_empty(
+                    "transfer", code, expected="трансфер от прилёта к выбранному отелю",
+                    actual=f"ни у одного из {len(fitting)}", meta=_meta_for("transfer", search.meta)))
+                continue
+            fitting = own_transfer
 
-        hotel_order = sorted(fitting, key=_hotel_order(state))
-        leg = sorted(within_limit, key=lambda offer: (offer.price_total, offer.hours))[0]
-        transfer = transfers[0]
+        def transfer_for(hotel: HotelOffer) -> TransferOffer:
+            """Трансфер именно этого отеля; порядок — только для источника без связи строк."""
+
+            return next((offer for offer in transfers
+                         if offer.hotel_id == hotel.specs.hotel_id), transfers[0])
+
+        def reachable(hotel: HotelOffer) -> list[TransportOffer]:
+            """Рейсы этого направления, при которых успеваешь на заселение в этот отель."""
+
+            return [offer for offer in within_limit
+                    if _reaches_checkin(offer, hotel, transfer_for(hotel))]
+
+        def leg_for(hotel: HotelOffer) -> TransportOffer:
+            """Рейс под этот отель: дешевле всех из успевающих на заселение.
+
+            Без этого COMPOSE отдаёт «самый дешёвый рейс + первый отель по релевантности», а
+            валидатор ловит стыковку постфактум: на 40 рейсах направления план падал бы из-за
+            прилёта в 20:17, хотя совместимый с дедлайном рейс в выдаче был — и отказывал бы
+            пользователь не получил бы ни плана, ни числа. Пустой список здесь уже невозможен:
+            отели без успевающего рейса отсеяны до выбора.
+            """
+
+            pool = reachable(hotel) or within_limit
+            return sorted(pool, key=lambda offer: (offer.price_total, offer.hours))[0]
+
+        #: отель, до которого нельзя долететь до дедлайна заселения, не «почти подходящий»:
+        #: собрать его и получить blocking-нарушение в VALIDATE — значит отнять у пользователя
+        #: план следующего финалиста, который собрался бы. Такое направление отпускаем дальше,
+        #: назвав числа в отказе
+        timely = [hotel for hotel in fitting if reachable(hotel)]
+        if not timely:
+            earliest = min(offer.arrival.arr_at for offer in within_limit)
+            deadline = min(hotel.specs.check_in_deadline for hotel in fitting)
+            failures.append(_empty(
+                "transport", code, expected=f"прилёт + трансфер до заселения (раньше {deadline})",
+                actual=f"{len(within_limit)} рейсов, самый ранний прилёт {earliest:%H:%M}",
+                meta=_meta_for("transport", search.meta)))
+            continue
+
+        hotel_order = sorted(timely, key=_hotel_order(state))
 
         def build(hotel: HotelOffer) -> Plan:
+            leg, transfer = leg_for(hotel), transfer_for(hotel)
             return Plan(
                 destination_code=code,
                 nights=nights,
@@ -624,9 +715,12 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
         hotel, displaced = _within_budget_or_best(hotel_order, build, request=request,
                                                   includes=includes, guests=guests)
         plan = build(hotel)
+        leg, transfer = leg_for(hotel), transfer_for(hotel)
         facts = {
             "headline": f"{destination.ref['country']}, {destination.ref['name']}",
             "sea_temp_c": destination.ref.get("sea_temp_c", ""),
+            "day_temp_c": destination.ref.get("day_temp_c", ""),
+            "climate_month": destination.ref.get("climate_month", ""),
             "flight_h": f"{leg.arrival.duration_h}",
             "hotel": hotel.name,
         }
@@ -648,7 +742,28 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
             facts=facts,
         )
 
-    return _empty("destination", "", expected="хотя бы одно направление", actual="финалистов нет")
+    if failures:
+        return failures[0]
+    return _empty("destination", "", expected="хотя бы одно направление",
+                  actual="финалистов нет", meta=_meta_for("destination", search.meta))
+
+
+def _reaches_checkin(offer: TransportOffer, hotel: HotelOffer,
+                     transfer: TransferOffer, *, buffer_min: int = 30) -> bool:
+    """Успеет ли турист на заселение этим рейсом в этот отель.
+
+    То же окно, что у валидатора (`_deadline_datetime` + `arrival_buffer_min`): сборка обязана
+    сравнивать с тем же числом, иначе она «чинит» то, чего проверка не видит, и в план уходит
+    пара, которая через секунду стала бы blocking-нарушением.
+    """
+
+    arrival = offer.arrival.arr_at
+    try:
+        hour, minute = (int(part) for part in hotel.specs.check_in_deadline.split(":"))
+    except ValueError:
+        return True
+    deadline = arrival.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    return arrival + timedelta(minutes=buffer_min + transfer.arrival.minutes) <= deadline
 
 
 def _within_budget_or_best(
@@ -847,15 +962,25 @@ def _destination_candidate(fact: DestinationFact) -> Candidate:
         ref={
             "name": fact.name,
             "country": fact.country,
-            "sea_temp_c": str(fact.sea_temp_c),
+            "sea_temp_c": _shown(fact.sea_temp_c),
             "day_temp_c": "",
             "flight_h": fact.flight_h,
-            "est_total": fact.est_total.as_display(),
+            "est_total": "" if fact.est_total is None else fact.est_total.as_display(),
             "source_id": fact.source_id,
         },
         score=fact.score,
         data_status=fact.data_status,
     )
+
+
+def _shown(value: Decimal | None) -> str:
+    """Число источника для `ref`: молчание — пустая строка, а не слово «None».
+
+    Строка нужна и для `unverified_numbers` (он сверяет цифры текста с `ref`), и для карточки:
+    там отсутствие числа означает «не показывать про море», а не «показать 0».
+    """
+
+    return "" if value is None else str(value)
 
 
 def _finalists(state: TripState) -> list[Candidate]:
@@ -917,11 +1042,62 @@ def _price_lines(plan: Plan, includes: list[str]) -> list[PriceLine]:
     return [line for line in lines if included(line.kind)]
 
 
-def _empty(component: str, code: str, *, expected: str, actual: str) -> Composition:
+#: счётчики источника сгруппированы по тому, чего не нашлось: отказ обязан называть числа
+#: своего среза, а не весь журнал прогона (61 направление + 1296 отелей в одной строке читаются
+#: как «мы не поняли, где мимо промахнулись»)
+_META_KEYS: dict[str, tuple[str, ...]] = {
+    "destination": ("направлений в каталоге", "направлений в выдаче", "направлений названо",
+                    "месяц поездки"),
+    "transport": ("сегментов в сиде", "аэропортов выезда нашли", "рейсов в выдаче",
+                  "режимов в сиде"),
+    "hotel": ("отелей в каталоге", "отелей на направление", "отелей в выдаче"),
+    "transfer": ("строк трансфера в сиде", "трансферов в выдаче"),
+}
+
+
+def _meta_for(component: str, meta: Mapping[str, str]) -> dict[str, str]:
+    """Счётчики ответа источника, относящиеся к отказавшему срезу."""
+
+    return {key: meta[key] for key in _META_KEYS.get(component, ()) if key in meta}
+
+
+def refusal_text(violations: Sequence[Violation]) -> str:
+    """Отказ по-русски из тех же чисел, что уже лежат в состоянии.
+
+    `infeasible` без строки — молчание вместо ответа «почему»: человек видит код нарушения.
+    Текст собирает код из `expected/actual/evidence` (модель на отказ не тратится, слот №5
+    работает на собранном плане), поэтому цифра в нём обязана быть уже в состоянии — ровно то
+    же требование, по которому `unverified_numbers` сверяет объяснение плана.
+    """
+
+    lines: list[str] = []
+    for violation in violations:
+        if not violation.is_blocking:
+            continue
+        where = violation.affected_component
+        numbers = [f"{label} — {value}" for label, value in violation.evidence.items()
+                   if label != "destination" and value]
+        tail = f"; {', '.join(numbers)}" if numbers else ""
+        lines.append(f"{where}: ждали {violation.expected}, вышло {violation.actual}{tail}")
+    if not lines:
+        return "Плана нет: совместимых вариантов не нашлось."
+    return f"Плана нет. {'; '.join(lines)}."
+
+
+def _empty(component: str, code: str, *, expected: str, actual: str,
+           meta: Mapping[str, str] | None = None) -> Composition:
+    """Отказ сборки с числами источника.
+
+    `CANDIDATES_EMPTY` без счётчиков — это «мы ничего не нашли» без ответа «а сколько
+    было»: отказ по контракту обязан быть с посчитанными числами, а посчитать их может
+    только сам источник (`SearchResult.meta`).
+    """
+
     return Composition(
         plan=None,
         blocking=[make(ViolationCode.CANDIDATES_EMPTY, component,
-                       expected=expected, actual=actual, evidence={"destination": code})],
+                       expected=expected, actual=actual,
+                       evidence={"destination": code, **(meta or {})})],
     )
 
 
