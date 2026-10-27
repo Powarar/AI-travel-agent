@@ -225,6 +225,20 @@ def _ask_about(violation: Violation, state: TripState) -> QuestionSpec:
             allow_skip=False,
             evidence={"expected": violation.expected or "", "actual": violation.actual or ""},
         )
+    if path == "direction.explicit":
+        # Формулировка для человека, а не имя поля (CONTRACTS.md, «Названное направление»):
+        # ответ здесь ровно двух видов — другое название или «подбери сам», и оба должны
+        # читаться из варианта. Число рассмотренных направлений берётся из `evidence`
+        # валидатора: узел решения их не пересчитывает и не выдумывает, а слот №2 кладёт
+        # пары «метка → число» в текст вопроса как есть, поэтому метки — русские.
+        considered = violation.evidence.get("considered", "")
+        return QuestionSpec(
+            field=path,
+            why=f"Ты просил «{violation.expected}», а план выходит в «{violation.actual}».",
+            options=("подбери сам",),
+            allow_skip=False,
+            evidence={"рассмотрено направлений": considered} if considered else {},
+        )
     return QuestionSpec(
         field=path,
         why=f"Ограничение «{path}» не выполняется: ждали {violation.expected}, вышло {violation.actual}",

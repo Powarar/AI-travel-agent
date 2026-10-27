@@ -83,13 +83,25 @@ def test_dates_start_closes_over_transfers():
 
 
 def test_named_destination_dirty_transport_and_hotels_via_guard():
-    """`direction.explicit` не уходит в запрос к источнику — его читает `guard`.
+    """`direction.explicit` не уходит в запрос к перелётам — его читает `guard`.
 
     «Я еду в Сочи» вместо «не знаю» меняет готовность поиска, поэтому замыкание идёт и по
     `guard_fields`: иначе перелёты и отели остались бы с ответами под «неизвестно куда».
     """
 
     assert {"transport_search", "hotel_search"} <= affected({"direction.explicit"})
+
+
+def test_named_destination_also_dirty_the_selector_because_it_filters_the_catalog():
+    """У подборщика поле в `inputs`, а не в `guard_fields`: оно уходит в запрос к источнику.
+
+    Без него «сочи» после «подбери сам» пересобирало бы старых финалистов: CONTRACTS.md
+    требует переспросить источник, а не переиспользовать ответ про другое направление.
+    """
+
+    assert "direction.explicit" in REGISTRY["suggest_destinations"].inputs
+    assert "suggest_destinations" in affected({"direction.explicit"})
+    assert "suggest_destinations" in tools_for({"direction.explicit"}, EscalationStep.RE_SEARCH)
 
 
 def test_month_shift_pulls_destinations_and_climate():

@@ -45,6 +45,7 @@ from shared.contracts.enums import (
     ConstraintKind,
     CostScope,
     DataStatus,
+    DirectionMode,
     FieldStatus,
     Outcome,
     PriceKind,
@@ -616,6 +617,73 @@ class TestHardConstraintIsNotRelaxedQuietly:
         assert "2.0" in numbers and "4.0" in numbers   # отказ обязан быть с посчитанными числами
         # 4.0 — самый короткий из имеющихся перелёт туда-обратно (берётся максимум сегментов),
         # а не 3.5: рантайм честно сравнивает с ограничением пользователя, а не с сегментом
+
+
+class TestNamedDestination:
+    """CONTRACTS.md, «Названное направление»: прогон 2026-10-28, где «хочу в сочи» закончился
+    планом в Анталье с пустым списком нарушений. Источник вправе вернуть своё — контур не
+    вправе выдать это за выполненное hard-требование.
+
+    Фикстура золотого пути отдаёт 12 морских направлений и не знает про Сочи — это ровно та
+    ситуация, в которой подмена и происходила: теперь она ловится на входе.
+    """
+
+    MESSAGE = "хочу в сочи на неделю в ноябре, с 14 по 21, из Москвы, бюджет 150к"
+
+    def test_named_destination_blocks_instead_of_plan_ready(self, runtime: Runtime) -> None:
+        run = runtime.start(self.MESSAGE, now=NOW)
+        st = run.state
+        assert st.outcome == Outcome.AWAITING_ANSWER
+        assert st.awaiting_fields == ["direction.explicit"]
+        assert st.request.direction.explicit.value == "сочи"
+        assert st.request.direction.explicit.source == "user"
+
+        blocking = st.blocking_violations()
+        assert [v.code for v in blocking] == [ViolationCode.HARD_CONSTRAINT_UNSATISFIED]
+        assert blocking[0].field_path == "direction.explicit"
+        assert blocking[0].expected == "сочи" and blocking[0].actual == "AYT"
+        # число из источника, а не из головы: рассмотрено 12 строк, совпадений нет
+        assert blocking[0].evidence["considered"] == "12"
+        assert blocking[0].evidence["matched"] == "нет"
+
+    def test_the_question_is_written_for_a_human(self, runtime: Runtime) -> None:
+        run = runtime.start(self.MESSAGE, now=NOW)
+        text = run.texts["direction.explicit"]
+        assert "сочи" in text and "AYT" in text and "12" in text
+        assert "direction.explicit" not in text          # имя поля — не ответ пользователю
+        assert "why" not in text                         # и ключи `evidence` тоже
+        assert run.questions["direction.explicit"].options == ("подбери сам",)
+
+    def test_answer_with_another_name_rebuilds_in_it(self, runtime: Runtime) -> None:
+        run = runtime.start(self.MESSAGE, now=NOW)
+        run = runtime.answer(run, "direction.explicit", "в анталью", now=NOW)
+        st = run.state
+        assert st.outcome == Outcome.PLAN_READY
+        assert st.request.direction.explicit.value == "в анталью"
+        assert st.chosen.component_refs["destination"] == "AYT"
+        assert st.violations == []                       # названное совпало — нарушения нет
+
+    def test_answer_pick_yourself_reopens_the_choice(self, runtime: Runtime) -> None:
+        run = runtime.start(self.MESSAGE, now=NOW)
+        run = runtime.answer(run, "direction.explicit", "подбери сам", now=NOW)
+        st = run.state
+        assert st.outcome == Outcome.PLAN_READY
+        assert st.request.direction.mode.value == DirectionMode.OPEN
+        assert st.request.direction.explicit.value is None
+        assert [v.field_path for v in st.violations] == []
+
+    def test_no_question_left_means_infeasible_with_the_count(self, runtime: Runtime) -> None:
+        """Лимит вопросов выбран — молча оставить план в другом направлении нельзя (инвариант №2)."""
+
+        run = runtime.start("хочу в сочи вдвоём, бюджет 150к", now=NOW)
+        run = walk_question(run, runtime, "Москва")
+        run = walk_question(run, runtime, "с 14 по 21")
+        assert run.state.outcome == Outcome.INFEASIBLE
+        assert run.order_id is None
+        assert run.unresolved == ["HARD_CONSTRAINT_UNSATISFIED:ask_with_computed_compromises"]
+        blocking = run.state.blocking_violations()
+        assert [v.field_path for v in blocking] == ["direction.explicit"]
+        assert "12" in blocking[0].evidence["considered"]        # отказ с посчитанным числом
 
 
 class TestEscalationSteps:

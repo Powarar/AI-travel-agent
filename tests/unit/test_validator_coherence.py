@@ -12,12 +12,16 @@ from shared.contracts.enums import (
     ConstraintKind,
     CostScope,
     DataStatus,
+    DirectionMode,
+    FieldStatus,
     PriceKind,
+    Severity,
     ViolationCode,
 )
 from shared.contracts.money import BudgetLedger, Money, PriceLine
-from shared.contracts.request import Budget, FieldValue, Party, Transport, TripRequest
+from shared.contracts.request import Budget, Direction, FieldValue, Party, Transport, TripRequest
 from shared.contracts.state import Candidate, Candidates, TripState
+from shared.contracts.violation import Violation
 
 UTC = timezone.utc
 NOW = datetime(2026, 10, 26, 9, 0, tzinfo=UTC)
@@ -271,3 +275,129 @@ class TestHardRequirementsAgainstPlan:
             candidates=Candidates(hotels=[Candidate(candidate_id="htl-sochi-00", kind="hotel")]),
         )
         assert codes(baseline_plan(), state=state) == set()
+
+
+#: (код, город, страна) — то, что кладёт в `ref` источник направлений. Названия специально
+#: в двух графиках: русское (как в фикстуре золотого пути) и латинское (как в `data/seeds`).
+CATALOG: tuple[tuple[str, str, str], ...] = (
+    ("AYT", "Анталья", "Турция"),
+    ("sochi", "Sochi", "Россия"),
+    ("HKT", "Пхукет", "Таиланд"),
+    ("saint-petersburg", "Saint Petersburg", "Россия"),
+)
+
+
+#: режим «названо словами» — тот, что ставит разборщик слота №1
+_EXPLICIT_MODE = FieldValue[DirectionMode].known(DirectionMode.EXPLICIT, kind=ConstraintKind.HARD)
+
+
+def named(value: str, *, kind: ConstraintKind = ConstraintKind.HARD,
+          source: str = "user", status: FieldStatus = FieldStatus.KNOWN) -> TripRequest:
+    """Запрос с названным направлением: `known`+`user`+`hard` — единственный проверяемый набор."""
+
+    held: FieldValue[str] = (
+        FieldValue[str].known(value, kind=kind, source=source)
+        if status == FieldStatus.KNOWN else
+        FieldValue[str].inferred(value, kind=kind, source=source, confidence=1.0)
+    )
+    return TripRequest(direction=Direction(mode=_EXPLICIT_MODE, explicit=held))
+
+
+def state_of(*codes_: str) -> TripState:
+    """Состояние с кандидатами-направлениями из `CATALOG`: источник ответил это множество."""
+
+    rows = [Candidate(candidate_id=code, kind="destination",
+                      ref={"name": name, "country": country})
+            for code, name, country in CATALOG if code in codes_]
+    return TripState(trip_id=uuid4(), candidates=Candidates(destinations=rows))
+
+
+def direction_violation(plan: Plan, request: TripRequest, state: TripState) -> Violation | None:
+    found = [v for v in validate(plan, ledger_of(plan), state.model_copy(update={"request": request}))
+             if v.field_path == "direction.explicit"]
+    assert len(found) <= 1, "проверка направления не множит нарушения"
+    return found[0] if found else None
+
+
+class TestNamedDestinationAgainstPlan:
+    """CONTRACTS.md, «Названное направление»: план в другом месте — это blocking, а не тишина.
+
+    Ровно тот вход, который прогон 2026-10-28 отдал как `plan_ready` с пустыми нарушениями:
+    пользователь сказал «сочи», источник вернул своё, сборка взяла Анталью.
+    """
+
+    def test_sochi_named_but_plan_in_antalya_is_blocking(self):
+        plan = baseline_plan(destination_code="AYT")
+        found = direction_violation(plan, named("сочи"), state_of("AYT", "sochi", "HKT"))
+        assert found is not None
+        assert found.code == ViolationCode.HARD_CONSTRAINT_UNSATISFIED
+        assert found.severity == Severity.BLOCKING
+        assert found.expected == "сочи" and found.actual == "AYT"
+        assert found.evidence["matched"] == "sochi"
+        assert found.evidence["considered"] == "3"
+
+    def test_the_named_destination_itself_passes(self):
+        assert direction_violation(baseline_plan(), named("сочи"),
+                                   state_of("AYT", "sochi")) is None
+
+    def test_case_and_preposition_do_not_matter(self):
+        for wording in ("СОЧИ", "в сочи", "Хочу в Сочи", "сочу", "Сочи"):
+            assert direction_violation(baseline_plan(), named(wording),
+                                       state_of("AYT", "sochi")) is None, wording
+
+    def test_declined_name_matches_the_same_city(self):
+        """Падежные усечения (`antalya` ← «анталью») — та же проверка, а не второй разборщик."""
+
+        plan = baseline_plan(destination_code="AYT")
+        assert direction_violation(plan, named("в анталью"), state_of("AYT", "sochi")) is None
+        assert direction_violation(plan, named("анталье"), state_of("AYT", "sochi")) is None
+
+    def test_country_name_is_satisfied_by_any_city_of_it(self):
+        """«в Турцию» — не одна точка: план в Анталье удовлетворяет названную страну."""
+
+        plan = baseline_plan(destination_code="AYT")
+        assert direction_violation(plan, named("в турцию"), state_of("AYT", "sochi")) is None
+        assert direction_violation(baseline_plan(), named("в турцию"),
+                                   state_of("AYT", "sochi")) is not None
+
+    def test_name_absent_from_the_source_keeps_the_count_in_evidence(self):
+        """Названного нет в каталоге — отказ тоже с числом, и он не «проверять нечего»."""
+
+        plan = baseline_plan(destination_code="AYT")
+        found = direction_violation(plan, named("в гамбург"), state_of("AYT", "sochi", "HKT"))
+        assert found is not None
+        assert found.evidence["matched"] == "нет"
+        assert found.evidence["considered"] == "3"
+        assert "3" in found.evidence["why"]
+
+    def test_irregular_latin_names_are_in_the_dictionary(self):
+        """`Moscow`/`Saint Petersburg`/`Nha Trang` — транслитерацией не получаются: словарь."""
+
+        assert direction_violation(
+            baseline_plan(destination_code="saint-petersburg"), named("санкт-петербург"),
+            state_of("AYT", "saint-petersburg")) is None
+        assert direction_violation(
+            baseline_plan(destination_code="saint-petersburg"), named("в петербурге"),
+            state_of("AYT", "saint-petersburg")) is None
+
+    def test_without_source_rows_the_plan_code_is_compared_directly(self):
+        """Подборщик ещё не отвечал — сверять не с чем, кроме кода самого плана."""
+
+        assert direction_violation(baseline_plan(), named("сочи"),
+                                   state_of()) is None
+        found = direction_violation(baseline_plan(destination_code="AYT"), named("анталья"),
+                                    state_of())
+        assert found is not None and found.evidence["considered"] == "0"
+
+    def test_not_a_check_when_the_user_did_not_name_it_hard(self):
+        """`unknown`, soft и `inferred` вне проверки: подмена возможна только у сказанного."""
+
+        open_request = TripRequest()
+        assert direction_violation(baseline_plan(destination_code="AYT"), open_request,
+                                   state_of("AYT", "sochi")) is None
+        assert direction_violation(baseline_plan(destination_code="AYT"),
+                                   named("сочи", kind=ConstraintKind.SOFT),
+                                   state_of("AYT", "sochi")) is None
+        assert direction_violation(baseline_plan(destination_code="AYT"),
+                                   named("сочи", status=FieldStatus.INFERRED, source="llm"),
+                                   state_of("AYT", "sochi")) is None

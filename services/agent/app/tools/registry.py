@@ -100,8 +100,9 @@ REGISTRY: dict[str, Tool] = {
     "suggest_destinations": Tool(
         name="suggest_destinations",
         inputs=frozenset({
-            "direction.mode", "direction.excluded", "dates.month", "themes",
-            "transport.max_hours_direct", "budget.amount", "budget.includes", "party.adults",
+            "direction.mode", "direction.explicit", "direction.excluded", "dates.month",
+            "themes", "transport.max_hours_direct", "budget.amount", "budget.includes",
+            "party.adults",
         }),
         provides=frozenset({"destinations"}),
         output="candidates.destinations",

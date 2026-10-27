@@ -216,6 +216,23 @@ def apply_answer(state: TripState, path: str, raw: str) -> TripState:
         request.direction.mode = FieldValue[DirectionMode].known(
             DirectionMode.OPEN if open_choice else DirectionMode.EXPLICIT, kind=ConstraintKind.HARD
         )
+    elif path == "direction.explicit":
+        # CONTRACTS.md, «Названное направление»: ответ — либо новое название, либо «подбери
+        # сам». Третьего нет, и прежний план с прежним нарушением здесь не остаётся: узел
+        # снимает поле, а следующий прогон переспрашивает подборщик по новому значению.
+        answer = raw.strip()
+        if answer.lower() in {"подбери сам", "открыто", "open", "любая", "не важно", ""}:
+            request.direction.explicit = FieldValue[str].unknown(kind=ConstraintKind.HARD)
+            request.direction.mode = FieldValue[DirectionMode].known(
+                DirectionMode.OPEN, kind=ConstraintKind.HARD
+            )
+        else:
+            request.direction.explicit = FieldValue[str].known(
+                answer, kind=ConstraintKind.HARD, source="user"
+            )
+            request.direction.mode = FieldValue[DirectionMode].known(
+                DirectionMode.EXPLICIT, kind=ConstraintKind.HARD
+            )
     else:
         raise ValueError(f"no such question: {path}")
 
