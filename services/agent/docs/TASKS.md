@@ -269,6 +269,8 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 
 ### T-05 · Рантайм оркестратора и сквозной сценарий — ГЕЙТ
 
+**Статус:** ✅ done 2026-10-27 (П1) — `orchestration/{runtime,nodes,policy}.py`, моки шести слотов,
+`tests/scenarios/test_golden_path.py`; 218 тестов зелёные без сети, mypy strict чистый
 **Владелец:** П1 · **Волна:** 2 · **Зависит:** T-02, T-03, T-04 · **Нужно для:** T-07, T-08, T-09, T-13
 **Файлы:** `services/agent/app/orchestration/{runtime,nodes,policy}.py`,
 `services/agent/app/llm/slots.py` (моки), `tests/scenarios/test_golden_path.py`
@@ -320,6 +322,11 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 
 ### T-07 · LLM-слоты на реальном провайдере
 
+**Статус:** 🟡 in progress 2026-10-27 (П1) — слоты №1, №2, №4, №5 на живом `/chat/completions`
+с retry по схеме и fallback-парсером, №3 — `/rerank` внутри контура (релевантность участвует в
+сборке плана), учёт токенов в `budgets.tokens`, `scripts/run_pipeline.py` собирает весь прогон
+одной командой. Не сделано: у слота №6 (`diff`) нет места в контуре до T-08; живые замеры
+остатка SL-1 и приёмка SL-3 — после прогона
 **Владелец:** П1 · **Волна:** 3 · **Зависит:** T-05 · **Нужно для:** T-08, T-09
 **Файлы:** `services/agent/app/llm/{provider_openai_compatible.py,schemas.py,instructor.py}`,
 `tests/scenarios/test_parse_accuracy.py`
