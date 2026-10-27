@@ -49,6 +49,7 @@ if str(ROOT) not in sys.path:
 
 from services.agent.app.llm.provider_openai_compatible import load_env_file, slots_from_config
 from services.agent.app.llm.rerank import MODEL_ENV as RERANK_MODEL_ENV
+from services.agent.app.llm.rerank import Reranker
 from services.agent.app.llm.slots import Explanation, LLMSlots, MockSlots, display
 from services.agent.app.orchestration.runtime import Runtime, Source, unverified_numbers
 from shared.contracts.enums import Outcome
@@ -129,6 +130,83 @@ class MeasuredSlots:
 
     def diff(self, old_plan: dict[str, str], new_plan: dict[str, str]) -> str:
         return cast(str, self._measured("diff", lambda: self._inner.diff(old_plan, new_plan)))
+
+
+class ChatMockRerankLive:
+    """Гибрид замеров SL-3: чат — моки T-05, слот №3 — живой `/rerank`.
+
+    Приёмка слота №3 — качество порядка отелей и время одного обращения. Если вместе с
+    реранкером включить чат, живыми становятся пять мест сразу: `parse` каждый раз отдаёт
+    другие даты и бюджет, слот №4 зовёт других финалистов, текст объяснения другой — и
+    разницу между прогонами нельзя приписать одной модели. С мок-чатом вход не меняется, и
+    обращение к шлюзу остаётся ровно одно.
+
+    Стоимость хода при этом настоящая: `tokens_used` читается с реранкера, и `MeasuredSlots`
+    пробрасывает её в отчёт как обычный живой прогон.
+    """
+
+    def __init__(self, reranker: Reranker | None) -> None:
+        self._reranker = reranker
+        self._chat = MockSlots()
+
+    @property
+    def reranker(self) -> Reranker | None:
+        return self._reranker
+
+    @property
+    def tokens_used(self) -> int:
+        return 0 if self._reranker is None else int(self._reranker.tokens_used)
+
+    def parse(self, message: str) -> Any:
+        return self._chat.parse(message)
+
+    def formulate(self, spec: Any) -> str:
+        return self._chat.formulate(spec)
+
+    def pick_finalists(self, candidates: list[Any]) -> list[Any]:
+        return self._chat.pick_finalists(candidates)
+
+    def explain(self, explanation: Explanation) -> str:
+        return self._chat.explain(explanation)
+
+    def diff(self, old_plan: dict[str, str], new_plan: dict[str, str]) -> str:
+        return self._chat.diff(old_plan, new_plan)
+
+    def soft_relevance(self, query: str,
+                       documents: dict[str, str]) -> dict[str, float] | None:
+        """Тот же путь, что у живого провайдера: ключ — `candidate_id`, `None` — «не чем ранжировать».
+
+        Нормализацию скоров делает рантайм (`nodes.apply_relevance`), поэтому гибрид и живой
+        прогон получают одинаковое приведение и сравнимы между собой.
+        """
+
+        if self._reranker is None or not documents or not query.strip():
+            return None
+        ids = list(documents)
+        hits = self._reranker.rank(query, [documents[cid] for cid in ids])
+        if not hits:
+            return None
+        return {ids[hit.index]: hit.score for hit in hits}
+
+    def close(self) -> None:
+        if self._reranker is not None:
+            self._reranker.close()
+
+
+def routing_summary(slots: LLMSlots) -> dict[str, str]:
+    """Чем платит прогон, одной строкой: `chat=mock, rerank=<модель>`.
+
+    Отдельная функция потому, что одно и то же число должно быть и в таблице консоли, и в
+    `--json`: dry-run печатается именно здесь, и расходиться двум местам нечем.
+    """
+
+    if isinstance(slots, ChatMockRerankLive):
+        return {"chat": "mock",
+                "rerank": slots.reranker.model if slots.reranker else "выключен"}
+    if isinstance(slots, MockSlots):
+        return {"chat": "mock", "rerank": "выключен"}
+    return {"chat": os.environ.get("LLM_MODEL", "") or "(LLM_MODEL не задан)",
+            "rerank": os.environ.get(RERANK_MODEL_ENV, "").strip() or "выключен"}
 
 
 def build_sources(kind: str = "fixture") -> dict[str, Source]:
@@ -267,6 +345,12 @@ def slot_models(slots: LLMSlots) -> dict[str, str]:
 
     if isinstance(slots, MockSlots):
         return {label: "mock (T-05)" for _, label, _ in SLOTS}
+    if isinstance(slots, ChatMockRerankLive):
+        #: чат остаётся моком, и врать в таблице про пять слотов, которые не вызывались, нельзя
+        models = {label: "mock (T-05)" for _, label, _ in SLOTS}
+        models["SL-3 relevance"] = (slots.reranker.model if slots.reranker is not None
+                                    else "(слот выключен: RERANK_MODEL не задан)")
+        return models
     base = os.environ.get("LLM_MODEL", "")
     models: dict[str, str] = {}
     for name, label, env_name in SLOTS:
@@ -289,6 +373,11 @@ def print_routing(slots: LLMSlots, sources: str = "fixture") -> None:
     print(f"  источники: {sources}"
           + (" — фикстуры золотого пути, офлайн" if sources == "fixture"
              else " — каталог data/seeds"))
+    if isinstance(slots, ChatMockRerankLive):
+        summary = routing_summary(slots)
+        print(f"  chat={summary['chat']} (бесплатно), rerank={summary['rerank']}")
+        print("  на ход: 0 чат-вызовов, 1 /rerank на прогон, если слот №3 включён")
+        return
     if isinstance(slots, MockSlots):
         print("  все слоты — моки T-05: сеть не трогается, денег нет")
         return
@@ -435,14 +524,22 @@ def json_payload(reports: Sequence[TurnReport], measured: MeasuredSlots, *,
     }
 
 
-def build_slots(provider: str) -> LLMSlots:
+def build_slots(provider: str, rerank_only: bool = False) -> LLMSlots:
     """Слоты из флага или окружения: `mock` — моки T-05, иначе живой провайдер.
 
     Флаг не дублирует `LLM_PROVIDER` каприза ради: живой прогон не должен зависеть от того, что
     осталось в `.env` после замера другой модели, а `--provider mock` обязан гарантированно
     ничего не стоить.
+
+    `--rerank-only` не смотрит на `provider`: чат остаётся моком, живым становится один слот №3.
+    Реранкер включается только явной `RERANK_MODEL` — без имени слот считается выключенным,
+    иначе прогон «посмотреть быстрее» платил бы дефолтной моделью молча.
     """
 
+    if rerank_only:
+        if not os.environ.get(RERANK_MODEL_ENV, "").strip():
+            return ChatMockRerankLive(None)
+        return ChatMockRerankLive(Reranker.from_config())
     if provider == "mock":
         return MockSlots()
     os.environ["LLM_PROVIDER"] = provider
@@ -490,18 +587,29 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--sources", choices=("fixture", "seed"), default="fixture",
                         help="откуда данные: фикстуры золотого пути (по умолчанию) "
                              "или каталог data/seeds")
+    parser.add_argument("--rerank-only", action="store_true",
+                        help="гибрид SL-3: чат-слоты остаются моками, живой только /rerank "
+                             "(включается переменной RERANK_MODEL)")
     args = parser.parse_args(argv)
 
     load_env_file()
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING,
                         format="%(levelname)s %(name)s: %(message)s", stream=sys.stderr)
 
+    #: гибрид по определению «чат — моки»: `build_slots` на флаг смотрит раньше провайдера, и
+    #: живая модель чата с ним просто не собирается. Принять флаг и сделать по-своему значило
+    #: бы заплатить за чат, ожидая бесплатного прогона
+    if args.rerank_only and args.provider.strip().lower() != "mock":
+        print("--rerank-only означает «чат — моки»: живой провайдер чата с ним исключается",
+              file=sys.stderr)
+        return 2
+
     answers = _answers_from_args(args.answer)
     #: в `--json` ответ берём только из флага: печатать вопрос в stdout значит испортить
     #: JSON, а молча подставить ответ — значит сфабриковать прогон
     ask = _ask_refuse if args.json or not sys.stdin.isatty() else _ask_terminal
     try:
-        slots = MeasuredSlots(build_slots(args.provider))
+        slots = MeasuredSlots(build_slots(args.provider, args.rerank_only))
     except ValueError as error:
         # конфигурация, а не падение контура: трекбэк из argparse-скрипта только засорит вывод
         print(f"провайдер {args.provider!r} не собран: {error}", file=sys.stderr)
@@ -519,8 +627,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         if callable(close):
             close()
         if args.json:
+            #: `routing` — те же два слова, что печатает консоль: фронту по dry-run надо знать,
+            #: платит ли этот прогон (rerank=выключен) или нет, и брать это из одного места
             print(json.dumps({"provider": args.provider, "sources": args.sources,
-                              "dry_run": True, "models": slot_models(slots.inner)},
+                              "dry_run": True, "routing": routing_summary(slots.inner),
+                              "models": slot_models(slots.inner)},
                              ensure_ascii=False, indent=2))
         else:
             print("\n--dry-run: прогон не начат, запросов к шлюзу не было")
