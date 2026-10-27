@@ -229,7 +229,7 @@ def _matches(path: str, actual: object, expected: Any) -> bool:
 
 
 def known_hard_fields(request: TripRequest) -> dict[str, Any]:
-    """Hard-поля со значением: именно они决定 выполнимость, их и сверяем.
+    """Hard-поля со значением: именно они решают выполнимость, их и сверяем.
 
     `iter_fields` отдаёт и `soft_preferences` — это простой список, а не `FieldValue`,
     поэтому фильтр по типу, иначе `.kind` падает на первом же прогоне.
