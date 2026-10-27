@@ -181,7 +181,14 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 
 ### T-04 · Реестр инструментов + `affected()`
 
-**Статус:** 🔵 next за T-03 (П1)
+**Статус:** ✅ done 2026-10-27 (П1) — `REGISTRY` (7 инструментов с политикой ретраев),
+`graph.affected()` = реверс-индекс + замыкание вниз, `ToolCache` по content-hash со
+счётчиком обращений; `tests/unit/test_invalidation.py` — 24 теста.
+Две осознанные правки к тексту приёмки: (а) `transfer_search` попадает в результат
+`dates.start` — замыкание по `transport.arrival_time`, иначе трансфер остался бы с оценкой
+под старый прилёт; (б) `coherence_check` и `checkout_mock` (`cost="none"`) в грязное
+множество не заносятся — локальный пересчёт и есть `validate`, всегда downstream.
+Сигнатура инструмента к источнику (заглушки на данных T-02) — в T-05, здесь только политика.
 **Владелец:** П1 · **Волна:** 1 · **Зависит:** T-01, T-02 · **Нужно для:** T-05, T-08
 **Файлы:** `services/agent/app/tools/registry.py`, `services/agent/app/orchestration/graph.py`,
 `tests/unit/test_invalidation.py`
