@@ -12,7 +12,7 @@ from services.agent.scripts.quiz_demo import (
     resume_from_file,
     resume_with_answer,
 )
-from shared.contracts.enums import Stage, Theme
+from shared.contracts.enums import DirectionMode, Stage, Theme
 from shared.contracts.state import TripState
 
 MESSAGE = "хочу к тёплому морю в ноябре вдвоём с ребёнком, 150к, без долгих перелётов"
@@ -100,3 +100,27 @@ class TestInterrupt:
         assert request.themes.value == [Theme.BEACH]
         assert request.party.adults.value == 2
         assert request.party.adults.source == "user"
+
+    def test_named_destination_is_not_dropped(self):
+        """«еду в Сочи» — hard-поле со слов юзера; раньше парсер его молча терял."""
+
+        request = mock_parse("еду в сочи на неделю")
+        assert request.direction.explicit.value == "сочи"
+        assert request.direction.explicit.source == "user"
+        assert request.direction.mode.value == DirectionMode.EXPLICIT
+
+    def test_month_or_theme_is_not_a_destination(self):
+        for phrase in ("поеду в ноябре", "хочу на море вдвоём", "лечу в отпуск",
+                       "еду в горы", "хочу в аэропорт"):
+            request = mock_parse(phrase)
+            assert request.direction.explicit.is_unknown, phrase
+            assert request.direction.mode.status.value == "defaulted", phrase
+
+    def test_hyphenated_city_is_captured_whole(self):
+        request = mock_parse("лечу в санкт-петербург")
+        assert request.direction.explicit.value == "санкт-петербург"
+
+    def test_golden_message_names_no_place(self):
+        request = mock_parse(MESSAGE)
+        assert request.direction.explicit.is_unknown
+        assert request.direction.mode.status.value == "defaulted"

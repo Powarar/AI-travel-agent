@@ -5,7 +5,10 @@ Mock-парсер вместо LLM (слоты подключаются в T-07)
 
 Запуск:
     python services/agent/scripts/quiz_demo.py                 # интерактивно
-    python services/agent/scripts/quiz_demo.py --non-interactive --answers "Сочи,14,21"
+    python services/agent/scripts/quiz_demo.py --non-interactive --answers "Москва;с 14 по 21"
+
+Ответы разделяются точкой с запятой и идут по порядку вопросов; пустой или «пропустить»
+означает пропуск мягкого поля.
 """
 
 from __future__ import annotations
@@ -63,6 +66,33 @@ _THEME_WORDS = {
     Theme.FOOD: ("гастро", "еда", "ресторан"),
 }
 
+#: «в|на <это>» после глагола поездки — не название места: месяц, сезон или абстракция.
+_NOT_A_PLACE = (
+    "янв", "фев", "мар", "апр", "мае", "июн", "июл", "авг", "сен", "окт", "ноя", "дек",
+    "зим", "весн", "лет", "осен", "отпуск", "командировк", "выходн", "праздник",
+    "морю", "море", "горы", "гор", "пляж", "природ", "теплу", "дач", "дом",
+    "аэропорт", "вокзал", "отел", "тур", "поездк", "дорог",
+)
+_DESTINATION_RE = re.compile(
+    r"\b(?:еду|едем|уедем|лечу|летим|улетим|полечу|поеду|хочу|хотим|мечтаю|собираемся|"
+    r"рвёмся|сорвёмся|срываемся)\s+(?:в|на)\s+([а-яё][а-яё-]{2,})"
+)
+
+
+def explicit_destination(text: str) -> str | None:
+    """Названное юзером направление — его слова, а не наш вывод.
+
+    Поле `direction.explicit` по контракту хранит строку, поэтому здесь мы не резолвим
+    «сочи» в код `sochi`: каталога город→код в этом контуре нет, и выдумывать совпадение
+    опаснее, чем оставить поле названным как есть.
+    """
+
+    for match in _DESTINATION_RE.finditer(text.lower()):
+        word = match.group(1)
+        if not word.startswith(_NOT_A_PLACE):
+            return word
+    return None
+
 
 def mock_parse(text: str) -> TripRequest:
     """Слот №1 (Parse) на моке: значение + kind + status + source.
@@ -74,9 +104,16 @@ def mock_parse(text: str) -> TripRequest:
     request = TripRequest()
     lowered = text.lower()
 
-    request.direction.mode = FieldValue[DirectionMode].defaulted(
-        DirectionMode.OPEN, kind=ConstraintKind.HARD
-    )
+    destination = explicit_destination(lowered)
+    if destination is not None:
+        request.direction.mode = FieldValue[DirectionMode].known(
+            DirectionMode.EXPLICIT, kind=ConstraintKind.HARD
+        )
+        request.direction.explicit = FieldValue[str].known(destination, kind=ConstraintKind.HARD)
+    else:
+        request.direction.mode = FieldValue[DirectionMode].defaulted(
+            DirectionMode.OPEN, kind=ConstraintKind.HARD
+        )
     themes = [theme for theme, words in _THEME_WORDS.items() if any(word in lowered for word in words)]
     if themes:
         request.themes = FieldValue[list[Theme]].known(themes, kind=ConstraintKind.SOFT, source="user")
