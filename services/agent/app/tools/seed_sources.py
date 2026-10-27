@@ -705,9 +705,17 @@ def _transfer(row: Mapping[str, Any]) -> TransferOffer:
 
 
 def checkout_mock(args: Mapping[str, object]) -> SearchResult:
-    """Заказ по содержимому корзины: тот же basket — тот же `order_id` (идемпотентность)."""
+    """Заказ по содержимому корзины: тот же basket — тот же `order_id` (идемпотентность).
 
-    return SearchResult(order_id=f"ord-seed-{args_hash(REGISTRY['checkout_mock'], args)}")
+    Хеш берётся от корзины, а не от всех аргументов: `idempotency_key` рантайм по умолчанию
+    берёт из `run_id` — случайного UUID, и вместе с ним `order_id` переставал быть
+    воспроизводимым, а повторный прогон переставал давать тот же JSON («повтор с тем же
+    ключом» коротит сам рантайм: `run.order_id` уже заполнен, второго вызова нет).
+    """
+
+    basket = args.get("basket")
+    return SearchResult(
+        order_id=f"ord-seed-{args_hash(REGISTRY['checkout_mock'], {'basket': basket})}")
 
 
 #: шесть инструментов — те же имена, что в `REGISTRY`; прогон собирает из этого `Source`-map
