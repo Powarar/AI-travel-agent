@@ -1,7 +1,8 @@
 """Викторина: цикл PARSE → DECIDE → question (interrupt) → answer → SEARCH.
 
-Mock-парсер вместо LLM (слоты подключаются в T-07); контракт вопросов — тот же, что
-уйдёт на фронт SSE-событием `question` (services/agent/docs/CONTRACTS.md).
+Парсер — мок `MockSlots` из `app/llm/slots.py` (тот же, что в тестах T-05/T-07), а не своя
+копия; контракт вопросов — тот же, что уйдёт на фронт SSE-событием `question`
+(services/agent/docs/CONTRACTS.md).
 
 Запуск:
     python services/agent/scripts/quiz_demo.py                 # интерактивно
@@ -17,19 +18,19 @@ import argparse
 import re
 import sys
 from datetime import date
-from decimal import Decimal
 from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
+from services.agent.app.llm.slots import MockSlots
 from shared.contracts.enums import (
     ConstraintKind,
     DirectionMode,
     FieldStatus,
     RunStatus,
     Stage,
-    Theme,
 )
 from shared.contracts.money import Money
 from shared.contracts.request import FieldValue, TripRequest
@@ -38,7 +39,9 @@ from shared.contracts.state import TripState
 DEMO_MONTH = date(2026, 11, 1)
 NO_NETWORK_NOTE = "внешних HTTP-вызовов в этом контуре нет"
 
-QUESTIONS: dict[str, dict[str, object]] = {
+#: `Any`, а не `object`: по значениям итерруются (`ask["options"]`), и `object` заставлял бы
+#: каждый такой цикл писать `type: ignore` — ошибка mypy была бы про типы словаря, а не про контур.
+QUESTIONS: dict[str, dict[str, Any]] = {
     "origin": {
         "field": "origin",
         "text": "Откуда стартуем? Нужен город или аэропорт вылета.",
@@ -54,110 +57,20 @@ QUESTIONS: dict[str, dict[str, object]] = {
 }
 
 
-_ADULTS_WORDS = {
-    "вдвоём": 2, "для двоих": 2, "нас двое": 2, "мы двое": 2,
-    "втроём": 3, "для троих": 3, "нас трое": 3,
-}
-_THEME_WORDS = {
-    Theme.BEACH: ("морю", "море", "пляж"),
-    Theme.NATURE: ("гор", "лес", "природа"),
-    Theme.CITY: ("город",),
-    Theme.CULTURE: ("музе", "культур", "истори"),
-    Theme.FOOD: ("гастро", "еда", "ресторан"),
-}
-
-#: «в|на <это>» после глагола поездки — не название места: месяц, сезон или абстракция.
-_NOT_A_PLACE = (
-    "янв", "фев", "мар", "апр", "мае", "июн", "июл", "авг", "сен", "окт", "ноя", "дек",
-    "зим", "весн", "лет", "осен", "отпуск", "командировк", "выходн", "праздник",
-    "морю", "море", "горы", "гор", "пляж", "природ", "теплу", "дач", "дом",
-    "аэропорт", "вокзал", "отел", "тур", "поездк", "дорог",
-)
-_DESTINATION_RE = re.compile(
-    r"\b(?:еду|едем|уедем|лечу|летим|улетим|полечу|поеду|хочу|хотим|мечтаю|собираемся|"
-    r"рвёмся|сорвёмся|срываемся)\s+(?:в|на)\s+([а-яё][а-яё-]{2,})"
-)
-
-
-def explicit_destination(text: str) -> str | None:
-    """Названное юзером направление — его слова, а не наш вывод.
-
-    Поле `direction.explicit` по контракту хранит строку, поэтому здесь мы не резолвим
-    «сочи» в код `sochi`: каталога город→код в этом контуре нет, и выдумывать совпадение
-    опаснее, чем оставить поле названным как есть.
-    """
-
-    for match in _DESTINATION_RE.finditer(text.lower()):
-        word = match.group(1)
-        if not word.startswith(_NOT_A_PLACE):
-            return word
-    return None
-
-
 def mock_parse(text: str) -> TripRequest:
-    """Слот №1 (Parse) на моке: значение + kind + status + source.
+    """Слот №1 (Parse) на моке T-05 — тонкая обёртка, а не второй парсер.
 
-    Мок не имеет права приписывать юзеру то, чего он не сказал: unmatched поле остаётся
-    `unknown`, а безопасная подстановка — `defaulted`, иначе `known` только по тексту.
+    Здесь жила копия детерминированного парсера, и она расходилась с `app/llm/slots.py`
+    на каждом исправлении: копия теряла названное направление, не знала «впятером»,
+    «дети 8 и 12 лет» и приписывала юзеру возраст, которого он не назвал (`known([7],
+    source="user")`). Пока демо-скрипт и тесты зовут один и тот же `MockSlots`, такой
+    разнобой невозможен по построению.
     """
 
-    request = TripRequest()
-    lowered = text.lower()
-
-    destination = explicit_destination(lowered)
-    if destination is not None:
-        request.direction.mode = FieldValue[DirectionMode].known(
-            DirectionMode.EXPLICIT, kind=ConstraintKind.HARD
-        )
-        request.direction.explicit = FieldValue[str].known(destination, kind=ConstraintKind.HARD)
-    else:
-        request.direction.mode = FieldValue[DirectionMode].defaulted(
-            DirectionMode.OPEN, kind=ConstraintKind.HARD
-        )
-    themes = [theme for theme, words in _THEME_WORDS.items() if any(word in lowered for word in words)]
-    if themes:
-        request.themes = FieldValue[list[Theme]].known(themes, kind=ConstraintKind.SOFT, source="user")
-    request.soft_preferences = [
-        phrase.strip()
-        for phrase in re.findall(r"(без долгих перелётов|не долго лететь|тёплому морю)", lowered)
-    ]
-
-    hits = [count for word, count in _ADULTS_WORDS.items() if word in lowered]
-    adults = hits[0] if hits else None
-    if adults is None:
-        request.party.adults = FieldValue[int].defaulted(2, kind=ConstraintKind.HARD)
-    else:
-        request.party.adults = FieldValue[int].known(adults, kind=ConstraintKind.HARD, source="user")
-    if re.search(r"с ребёнком", lowered):
-        request.party.children = FieldValue[list[int]].known([7], kind=ConstraintKind.HARD, source="user")
-    if re.search(r"с собако|с кот", lowered):
-        request.party.pets = FieldValue[bool].known(True, kind=ConstraintKind.HARD, source="user")
-
-    if match := re.search(r"(\d{1,3})\s*[кk]\b", lowered):
-        amount = Decimal(match.group(1)) * 1000
-        request.budget.amount = FieldValue[Money].known(
-            Money(amount=amount, currency="RUB"), kind=ConstraintKind.HARD, source="user"
-        )
-    if match := re.search(r"не больше (\d{1,2})\s*(?:час|ч)\b", lowered):
-        request.transport.max_hours_direct = FieldValue[float].known(
-            float(match.group(1)), kind=ConstraintKind.HARD, source="user"
-        )
-    if "прям" in lowered and ("рейс" in lowered or "перел" in lowered):
-        request.transport.prefer_direct = FieldValue[bool].known(True, kind=ConstraintKind.SOFT, source="user")
-
-    if "ноябр" in lowered:
-        # «в ноябре» — это не дата: вывели мы, значит поле требует подтверждения (CONTRACTS.md)
-        request.dates.start = FieldValue[date].inferred(
-            DEMO_MONTH.replace(day=1), kind=ConstraintKind.HARD, source="context", confidence=0.5
-        )
-
-    if match := re.search(r"(\d{1,2})\s*(?:ноч|ночей)", lowered):
-        request.nights = FieldValue[int].known(int(match.group(1)), kind=ConstraintKind.HARD, source="user")
-
-    return request
+    return MockSlots().parse(text)
 
 
-def decide_questions(state: TripState) -> list[dict[str, object]]:
+def decide_questions(state: TripState) -> list[dict[str, Any]]:
     """Порог значимости (ThresholdProvider): unknown hard-поля, без которых нечего искать."""
 
     if state.questions_asked >= state.budgets.questions_limit:
@@ -167,7 +80,7 @@ def decide_questions(state: TripState) -> list[dict[str, object]]:
     dates_significant = start.is_unknown or (
         start.status == FieldStatus.INFERRED and start.needs_confirmation
     )
-    asks: list[dict[str, object]] = []
+    asks: list[dict[str, Any]] = []
     if origin_unknown:
         asks.append(QUESTIONS["origin"])
     if dates_significant and len(asks) < 2:

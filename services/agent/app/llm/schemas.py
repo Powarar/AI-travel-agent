@@ -1,0 +1,634 @@
+"""Схемы вывода шести LLM-слотов и превращение ответа модели в `TripRequest`.
+
+Здесь живёт главное правило T-07: **модель не арифметикирует и не решает, что значение
+достоверно**. Она возвращает поля с цитатой слов пользователя, а код (а) приводит строку к
+типу контракта, (б) проверяет, что значение прослеживается в сообщении, (в) сам ставит
+`defaulted`/`inferred` — statuses, которые модель выдавать не вправе.
+
+Почему не «модель сразу отдаёт `{"party.adults": 2}`»: такое значение неотличимо от
+выдуманного. «вдвоём» → 2 — это вывод из слова, а «2» без слова в сообщении — галлюцинация.
+Проверка прослеживаемости (provenance) смотрит ровно на то, что юзер сказал руками: цифры
+для чисел, начало слова для названий (_forms_ падежей не совпадают: «из Москвы» ≠ «Москва»).
+
+`FABRICATED_FIELD` — не тихий дефолт: непрослеженное значение отбрасывается, причина
+возвращается вызывающему, и тот пишет `known=False` + нарушение.
+"""
+
+from __future__ import annotations
+
+import re
+from datetime import date
+from decimal import Decimal, InvalidOperation
+from typing import Any, Literal, cast
+
+from pydantic import BaseModel, Field, ValidationError, field_validator
+
+from shared.contracts.enums import (
+    BudgetInclude,
+    BudgetScope,
+    ConstraintKind,
+    DirectionMode,
+    FieldStatus,
+    Theme,
+    TransportMode,
+)
+from shared.contracts.money import Money
+from shared.contracts.request import FieldValue, TripRequest
+
+#: Правильные пути — из контракта, а не на память: модель не может выдумать поле, которого
+#: нет в `TripRequest`, потому что несуществующий путь отбивается на валидации схемы.
+LEGAL_PATHS: frozenset[str] = frozenset(path for path, _ in TripRequest().iter_fields())
+
+Span = str
+FieldStatusName = Literal["known", "inferred"]
+
+
+#: Значимость поля по контракту, а не по впечатлению модели. Понижение hard→soft — это
+#: молчаливое ослабление ограничения (инвариант №2): «еду в Калининград» модель отметила как
+#: пожелание, и оркестратор имел право искать другие города. Повышать soft→hard тоже нельзя.
+_CONTRACT_KINDS: dict[str, ConstraintKind] = {
+    path: field.kind for path, field in TripRequest().iter_fields()
+    if isinstance(field, FieldValue)
+}
+
+
+def resolve_kind(path: str, claimed: ConstraintKind) -> ConstraintKind:
+    """Kind из контракта побеждает kind из вывода модели; несогласие видно в логе."""
+
+    declared = _CONTRACT_KINDS.get(path)
+    return declared if declared is not None else claimed
+
+
+class ParsedDelta(BaseModel):
+    """Одно поле, которое модель нашла в сообщении.
+
+    `raw` — кусок слов пользователя (для чисел — с точностью до падежа, для названий — как
+    названо). `confidence` модель честно снижает, когда выводит: «в ноябре» без числа дня —
+    это уже не со слов, и `inferred` ниже порога означает «надо спросить», а не «подставить».
+    """
+
+    path: str
+    raw: Span
+    kind: ConstraintKind
+    status: FieldStatusName = "known"
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+
+    @field_validator("path")
+    @classmethod
+    def _path_exists(cls, value: str) -> str:
+        if value not in LEGAL_PATHS:
+            raise ValueError(f"unknown field path {value!r}; contract has {sorted(LEGAL_PATHS)[:4]}…")
+        return value
+
+
+class ParseSchema(BaseModel):
+    """Слот №1: whole message → список дельт. `note` — для человека, на значимость не влияет."""
+
+    deltas: list[ParsedDelta] = Field(default_factory=list)
+    note: str = ""
+
+
+class QuestionSchema(BaseModel):
+    """Слот №2: код уже решил, какое поле добивать; модель даёт только формулировку."""
+
+    text: str
+    options: list[str] = Field(default_factory=list)
+    allow_skip: bool = True
+
+
+class FinalistsSchema(BaseModel):
+    """Слот №4: три `candidate_id` с причиной. Порядок и score считает код, не модель."""
+
+    picked: list[str] = Field(min_length=1, max_length=3)
+    rationale: dict[str, str] = Field(default_factory=dict)
+
+
+class ExplainSchema(BaseModel):
+    """Слот №5: текст карточки. Чисел в схеме нет намеренно — их берёт `Explanation`."""
+
+    text: str
+
+
+class DiffSchema(BaseModel):
+    """Слот №6: сообщение → какие поля контракта задело. Enum-словарь, не свободный вывод."""
+
+    touched: list[str] = Field(default_factory=list)
+    unchanged_note: str = ""
+
+    @field_validator("touched")
+    @classmethod
+    def _touched_are_paths(cls, value: list[str]) -> list[str]:
+        unknown = [item for item in value if item not in LEGAL_PATHS]
+        if unknown:
+            raise ValueError(f"unknown field paths: {unknown}")
+        return value
+
+
+class Rejected(BaseModel):
+    """Причина, по которой дельта не попала в состояние."""
+
+    path: str
+    raw: str
+    reason: str
+
+
+class ParsedMessage(BaseModel):
+    """Итог применения дельт: состояние-дельта + чем её нельзя пользоваться.
+
+    `used_fallback` — признак, что живой ответ не прошёл схему и поле разобрал детерминированный
+    парсер. Это не «тихий дефолт»: причину видно в `rejected` и в метрике T-07.
+    """
+
+    request: TripRequest
+    rejected: list[Rejected] = Field(default_factory=list)
+    used_fallback: bool = False
+    #: почему фолбэк: "schema_failed" — вывод не прошёл схему, "provider_unavailable" — шлюз
+    #: не ответил. Разные причины по-разному чинятся, и в метрике это надо видеть.
+    fallback_reason: str = ""
+
+
+_NUMBERS = re.compile(r"\d[\d \u00a0]*|\d")
+_WORD_PREFIX = 4
+
+
+def _digits_in(raw_value: str, message: str) -> bool:
+    """Все цифровые группы значения встречаются в сообщении (порядок свободный, «150к» → 150).
+
+    Однозначная цифра проверяется отдельным числом, а не подстрокой склейки: «1» внутри «150»
+    не значит, что человек назвал первое число.
+    """
+
+    groups = [group.replace(" ", "").replace(" ", "") for group in _NUMBERS.findall(raw_value)]
+    hay_groups = [group.replace(" ", "").replace(" ", "") for group in _NUMBERS.findall(message)]
+    if not groups:
+        return False
+    hay_digits = "".join(hay_groups)
+    for group in groups:
+        if len(group) == 1:
+            #: однозначная цифра обязана стоять в сообщении отдельным числом: «4» внутри
+            #: «1504» — совпадение записи, а не названная ночь
+            if group not in hay_groups:
+                return False
+        elif group not in hay_digits:
+            return False
+    return True
+
+
+def _word_in(raw_value: str, message: str) -> bool:
+    """Начало значения читается в сообщении: «Москва» ищется как «моск» в «из москвы».
+
+    Модель часто цитирует фразу целиком («с собакой», «не больше 4 часов»), поэтому проверяем
+    каждое слово цитаты: достаточно одного слова длиной ≥`_WORD_PREFIX`, начало которого
+    встречается в сообщении. Склейка пробелов в одну иглу ловила не всё, а почти ничего.
+    """
+
+    needle_words = [word for word in re.findall(r"[а-яёa-z]+", raw_value.lower()) if word]
+    if not needle_words:
+        # только цифры или знаки: это числовое поле, и сюда попадают пути, забытые в
+        # `_NUMERIC_PATHS` — пустая подстрока ловила бы что угодно
+        return False
+    haystack = re.findall(r"[а-яёa-z]{%d,}" % _WORD_PREFIX, message.lower())
+    for word in needle_words:
+        if len(word) < _WORD_PREFIX:
+            if word in message.lower():
+                return True
+            continue
+        if any(item.startswith(word[:_WORD_PREFIX]) for item in haystack):
+            return True
+    return False
+
+
+def _number_traceable(raw_value: str, message: str) -> bool:
+    """Число прослеживается цифрами ИЛИ словами («на 7 ночей», «вчетвером»).
+
+    Три формы входа: цитата словами («вдвоём»), цитата цифрами («150к»), пересказ цифрой там,
+    где юзер сказал словом (сообщение «вчетвером», raw «4»). Первая и третья — разные: во
+    второй значение выводим мы, и оно легально только как `inferred`.
+    """
+
+    if _digits_in(raw_value, message):
+        return True
+    if not _NUMBERS.search(raw_value):
+        # цитаты-слова: «вдвоём» — проверяем по буквам, цифр в цитате нет
+        return _word_in(raw_value, message)
+    spoken = _numbers_from_words(message)
+    for group in _NUMBERS.findall(raw_value):
+        # юзер мог назвать число словом: «вчетвером» → 4, и цифры «4» в сообщении нет
+        if int(re.sub(r"[^\d]", "", group) or 0) in spoken:
+            return True
+    return False
+
+
+#: Поля, чьё значение — число: их проверяем по цифрам, а не по буквам.
+_NUMERIC_PATHS = frozenset({
+    "party.adults", "party.children", "nights", "dates.flexibility_days",
+    "lodging.stars_min", "lodging.rooms", "lodging.budget_per_night_max",
+    "transport.max_hours_direct", "budget.amount",
+})
+
+
+def _day_tokens(message: str) -> set[int]:
+    """Числа сообщения как отдельные значения: «150к» не содержит ни дня 1, ни дня 15.
+
+    Проверка по склейке цифр ловила однозначный день подстрокой: ISO-дата `2026-11-01`,
+    которую модель выдумала из «в ноябре», считалась названной, потому что «1» стоит внутри
+    «150». Живой контур 2026-10-27: нулевая ночёвка ушла в план с `source="user"`.
+    """
+
+    return {int(token) for token in re.findall(r"\d+", message)}
+
+
+def _date_traceable(raw: str, message: str) -> bool:
+    r"""Дата прослеживается по дню и месяцу отдельно, а «2026» из ISO-строки — не день.
+
+    Первый вариант брал `\b(\d{1,2})` от строки целиком и на «2026-11-21» получал «20»:
+    сообщение с «с 14 по 21» его не содержало, и правильная дата отбраковывалась как выдумка.
+    """
+
+    tokens = _day_tokens(message)
+    iso = re.search(r"\b(\d{4})-(\d{1,2})-(\d{1,2})\b", raw)
+    if iso is not None:
+        day, month = int(iso.group(3)), int(iso.group(2))
+    else:
+        days = [int(item) for item in re.findall(r"\b(\d{1,2})\b", raw) if 1 <= int(item) <= 31]
+        if not days:
+            return False
+        # каждый названный день диапазона обязан прозвучать: «с 1 по 10» → и 1, и 10
+        if not all(item in tokens for item in days):
+            return False
+        day, month = days[0], None
+    if day not in tokens:
+        return False
+    if month is not None:
+        # месяц либо цифрой в сообщении, либо словом («ноября» → 11) — иначе это додумка
+        return month in tokens or _month_of(message) is not None
+    return _month_of(raw) is not None or _month_of(message) is not None
+
+
+def _traceable(delta: ParsedDelta, message: str) -> bool:
+    """Прослеживается ли значение в словах пользователя.
+
+    Числовые поля — по цифрам ИЛИ словами («вчетвером» = 4). Текстовые — по началу слова.
+    Даты — по дню и месяцу отдельно; год не проверяем: его модель берёт из подсказки, а не
+    выдумывает.
+    """
+
+    raw = delta.raw
+    if delta.path in _NUMERIC_PATHS:
+        return _number_traceable(raw, message)
+    if delta.path in {"dates.start", "dates.end"}:
+        return _date_traceable(raw, message)
+    return _word_in(raw, message)
+
+
+#: Только полные stems месяцев: «ма» матчится на любую «маму», а это молча сдвигает дату на май.
+_MONTHS = {
+    "янв": 1, "фев": 2, "мар": 3, "апр": 4, "мае": 5, "мая": 5, "май": 5, "июн": 6, "июл": 7,
+    "авг": 8, "сен": 9, "окт": 10, "ноя": 11, "дек": 12,
+}
+#: «с ребёнком» без возраста: дети названы, возраст — нет. Слово ищут оба парсера
+#: (детерминированный `MockSlots.parse` и `apply_deltas` над ответом модели), поэтому оно
+#: живёт здесь, а не в `slots.py`: два набора слов разъехались бы на первом же «внучата».
+CHILD_WORD_RE = re.compile(r"ребён|ребен|дет[еёи]|младен|малыш|груднич")
+#: Безопасный возраст для подстановки: с ним ищется семейный номер и детская кровать, а
+#: статус остаётся `defaulted` — код обязан показать, что это его предположение.
+DEFAULT_CHILD_AGE = 7
+
+#: Русские слова к значениям `Theme` — как в моке T-05, иначе «море» не станет пляжем.
+_THEME_WORDS = {
+    Theme.BEACH: ("мор", "пляж", "берег"),
+    Theme.NATURE: ("гор", "лес", "природ", "озер"),
+    Theme.CITY: ("город", "центр"),
+    Theme.CULTURE: ("музе", "культур", "истори", "экскурси"),
+    Theme.FOOD: ("гастро", "еда", "ресторан", "кухн"),
+}
+
+
+def _month_of(text: str) -> int | None:
+    """Месяц из названия («ноябре») или из цифры `дд.мм`; ищем по переданному тексту."""
+
+    lowered = text.lower()
+    for stem, number in _MONTHS.items():
+        if stem in lowered:
+            return number
+    match = re.search(r"\b(\d{1,2})\.(\d{1,2})\b", lowered)
+    if match is not None:
+        return int(match.group(2))
+    return None
+
+
+#: Слова-числительные сортируются по длине: «одиннадцать» содержит «один», и порядок перебора
+#: решал бы за нас, а должен решать размер слова.
+_NUMBER_WORDS: dict[int, tuple[str, ...]] = {
+    1: ("один", "одна", "одно", "одну", "одной"),
+    2: ("два", "две", "двое", "вдвоём", "вдвоем", "двоих", "пара"),
+    3: ("три", "трое", "втроём", "втроем", "троих"),
+    4: ("четыре", "четверо", "вчетвером", "вчетвёртом", "четверых"),
+    5: ("пять", "пятеро", "пятерых"),
+    6: ("шесть", "шестеро"), 7: ("семь", "семеро"), 8: ("восемь",), 9: ("девять",),
+    10: ("десять",), 11: ("одиннадцать",), 12: ("двенадцать",), 13: ("тринадцать",),
+    14: ("четырнадцать",), 15: ("пятнадцать",),
+    20: ("двадцать",), 30: ("тридцать",),
+}
+
+
+#: Слова проверяются по границе: подстрока «один» сидит внутри «одиннадцать», а без `\b`
+#: парсер возвращал 1 вместо 11. Кортежи длиной в один элемент пишутся с запятой — `("восемь")`
+#: это строка, и обход по ней даёт отдельные буквы, которые матчатся на любом слове.
+_WORD_TO_NUMBER: list[tuple[re.Pattern[str], int]] = sorted(
+    ((re.compile(rf"\b{re.escape(word)}\b"), number)
+     for number, words in _NUMBER_WORDS.items() for word in words),
+    key=lambda item: -len(item[0].pattern),
+)
+
+
+def _numbers_from_words(text: str) -> set[int]:
+    lowered = text.lower()
+    return {number for pattern, number in _WORD_TO_NUMBER if pattern.search(lowered)}
+
+
+def number_from_words(text: str) -> int | None:
+    """Первое названное словом число: «на двоих» → 2. Граница слова обязательна.
+
+    Публичное имя: этим же словарём пользуется детерминированный парсер из `slots.py`, и на
+    «пять ночей» оба разборщика обязаны давать пять, а не «живой — 5, мок — ничего».
+    """
+
+    lowered = text.lower()
+    for pattern, number in _WORD_TO_NUMBER:
+        if pattern.search(lowered):
+            return number
+    return None
+
+
+def _to_int(raw: str) -> int:
+    """Цифра или русское слово-числительное. «на двоих» — это 2, и терять её нельзя.
+
+    Живая модель цитирует словами именно так, как сказал человек; converter, который знает
+    только «вдвоём/втроём», отбраковывал правильный ответ с `coerce: no number in 'трое'`.
+    """
+
+    lowered = raw.lower()
+    from_words = number_from_words(lowered)
+    if from_words is not None:
+        return from_words
+    match = re.search(r"\d+", raw)
+    if match is None:
+        raise ValueError(f"no number in {raw!r}")
+    return int(match.group(0))
+
+
+def _to_money(raw: str) -> Money:
+    digits = re.sub(r"[^\d]", "", raw.replace(" ", ""))
+    if not digits:
+        raise ValueError(f"no amount in {raw!r}")
+    amount = Decimal(digits)
+    if re.search(r"[кk]\b|тысяч", raw.lower()):
+        amount *= 1000
+    elif re.search(r"млн", raw.lower()):
+        amount *= 1_000_000
+    return Money(amount=amount, currency="RUB")
+
+
+def _to_date(raw: str, *, year: int, message: str = "", inferred: bool = False,
+             latest: bool = False) -> date:
+    """Дата из цитаты. `latest` — для выезда: из «с 1 по 10 августа» брать последнее число.
+
+    Модель отдаёт одну и ту же цитату диапазона на обе даты (диапазон один, и это правильно),
+    а без различия start/end обе даты становились 1 августа — поездка нулевой длины.
+    """
+
+    iso = re.search(r"\b(\d{4})-(\d{2})-(\d{2})\b", raw)
+    if iso is not None:
+        return date(int(iso.group(1)), int(iso.group(2)), int(iso.group(3)))
+    days = [int(item) for item in re.findall(r"\b(\d{1,2})\b", raw) if 1 <= int(item) <= 31]
+    month = _month_of(raw) or _month_of(message)
+    if month is None:
+        raise ValueError(f"month missing: raw={raw!r} message={message[:60]!r}")
+    if not days:
+        # «в ноябре» — дня нет, и выдумывать его право только код: поле помечается
+        # `inferred` + `needs_confirmation`, ровно как в моке T-05. Живой провайдер не имеет
+        # права вести себя строже мока: тот же вход обязан давать тот же вопрос пользователю.
+        if not inferred:
+            raise ValueError(f"day missing in a field claimed as spoken: {raw!r}")
+        day_number = 1
+    else:
+        day_number = max(days) if latest else min(days)
+    guessed = year
+    iso_year = re.search(r"\b(20\d{2})\b", raw)
+    if iso_year is not None:
+        guessed = int(iso_year.group(1))
+    return date(guessed, month, day_number)
+
+
+def _to_list_of_int(raw: str) -> list[int]:
+    return [int(item) for item in re.findall(r"\d+", raw)]
+
+
+def _to_bool(raw: str) -> bool:
+    return not raw.lower().startswith(("не", "без", "no"))
+
+
+def _to_themes(raw: str) -> list[Theme]:
+    """Русская фраза → значения `Theme`. English-значения enum юзер не произносит.
+
+    Модель отдаёт фрагмент слов («тёплому морю, горы»), и здесь он разбирается тем же
+    словарём, что и мок T-05, — иначе два парсера расходились бы на одном и том же входе.
+    """
+
+    lowered = raw.lower()
+    themes = [theme for theme, words in _THEME_WORDS.items() if any(word in lowered for word in words)]
+    for name in (item.strip() for item in re.split(r"[,;\s]+", lowered) if item.strip()):
+        for theme in Theme:
+            if theme.value == name:
+                if theme not in themes:
+                    themes.append(theme)
+                break
+    if not themes:
+        raise ValueError(f"no known theme in {raw!r}")
+    return themes
+
+
+#: «рублей» → RUB, а не «РУБ» кириллицей: `Money.currency` проверяется `[A-Z]{3}` и на
+#: кириллице упало бы уже позже, в арифметике, а `budget.currency` — просто строка, и
+#: латиница/кириллица в нём неразличимы глазом.
+_CURRENCY_WORDS = {
+    "руб": "RUB", "рос": "RUB", "долл": "USD", "евр": "EUR", "тинь": "CNY", "юань": "CNY",
+    "лир": "TRY",
+}
+
+
+def _currency(raw: str) -> str:
+    lowered = raw.strip().lower()
+    for needle, code in _CURRENCY_WORDS.items():
+        if lowered.startswith(needle):
+            return code
+    match = re.fullmatch(r"[a-zа-ё]{3}", lowered)
+    if match is None:
+        raise ValueError(f"unknown currency in {raw!r}")
+    return lowered.upper()
+
+
+def coerce(path: str, raw: str, *, year: int, message: str = "", inferred: bool = False) -> object:
+    """Строка юзера → значение типа контракта. Арифметикует код, не модель.
+
+    Даты собираются из двух мест: день — из фрагмента, месяц — из фрагмента, а если его там
+    нет, из всего сообщения. «с 14 по 21 ноября» не содержит рядом месяц и число для каждой
+    даты отдельно, и требовать это значило бы заставлять модель додумывать.
+    """
+
+    if path in {"party.adults", "nights", "dates.flexibility_days", "lodging.rooms",
+                "lodging.stars_min"}:
+        return _to_int(raw)
+    if path == "party.children":
+        return _to_list_of_int(raw)
+    if path == "party.pets":
+        return _to_bool(raw)
+    if path in {"transport.prefer_direct", "transport.overnight_ok"}:
+        return _to_bool(raw)
+    if path == "transport.max_hours_direct":
+        match = re.search(r"\d+(?:[.,]\d+)?", raw)
+        if match is None:
+            raise ValueError(f"no hours in {raw!r}")
+        return float(match.group(0).replace(",", "."))
+    if path in {"budget.amount", "lodging.budget_per_night_max"}:
+        return _to_money(raw)
+    if path in {"dates.start", "dates.end"}:
+        return _to_date(raw, year=year, message=message, inferred=inferred,
+                        latest=path == "dates.end")
+    if path == "themes":
+        return _to_themes(raw)
+    if path == "direction.mode":
+        return DirectionMode(raw.strip().lower())
+    if path == "budget.currency":
+        return _currency(raw)
+    if path == "budget.scope":
+        lowered = raw.lower()
+        for needle, scope in (("на человека", BudgetScope.PER_PERSON), ("каждому", BudgetScope.PER_PERSON),
+                              ("всего", BudgetScope.TOTAL), ("общий", BudgetScope.TOTAL)):
+            if needle in lowered:
+                return scope
+        return BudgetScope(raw.strip().lower())
+    if path == "transport.modes":
+        names: dict[str, TransportMode] = {
+            "самол": TransportMode.PLANE, "лет": TransportMode.PLANE,
+            "поезд": TransportMode.TRAIN, "ж-д": TransportMode.TRAIN,
+            "авто": TransportMode.AUTO, "машин": TransportMode.AUTO,
+            "бuss": TransportMode.AUTO,
+        }
+        found = [mode for needle, mode in names.items() if needle in raw.lower()]
+        if not found:
+            raise ValueError(f"no known transport mode in {raw!r}")
+        return found
+    if path == "budget.includes":
+        #: отдельное имя: `names` выше уже занят словарём транспорта, и в одной функции
+        #: mypy считает второе присваивание переопределением с другим типом значений
+        include_words: dict[str, BudgetInclude] = {
+            "прожив": BudgetInclude.LODGING, "отел": BudgetInclude.LODGING,
+            "перел": BudgetInclude.TRANSPORT, "лет": BudgetInclude.TRANSPORT,
+            "питани": BudgetInclude.ACTIVITIES, "экскурс": BudgetInclude.ACTIVITIES,
+            "трансфер": BudgetInclude.TRANSFER,
+        }
+        includes: list[BudgetInclude] = [
+            item for needle, item in include_words.items() if needle in raw.lower()
+        ]
+        if not includes:
+            raise ValueError(f"no known budget scope in {raw!r}")
+        return includes
+    if path in {"origin", "identity.citizenship", "identity.residence", "direction.explicit"}:
+        return raw.strip()
+    if path == "direction.excluded":
+        return [item.strip() for item in re.split(r"[,;]", raw) if item.strip()]
+    raise ValueError(f"no coercer for {path!r}")
+
+
+def apply_deltas(deltas: list[ParsedDelta], message: str, *, year: int,
+                 fallback: TripRequest | None = None,
+                 fallback_reason: str = "schema_failed") -> ParsedMessage:
+    """Дельты модели → `TripRequest`-дельта: типы проверяются, выдумка отбрасывается.
+
+    Модель вправе отдать только `known` (со слов) и `inferred` (вывод). `defaulted` ставит
+    код, когда сам подставляет безопасное значение — здесь его нет и быть не может.
+
+    `fallback` — результат детерминированного парсера, если живой ответ не прошёл схему или
+    провайдер вообще не ответил. Он не подмешивается к валидным дельтам: либо модель
+    ответила, либо фолбэк, иначе метрика «0 выдуманных значений» стала бы неверифицируемой.
+    """
+
+    if fallback is not None:
+        return ParsedMessage(
+            request=fallback, used_fallback=True, fallback_reason=fallback_reason,
+            rejected=[Rejected(path="*", raw="", reason=f"{fallback_reason} → fallback_parser")],
+        )
+    request = TripRequest()
+    rejected: list[Rejected] = []
+    for delta in deltas:
+        if delta.status == "known" and not _traceable(delta, message):
+            rejected.append(Rejected(path=delta.path, raw=delta.raw,
+                                     reason="FABRICATED_FIELD: значение не прослеживается в сообщении"))
+            continue
+        try:
+            value = coerce(delta.path, delta.raw, year=year, message=message,
+                           inferred=delta.status == "inferred")
+        except (ValueError, InvalidOperation) as error:
+            rejected.append(Rejected(path=delta.path, raw=delta.raw, reason=f"coerce: {error}"))
+            continue
+        if delta.path == "party.children" and not value and CHILD_WORD_RE.search(
+                f"{delta.raw} {message}".lower()):
+            #: «с ребёнком» без возраста: возраст подставляет код, и статус обязан быть
+            #: `defaulted`, как у мока T-05, — приписать человеку несказанное нельзя. Пустой
+            #: список сюда тоже попадает: живой слот №1 отдавал `raw="с ребёнком"` без цифр,
+            #: и `[]` с `source="user"` значило бы «пользователь сказал, что детей нет».
+            request.party.children = FieldValue[list[int]].defaulted(
+                [DEFAULT_CHILD_AGE], kind=ConstraintKind.HARD
+            )
+            continue
+        try:
+            _set_field(request, delta, value)
+        except (ValidationError, ValueError) as error:
+            rejected.append(Rejected(path=delta.path, raw=delta.raw, reason=f"contract: {error}"))
+    if not request.direction.explicit.is_unknown and request.direction.mode.is_unknown:
+        # названное направление без режима — режим тот же факт: искать нечего
+        request.direction.mode = FieldValue[DirectionMode].known(
+            DirectionMode.EXPLICIT, kind=ConstraintKind.HARD, source="user"
+        )
+    if request.direction.mode.is_unknown:
+        #: Мок (`MockSlots.parse`) закрыть режим обязан всегда, и живой путь — тоже:
+        #: `defaulted(OPEN)` по CONTRACTS.md («open → ограничения нет вообще, это триггер
+        #: INSPIRE»), а не `known(source="user")`, потому что человек режима не называл.
+        #: Без этой строки на живом контуре 2026-10-27 unknown-режим забирал второй вопрос
+        #: хода («подбери сам» / «конкретная страна»), ответ про даты не применялся,
+        #: `dates.start` оставался пустым, и `compose` собирал план без единой ночёвки.
+        request.direction.mode = FieldValue[DirectionMode].defaulted(
+            DirectionMode.OPEN, kind=ConstraintKind.HARD
+        )
+    return ParsedMessage(request=request, rejected=rejected)
+
+
+def _set_field(request: TripRequest, delta: ParsedDelta, value: object) -> None:
+    """Значение кладётся на путь контракта как `FieldValue[T]` с типом из самой модели.
+
+    Аннотация берётся из `__pydantic_fields__` родителя, а не угадывается по значению:
+    иначе `list[int]` и `list[str]` слились бы в один тип, и контракт проверил бы нас на
+    честное слово.
+    """
+
+    container: BaseModel = request
+    for part in delta.path.split(".")[:-1]:
+        container = getattr(container, part)
+    name = delta.path.split(".")[-1]
+    annotation = type(container).__pydantic_fields__[name].annotation
+    #: pydantic объявляет `.annotation` как `type[Any] | None`, и для mypy «Field(None)(…)» —
+    #: вызов None. Здесь это всегда класс `FieldValue[...]`: контракт строится именно им.
+    field_type = cast("type[FieldValue[Any]]", annotation)
+    kind = resolve_kind(delta.path, delta.kind)
+    #: ветвление явное, а не `**kwargs`: у `known` уверенность не проставляется (её нет зачем),
+    #: у `inferred` она обязательна и поле помечается на подтверждение. Словарём `object` это
+    #: не проверить — mypy бы молчал, а `confidence=None` у known стало бы случайностью.
+    if delta.status == "known":
+        field: FieldValue[Any] = field_type(value=value, kind=kind,
+                                            status=FieldStatus.KNOWN, source="user")
+    else:
+        field = field_type(value=value, kind=kind, status=FieldStatus.INFERRED, source="model",
+                           confidence=delta.confidence, needs_confirmation=True)
+    setattr(container, name, field)

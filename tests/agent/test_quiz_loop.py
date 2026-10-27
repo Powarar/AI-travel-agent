@@ -1,6 +1,7 @@
 """Викторина (кусок T-05): ≤2 вопроса, interrupt переживает рестарт, hard-поле нельзя пропустить."""
 
 import json
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -12,7 +13,8 @@ from services.agent.scripts.quiz_demo import (
     resume_from_file,
     resume_with_answer,
 )
-from shared.contracts.enums import DirectionMode, Stage, Theme
+from shared.contracts.enums import ConstraintKind, DirectionMode, Stage, Theme
+from shared.contracts.request import FieldValue
 from shared.contracts.state import TripState
 
 MESSAGE = "хочу к тёплому морю в ноябре вдвоём с ребёнком, 150к, без долгих перелётов"
@@ -35,6 +37,36 @@ class TestQuestionLimit:
         state = fresh_state()
         state.questions_asked = 2
         assert decide_questions(state) == []
+
+    def test_unknown_direction_mode_is_not_a_question(self):
+        """Про режим направления не спрашиваем: на unknown он закрывается `defaulted(OPEN)`.
+
+        Вопрос «подбери сам / конкретная страна» на живом контуре 2026-10-27 забрал второй
+        слот хода, ответ про даты ушёл в режим, и план собрался без ночёвок. Хуже того,
+        «конкретная страна» ставит `explicit` без названия города: поиск без направления и
+        без INSPIRE. Молча тратить на это лимит нельзя.
+        """
+
+        state = fresh_state()
+        state.request.direction.mode = FieldValue[DirectionMode].unknown(kind=ConstraintKind.HARD)
+        asks = decide_questions(state)
+        assert [ask["field"] for ask in asks] == ["origin", "dates.start"]
+        assert "direction.mode" not in state.awaiting_fields
+
+    def test_inferred_end_does_not_cancel_the_dates_question(self):
+        """Вилку спрашиваем, пока конец только выведен: `inferred` — не «даты названы».
+
+        Живой парсер отдал start=end из «в ноябре», старый пропуск («конец ведь известен»)
+        глотал вопрос, и поездка нулевой длины доходила до сборки плана.
+        """
+
+        state = fresh_state()
+        for field, held in (("start", date(2026, 11, 1)), ("end", date(2026, 11, 1))):
+            setattr(state.request.dates, field,
+                    FieldValue[date].inferred(held, kind=ConstraintKind.HARD,
+                                              source="model", confidence=0.6))
+        asks = decide_questions(state)
+        assert [ask["field"] for ask in asks] == ["origin", "dates.start"]
 
     def test_hard_field_cannot_be_skipped(self):
         with pytest.raises(ValueError, match="hard-required"):
