@@ -155,15 +155,17 @@ replay прогона и изменение одного компонента б
 ```python
 Tool(
   name="hotel_search",
-  inputs={"direction.explicit|destinations", "dates.start", "dates.end",
+  inputs={"destinations", "dates.start", "dates.end", "nights",
           "party.adults", "party.children", "party.pets",
-          "lodging.budget_per_night_max", "lodging.must", "soft_preferences"},
-  guard=lambda s: s.destination_resolved,      # Callable, не DSL (ADR-004)
-  output=HotelCandidates,
+          "lodging.rooms", "lodging.stars_min", "lodging.budget_per_night_max",
+          "lodging.must", "soft_preferences", "budget.includes"},
+  guard=lambda s: bool(s.candidates.destinations) or not s.request.direction.explicit.is_unknown,
+  guard_fields={"direction.explicit", "destinations", "dates.start", "dates.end"},
+  output="candidates.hotels",
   cost="high",
   retries=3, backoff=(0.5, 1.0, 2.0), jitter=True, timeout=3.0,
-  breaker=(failures=3, window=60), fallback="stale_cache", on_fallback=mark_stale,
-  cache_ttl=None,                              # по content-hash аргументов
+  breaker=(failures=3, window=60), fallback="stale_cache",
+  cache_ttl=3600,                              # по content-hash аргументов
 )
 ```
 
@@ -177,8 +179,23 @@ Tool(
 | `coherence_check` | (локально, без сети) | none | — |
 | `checkout_mock` | basket, idempotency_key | none | идемпотентный повтор |
 
+Направление в реестре называется `destinations` (в состоянии — `candidates.destinations`),
+одна и та же строка фигурирует и в `provides` подборщика, и в `inputs` поиска. `guard` —
+обычная функция над типизированным состоянием, не выражение в DSL (ADR-004).
+
 `affected(changed_fields)` = реверс-индекс полей + транзитивное замыкание вниз
-(`compose` и `validate` — всегда downstream).
+(`compose` и `validate` — всегда downstream). Три правила замыкания:
+
+- инструмент грязный, если дельта попала в `watched` = `inputs` ∪ `guard_fields`: поле либо
+  уходит в запрос к источнику, либо меняет готовность запуска (`guard`);
+- дальше замыкаем по `provides`: пересобранный `transport.arrival_time` тянет трансфер,
+  пересобранные `destinations` — климат, перелёты и отели;
+- инструменты с `cost="none"` (`coherence_check`, `checkout_mock`) в грязное множество не
+  заносятся: к источнику они не ходят, а их локальный пересчёт — это и есть `validate`.
+
+Общая `budget.amount` не входит в `inputs` поиска отелей: сумма — проверочное число
+(`BudgetLedger`, T-03), а в запросе к источнику работает `lodging.budget_per_night_max`.
+Иначе «бюджет −30%» на ступени 0 ложно объявлял бы отельный поиск грязным.
 
 ## Ступени эскалации дельты
 
@@ -188,6 +205,12 @@ Tool(
 | 1 | пересчитать выбранный план на новых входных | 0–1 | «на троих» влезает ли в номер |
 | 2 | re-search только грязных инструментов | 2–3 | «у нас собака» |
 | 3 | расширить поиск (другие даты/направление) | 5+ | только с разрешения, если задевает hard |
+
+Ступени 0 и 1 не обращаются к источнику вовсе: `tools_for(changed, step)` отдаёт пустое
+множество, пересобираются только порядок, выбранный план и проверки. С какой ступени
+начинать ход, считает `entry_step(changed)` по реестру; дальше поднимает repair-цикл (T-08).
+Ступень 3 в `EscalationStep` нет — расширение поиска с разрешения появляется только после
+зелёного гейта T-05.
 
 ## Коды нарушений
 
