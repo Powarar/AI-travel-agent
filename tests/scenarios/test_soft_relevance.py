@@ -191,17 +191,48 @@ class TestApplyRelevance:
 class TestComposeUsesRelevance:
     """Был выбран дешёвый отель, стал — подходящий по теме: меняться должен именно состав."""
 
-    def _composed(self, run, scores: dict[str, float]):
+    def _composed(self, run, scores: dict[str, float], *, budget: str | None = None):
         state = apply_relevance(run.state, scores)
+        if budget is not None:
+            state = nodes.apply_answer(state, "budget.amount", budget)
         search = merge_results(list(run.scratch.results.values()))
         return nodes.compose(state, search, now=NOW)
 
     def test_more_relevant_hotel_wins_over_cheaper(self) -> None:
+        """Среди влезющих в бюджет atmospheric-отель бьёт дешёвый, даже он дороже."""
+
         engine, _slots, run = run_with({})
+        #: 300к: AYT-LUX (183 300 ₽) и AYT-FAM (125 200 ₽) оба в лимите, решает балл
         composition = self._composed(run, {"AYT-FAM": 0.10, "AYT-LUX": 0.95,
-                                          "HKT-ONE": 0.50, "HER-ONE": 0.50})
+                                          "HKT-ONE": 0.50, "HER-ONE": 0.50}, budget="300к")
         assert composition.plan is not None
         assert composition.plan.hotel.hotel_id == "AYT-LUX"
+
+    def test_soft_score_never_makes_a_feasible_request_infeasible(self) -> None:
+        """Баг живого прогона: самый релевантный отель вышел за бюджет, и ход умирал в infeasible.
+
+        Снято 2026-10-27: слот №3 поднял `AYT-LUX` (183 300 ₽ при бюджете 150 000 ₽),
+        валидатор дал `BUDGET_EXCEEDED`, а более дешёвый подходящий отель никто не взял —
+        то есть soft-поле превратило выполнимый запрос в невыполнимый.
+        """
+
+        engine, _slots, run = run_with({})
+        composition = self._composed(run, {"AYT-FAM": 0.05, "AYT-LUX": 1.00,
+                                          "HKT-ONE": 0.50, "HER-ONE": 0.50})
+        assert composition.plan is not None
+        assert composition.plan.hotel.hotel_id == "AYT-FAM"
+        #: уступка названа: мягкое предпочтение не отбрасывается молча
+        assert composition.facts["cheaper_than_relevant"] == "Gulf Palace"
+
+    def test_when_nothing_fits_the_budget_the_best_score_still_wins(self) -> None:
+        """Ничего не влезает → берём лучший по баллу и превышение считает валидатор числами."""
+
+        engine, _slots, run = run_with({})
+        composition = self._composed(run, {"AYT-FAM": 0.05, "AYT-LUX": 1.00,
+                                          "HKT-ONE": 0.50, "HER-ONE": 0.50}, budget="60к")
+        assert composition.plan is not None
+        assert composition.plan.hotel.hotel_id == "AYT-LUX"
+        assert "cheaper_than_relevant" not in composition.facts
 
     def test_equal_relevance_falls_back_to_price(self) -> None:
         engine, _slots, run = run_with({})

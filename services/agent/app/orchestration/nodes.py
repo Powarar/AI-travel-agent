@@ -584,22 +584,38 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
         if not transfers:
             return _empty("transfer", code, expected="трансфер от прилёта", actual="ни одного")
 
-        hotel = sorted(fitting, key=_hotel_order(state))[0]
+        hotel_order = sorted(fitting, key=_hotel_order(state))
         leg = sorted(within_limit, key=lambda offer: (offer.price_total, offer.hours))[0]
         transfer = transfers[0]
-        plan = Plan(
-            destination_code=code,
-            nights=nights,
-            adults=adults,
-            children=children,
-            has_pet=has_pet,
-            party_total=guests,
-            hotel=hotel.specs,
-            stays=hotel.stays,
-            legs=[leg.arrival, leg.departure],
-            transfers=[transfer.arrival, transfer.departure],
-            now=now,
-        )
+
+        def build(hotel: HotelOffer) -> Plan:
+            return Plan(
+                destination_code=code,
+                nights=nights,
+                adults=adults,
+                children=children,
+                has_pet=has_pet,
+                party_total=guests,
+                hotel=hotel.specs,
+                stays=hotel.stays,
+                legs=[leg.arrival, leg.departure],
+                transfers=[transfer.arrival, transfer.departure],
+                now=now,
+            )
+
+        hotel, displaced = _within_budget_or_best(hotel_order, build, request=request,
+                                                  includes=includes, guests=guests)
+        plan = build(hotel)
+        facts = {
+            "headline": f"{destination.ref['country']}, {destination.ref['name']}",
+            "sea_temp_c": destination.ref.get("sea_temp_c", ""),
+            "flight_h": f"{leg.arrival.duration_h}",
+            "hotel": hotel.name,
+        }
+        if displaced is not None:
+            #: мягкое предпочтение уступило hard-бюджету — это компромисс, и он обязан быть
+            #: назван, а не промолчан (инвариант №2 в обратную сторону)
+            facts["cheaper_than_relevant"] = displaced.name
         return Composition(
             plan=plan,
             lines=_price_lines(plan, includes),
@@ -611,15 +627,46 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
                 "transfer_arrival": transfer.arrival.transfer_id,
                 "transfer_departure": transfer.departure.transfer_id,
             },
-            facts={
-                "headline": f"{destination.ref['country']}, {destination.ref['name']}",
-                "sea_temp_c": destination.ref.get("sea_temp_c", ""),
-                "flight_h": f"{leg.arrival.duration_h}",
-                "hotel": hotel.name,
-            },
+            facts=facts,
         )
 
     return _empty("destination", "", expected="хотя бы одно направление", actual="финалистов нет")
+
+
+def _within_budget_or_best(
+    ordered: list[HotelOffer],
+    build: Callable[[HotelOffer], Plan],
+    *,
+    request: TripRequest,
+    includes: list[str],
+    guests: int,
+) -> tuple[HotelOffer, HotelOffer | None]:
+    """Первый отель по релевантности, при котором план влезает в бюджет.
+
+    Без этого мягкое поле делает выполнимый запрос невыполнимым: самый «атмосферный» отель
+    поднимает цену выше лимита, валидатор отвечает `BUDGET_EXCEEDED`, и ход заканчивается
+    отказом, хотя совместимый план существовал. Soft-предпочтение имеет право менять только
+    порядок перебора, но не превращать hard-ограничение в нарушение (инвариант №2).
+
+    Если в бюджет не влезает ни один отель, берётся лучший по релевантности с
+    `displaced=None`: превышение тогда честно ловит валидатор числами, а не прячется здесь.
+    """
+
+    #: список непустой: `fitting` проверен вызывающим кодом до обращения сюда
+    best = ordered[0]
+    budget = request.budget.amount.value
+    if budget is None:
+        return best, None
+    limit = (budget.times(guests) if request.budget.scope.value is BudgetScope.PER_PERSON
+             else budget)
+
+    for hotel in ordered:
+        lines = _price_lines(build(hotel), includes)
+        total = sum((line.amount.amount for line in lines), Decimal(0))
+        if total <= limit.amount:
+            #: уступили месту более дешёвому — тот, что был выше по теме, и есть компромисс
+            return hotel, None if hotel is best else best
+    return best, None
 
 
 def commit_plan(state: TripState, composition: Composition) -> TripState:
