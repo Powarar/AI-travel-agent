@@ -86,9 +86,12 @@ def entry_step(changed: Iterable[str]) -> EscalationStep:
         return EscalationStep.RE_RANK
     if delta <= RERANK_ONLY:
         return EscalationStep.RE_RANK
-    if not search_tools(delta):
+    # Состав группы может присутствовать во входе источника (для следующего поиска), но
+    # для уже найденного допустимого множества сначала достаточно пересобрать размещение.
+    # Комбинация «на троих» + явный total-budget также остаётся ступенью 1.
+    if delta <= RERANK_ONLY | RECOMPOSE_ONLY:
         return EscalationStep.RECOMPOSE
-    if delta <= RECOMPOSE_ONLY:
+    if not search_tools(delta):
         return EscalationStep.RECOMPOSE
     return EscalationStep.RE_SEARCH
 

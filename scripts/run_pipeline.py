@@ -268,10 +268,15 @@ class TurnReport:
     order_id: str | None = None
     failed: str | None = None
     state_dump: dict[str, Any] = field(default_factory=dict)
+    replan_step: int | None = None
+    changed_fields: list[str] = field(default_factory=list)
+    kept_components: list[str] = field(default_factory=list)
+    diff_text: str | None = None
 
 
 def walk(runtime: Runtime, message: str, answers: Mapping[str, str], *, now: datetime,
-         ask: Callable[[str, str], str], report: TurnReport) -> None:
+         ask: Callable[[str, str], str], report: TurnReport,
+         state: TripState | None = None, checkout: bool = True) -> Any:
     """Сообщение → ответы на висящие вопросы → checkout; путь поля берётся из состояния.
 
     Тот же порядок, что в тесте: диктует `awaiting_fields[0]`, поэтому прогон не может ответить
@@ -280,7 +285,7 @@ def walk(runtime: Runtime, message: str, answers: Mapping[str, str], *, now: dat
     трекбеком из `nodes._apply_dates`.
     """
 
-    run = runtime.start(message, now=now)
+    run = runtime.start(message, state=state, now=now)
     while run.state.awaiting_fields:
         path = run.state.awaiting_fields[0]
         raw = answers.get(path) or ask(path, run.texts.get(path, ""))
@@ -294,14 +299,18 @@ def walk(runtime: Runtime, message: str, answers: Mapping[str, str], *, now: dat
             #: поэтому отчёт со счётчиками и числами хода всё равно отдаётся
             report.failed = f"ответ на вопрос {path!r} не прочитан: {error}"
             _fill(run, runtime, report)
-            return
+            return run
     if run.state.outcome != Outcome.PLAN_READY:
         report.failed = (f"до checkout не дошли: outcome={run.state.outcome} "
                          f"status={run.state.run_status.value}")
         _fill(run, runtime, report)
-        return
+        return run
+    if not checkout:
+        _fill(run, runtime, report)
+        return run
     run = runtime.checkout(run, now=now)
     _fill(run, runtime, report)
+    return run
 
 
 def _fill(run: Any, runtime: Runtime, report: TurnReport) -> None:
@@ -313,6 +322,10 @@ def _fill(run: Any, runtime: Runtime, report: TurnReport) -> None:
     #: Сериализуется до `_fill`, а не в самом конце: прогон обязан отдавать JSON и когда
     #: денег в плане нет, и когда до плана не дошли.
     report.state_dump = json.loads(state.model_dump_json())
+    report.replan_step = None if run.replan_step is None else run.replan_step.value
+    report.changed_fields = sorted(run.changed)
+    report.kept_components = list(run.kept_components)
+    report.diff_text = run.diff_text
     report.trace = list(run.trace)
     report.outcome = state.outcome
     report.stage = state.stage.value
@@ -341,7 +354,9 @@ def _fill(run: Any, runtime: Runtime, report: TurnReport) -> None:
         # без бюджета ledger не собирается: сумма — hard-поле, и его отсутствие в отчёте
         # должно быть видно как пустая строка, а не как исключение прогона
         return
-    ledger = BudgetLedger(lines=list(state.chosen.items), budget=amount, scope=scope)
+    people = (state.request.party.adults.value or 2) + len(state.request.party.children.value or [])
+    ledger = BudgetLedger(lines=list(state.chosen.items), budget=amount, scope=scope,
+                          party_size=people)
     report.total = display(ledger.total)
     report.budget = display(ledger.budget)
     report.remaining = display(ledger.remaining)
@@ -634,6 +649,8 @@ def json_payload(reports: Sequence[TurnReport], measured: MeasuredSlots, *,
                            "name": name}
                           for cid, score, name in report.relevance],
             "components": report.components,
+            "replan": {"step": report.replan_step, "changed_fields": report.changed_fields,
+                       "kept_components": report.kept_components, "diff": report.diff_text},
             "money": {"total": report.total, "budget": report.budget,
                       "remaining": report.remaining, "over_budget": report.over_budget,
                       "breakdown": [dict(zip(("kind", "amount"), row))
@@ -731,6 +748,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--provider", default=os.environ.get("LLM_PROVIDER", "mock"),
                         help="mock (по умолчанию, без сети) или aitunnel")
     parser.add_argument("--message", default=DEFAULT_MESSAGE)
+    parser.add_argument("--delta", help="второе сообщение в тот же trip; по умолчанию не задано")
     parser.add_argument("--answer", action="append", default=[], metavar="ПОЛЕ=ЗНАЧЕНИЕ")
     parser.add_argument("--repeat", type=int, default=1)
     parser.add_argument("--real-now", action="store_true",
@@ -835,7 +853,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             # из прогонов в прогоны, иначе второй «прогон» ничего не считает
             runtime = Runtime(sources, slots=slots)
             report = TurnReport()
-            walk(runtime, args.message, answers, now=now, ask=ask, report=report)
+            completed = walk(runtime, args.message, answers, now=now, ask=ask, report=report)
+            if args.delta:
+                report = TurnReport()
+                walk(runtime, args.delta, answers, now=now, ask=ask, report=report,
+                     state=completed.state, checkout=False)
             reports.append(report)
             if not args.json:
                 print_turn(report, args.message, index)

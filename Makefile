@@ -15,7 +15,8 @@ help:
 	@echo "make logs      — логи всех сервисов"
 	@echo "make seed      — одноразовый запуск scripts/seed_database.py"
 	@echo "make migrate   — alembic upgrade head внутри backend"
-	@echo "make eval      — офлайн-прогон золотого сценария"
+	@echo "make eval      — офлайн evaluation 12 сценариев"
+	@echo "make warmup    — подготовить кэш ingestion-адаптера"
 	@echo "make psql      — консоль postgres"
 	@echo "make test      — весь набор pytest"
 	@echo "make lint      — mypy и запрет LLM-импортов в валидаторе"
@@ -69,7 +70,11 @@ test:
 
 .PHONY: eval
 eval:
-	$(PYTHON) scripts/run_pipeline.py --answer origin=Москва --answer "dates.start=с 14 по 21"
+	$(PYTHON) -m evaluation.run_eval --json
+
+.PHONY: warmup
+warmup:
+	$(PYTHON) -m services.backend.app.ingestion.warmup
 
 .PHONY: lint
 lint:

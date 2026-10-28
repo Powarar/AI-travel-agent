@@ -670,6 +670,19 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
             failures.append(_empty("transfer", code, expected="трансфер от прилёта",
                                    actual="ни одного", meta=_meta_for("transfer", search.meta)))
             continue
+        #: Группа обязана помещаться в оба плеча трансфера. Проверка только в валидаторе
+        #: была запоздалой: composer уже выбрал невозможную пару и не дошёл до финалиста.
+        transfers = [offer for offer in transfers if all(
+            leg.capacity is None or leg.capacity >= guests
+            for leg in (offer.arrival, offer.departure)
+        )]
+        if not transfers:
+            failures.append(_empty(
+                "transfer", code, expected=f"трансфер минимум на {guests} гостей",
+                actual="все доступные трансферы меньшей вместимости",
+                meta=_meta_for("transfer", search.meta),
+            ))
+            continue
         #: источник привязал трансферы к отелям (`data/seeds/transfers.json` = одна строка на
         #: гостиницу) — отель без своего трансфера несовместим: пришить ему путь от аэропорта
         #: соседней гостиницы значит собрать план из двух разных поездок
@@ -1037,6 +1050,15 @@ def derive_defaults(request: TripRequest) -> TripRequest:
     if derived.lodging.rooms.is_unknown:
         people = (derived.party.adults.value or 2) + len(derived.party.children.value or [])
         derived.lodging.rooms = FieldValue[int].defaulted(1 if people <= 3 else 2, kind=ConstraintKind.HARD)
+    #: Фраза «без долгих перелётов» — пользовательское ограничение, но не число. При
+    #: лимите двух вопросов origin и даты могут исчерпать уточнения раньше, чем спросим
+    #: часы; оставить его пустым означало бы молча выбрать 14-часовой рейс. Консервативные
+    #: 6 ч — наше *inferred* допущение, видимое в state/UI и легко заменяемое сообщением.
+    if (derived.transport.max_hours_direct.is_unknown
+            and "без долгих перел" in " ".join(derived.soft_preferences).lower()):
+        derived.transport.max_hours_direct = FieldValue[float].inferred(
+            6.0, kind=ConstraintKind.HARD, source="preference:short_flight", confidence=0.5
+        )
     if derived.budget.scope.is_unknown:
         derived.budget.scope = FieldValue[BudgetScope].defaulted(BudgetScope.TOTAL, kind=ConstraintKind.HARD)
     if derived.budget.includes.is_unknown:

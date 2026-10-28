@@ -40,7 +40,7 @@ from shared.contracts.state import Candidate
 
 _ADULTS_WORDS = {
     "вдвоём": 2, "для двоих": 2, "нас двое": 2, "мы двое": 2,
-    "втроём": 3, "для троих": 3, "нас трое": 3,
+    "втроём": 3, "для троих": 3, "на троих": 3, "нас трое": 3,
     "вчетвером": 4, "вчетвёртом": 4, "для четверых": 4, "нас четверо": 4,
     "впятером": 5, "нас пятеро": 5, "для пятерых": 5,
     "вшестером": 6, "нас шестеро": 6, "всмером": 8, "нас восьмеро": 8,
@@ -162,6 +162,15 @@ def explicit_destination(text: str) -> str | None:
     """
 
     lowered = text.lower()
+    #: В короткой реплике город часто стоит первым: «Гамбург с 14 по 21…». Предлога
+    #: здесь нет, но заглавная буква и следующий календарный/маршрутный маркер дают
+    #: достаточно узкий сигнал; не превращаем произвольное первое слово в направление.
+    bare = re.match(
+        r"^\s*([А-ЯЁA-Z][а-яёa-z-]{2,})(?=\s+(?:с\s+\d|в\s+\d|из\s+|на\s+\d|бюджет))",
+        text,
+    )
+    if bare is not None and not _is_not_a_place(bare.group(1).lower()):
+        return bare.group(1).lower()
     if _TRAVEL_VERB_RE.search(lowered) is None and "из " not in lowered:
         return None
     for match in _PLACE_RE.finditer(lowered):
@@ -248,7 +257,7 @@ class MockSlots:
         request = TripRequest()
         lowered = message.lower()
 
-        destination = explicit_destination(lowered)
+        destination = explicit_destination(message)
         if destination is not None:
             request.direction.mode = FieldValue[DirectionMode].known(
                 DirectionMode.EXPLICIT, kind=ConstraintKind.HARD
@@ -260,6 +269,15 @@ class MockSlots:
             request.direction.mode = FieldValue[DirectionMode].defaulted(
                 DirectionMode.OPEN, kind=ConstraintKind.HARD
             )
+        #: «хочу в Турцию, но не в Анталью»: запрет не должен стать вторым explicit.
+        #: Исключение хранится отдельно и остаётся hard-фильтром для источника.
+        excluded = [match.group(1) for match in re.finditer(
+            r"(?:но\s+)?не\s+(?:в|на)\s+([а-яёa-z][а-яёa-z0-9-]{2,})", lowered
+        ) if not _is_not_a_place(match.group(1))]
+        if excluded:
+            request.direction.excluded = FieldValue[list[str]].known(
+                excluded, kind=ConstraintKind.HARD, source="user"
+            )
         themes = themes_in(lowered)
         if themes:
             request.themes = FieldValue[list[Theme]].known(themes, kind=ConstraintKind.SOFT, source="user")
@@ -269,7 +287,8 @@ class MockSlots:
         ]
 
         hits = [count for word, count in _ADULTS_WORDS.items() if word in lowered]
-        adults = hits[0] if hits else None
+        numeric_party = re.search(r"(?:нас\s+)?(\d{1,2})\s*(?:человек|взросл\w*)\b", lowered)
+        adults = int(numeric_party.group(1)) if numeric_party is not None else (hits[0] if hits else None)
         if adults is None:
             request.party.adults = FieldValue[int].defaulted(2, kind=ConstraintKind.HARD)
         else:

@@ -254,35 +254,23 @@ class TestBudgetAcrossDestinations:
     направлении, и пользователь слышал «плана нет», хотя план был в трёх строках отбора.
     """
 
-    def test_the_cheaper_finalist_becomes_the_plan(self) -> None:
+    def test_short_flight_finalist_becomes_the_plan(self) -> None:
         report = trip("хочу к тёплому морю в ноябре вдвоём с ребёнком, 200к, "
                       "без долгих перелётов")
         assert report.outcome == Outcome.PLAN_READY
-        assert report.components["destination"] == "pattaya"
+        assert report.components["destination"] == "larnaca"
         assert report.violations == []
-        assert report.total == "166 950 ₽"
+        assert report.total == "96 700 ₽"
 
-    def test_when_nothing_fits_the_refusal_names_the_closest_miss(self) -> None:
+    def test_short_flight_constraint_finds_an_affordable_alternative(self) -> None:
         report = trip("хочу к тёплому морю в ноябре вдвоём с ребёнком, 150к, "
                      "без долгих перелётов")
-        assert report.outcome == Outcome.INFEASIBLE
-        blocking = [row for row in report.violations if row.endswith(":blocking")]
-        assert blocking == ["BUDGET_EXCEEDED:blocking"]
-        #: отказ по самому дешёвому из собранных: 166 950 ₽, а не 244 850 ₽ самого релевантного
-        assert "стоит 166 950 ₽ при бюджете 150 000 ₽" in report.explanation_text
-        assert "удешевить до 15 500 ₽" in report.explanation_text
-        assert "reduce_lodging_to" not in report.explanation_text
-        #: отказ цитирует числа состояния в человекочитаемой форме («15 500 ₽») — guard не
-        #: имеет права считать их выдумкой: на живом слоте №5 это вторая платная генерация
+        assert report.outcome == Outcome.PLAN_READY
+        assert report.components["destination"] == "larnaca"
+        assert report.total == "96 700 ₽"
+        assert report.remaining == "53 300 ₽"
+        assert report.violations == []
         assert report.invented_numbers == []
-        #: остальные направления не потерялись: они warnings с своими числами
-        notes = [row for row in report.violations if row.endswith(":warning")]
-        assert len(notes) == 2
-        dropped = [violation for violation in report.state_dump["violations"]
-                   if violation["severity"] == "warning"]
-        assert all(violation["expected"] and violation["actual"] for violation in dropped)
-        #: каждое отпущенное направление названо кодом, а не «что-то не подошло»
-        assert {violation["evidence"].get("destination") for violation in dropped} == {"dubai", "phuket"}
 
 
 class TestCatalogHasToBeThere:

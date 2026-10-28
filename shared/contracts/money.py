@@ -139,6 +139,14 @@ class BudgetLedger(BaseModel):
     lines: list[PriceLine] = Field(default_factory=list)
     budget: Money
     scope: BudgetScope
+    #: Для ``per_person`` лимит и остаток считаются от всей группы, а не от одной персоны.
+    party_size: int = Field(default=1, ge=1)
+
+    @property
+    def effective_budget(self) -> Money:
+        """Фактический лимит поездки с учётом scope."""
+
+        return self.budget.times(self.party_size) if self.scope == BudgetScope.PER_PERSON else self.budget
 
     @property
     def total(self) -> Money:
@@ -179,8 +187,8 @@ class BudgetLedger(BaseModel):
         """Сумма превышения над бюджетом; None — если бюджет не нарушен."""
 
         total = self.total
-        return (total - self.budget) if total > self.budget else None
+        return (total - self.effective_budget) if total > self.effective_budget else None
 
     @property
     def remaining(self) -> Money:
-        return self.budget - self.total
+        return self.effective_budget - self.total

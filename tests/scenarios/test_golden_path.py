@@ -395,8 +395,8 @@ class TestGoldenPath:
         run = golden_run(runtime)
         sources = hard_field_sources(run.state)
         # ни одно hard-поле не сменилось «от рантайма»: разрешены только user, безопасный
-        # default и вывод из дат (nights из dates.start/dates.end)
-        assert set(sources.values()) <= {"user", "default", "dates"}
+        # default, вывод из дат и документированный вывод из фразы «без долгих перелётов».
+        assert set(sources.values()) <= {"user", "default", "dates", "preference:short_flight"}
         assert sources["origin"] == sources["budget.amount"] == "user"
         assert sources["dates.start"] == sources["dates.end"] == "user"
         # сказанное в первом сообщении переживает два хода с ответами и mock-checkout
@@ -701,7 +701,7 @@ class TestEscalationSteps:
         assert second.state.outcome == Outcome.PLAN_READY
         assert second.state.budgets.tool_calls == 0   # переспрашивать источник запрещено
         assert runtime.cache.source_calls == calls_before
-        assert second.state.budgets.llm_calls == 2    # parse + объяснение
+        assert second.state.budgets.llm_calls == 3    # parse + объяснение + SL-6 diff
         assert ledger_of(second.state).budget.amount == Decimal("160000")
         assert second.state.budgets.tool_calls == 0 and tools_before == 6
 

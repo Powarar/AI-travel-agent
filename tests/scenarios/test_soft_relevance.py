@@ -291,12 +291,11 @@ class TestComposeUsesRelevance:
         assert all(not note.is_blocking for note in composition.notes)
         assert ruble(missed["AYT"]) == total
 
-    def test_an_over_budget_destination_does_not_hide_the_cheap_one(self) -> None:
-        """Баг питча: самое релевантное направление не влезло, и прогон врал «плана нет».
+    def test_short_flight_filter_precedes_budget_comparison(self) -> None:
+        """Длинный перелёт не остаётся бюджетным кандидатом при явном предпочтении.
 
-        Бюджет 140к на фикстурах: `Пхукет` — 196 100 ₽, `Ираклион` — 131 600 ₽. Раньше ход
-        заканчивался `INFEASIBLE` на первом направлении, хотя план существовал; теперь
-        собирается второе, а первое остаётся в состоянии предупреждением с числами.
+        Бюджет 140к на фикстурах: `Пхукет` — 196 100 ₽, `Ираклион` — 131 600 ₽. Пхукет
+        исключается до бюджета, потому что «без долгих перелётов» выводит лимит 6 часов.
         """
 
         engine, _slots, run = run_with({})
@@ -306,7 +305,7 @@ class TestComposeUsesRelevance:
         assert composition.plan is not None
         assert composition.plan.destination_code == "HER"
         assert sum((line.amount.amount for line in composition.lines), Decimal(0)) <= Decimal(140000)
-        assert [note.evidence["destination"] for note in composition.notes] == ["HKT"]
+        assert composition.notes == []
 
     def test_equal_relevance_falls_back_to_price(self) -> None:
         engine, _slots, run = run_with({})

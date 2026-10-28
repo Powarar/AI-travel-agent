@@ -324,6 +324,13 @@ def validate(plan: Plan, ledger: BudgetLedger, state: TripRequest | TripState | 
             make(ViolationCode.OCCUPANCY_EXCEEDED, "hotel",
                  expected=f"≤ {plan.hotel.capacity}", actual=plan.guests)
         )
+    for transfer in plan.transfers:
+        if transfer.capacity is not None and plan.guests > transfer.capacity:
+            violations.append(
+                make(ViolationCode.OCCUPANCY_EXCEEDED, "transfer",
+                     expected=f"≤ {transfer.capacity}", actual=plan.guests,
+                     evidence={"transfer_id": transfer.transfer_id})
+            )
     if plan.has_pet and not plan.hotel.pet_friendly:
         violations.append(make(ViolationCode.PET_NOT_ALLOWED, "hotel", expected="pet_friendly", actual=False))
     for transfer in plan.transfers:
@@ -394,11 +401,11 @@ def validate(plan: Plan, ledger: BudgetLedger, state: TripRequest | TripState | 
         total = None
 
     if total is not None:
-        # per_person: сравниваем с бюджетом, умноженным на состав, а не с суммой на человека
-        budget_for_plan = ledger.budget
-        if ledger.scope == BudgetScope.PER_PERSON:
-            party = plan.party_total if plan.party_total is not None else plan.guests
-            budget_for_plan = ledger.budget.times(party)
+        # Прямой вызов валидатора может принести ledger без party_size, поэтому
+        # используем состав собранного плана как единственный источник лимита.
+        party = plan.party_total if plan.party_total is not None else plan.guests
+        budget_for_plan = (ledger.budget.times(party) if ledger.scope == BudgetScope.PER_PERSON
+                           else ledger.budget)
 
         if total > budget_for_plan:
             over = total - budget_for_plan
@@ -408,12 +415,19 @@ def validate(plan: Plan, ledger: BudgetLedger, state: TripRequest | TripState | 
                            Decimal(0)),
                 currency=ledger.budget.currency,
             )
+            #: Нельзя обещать отрицательную цену проживания. Ноль означает, что даже
+            #: бесплатный отель не закрывает превышение — repair/UI должны показать
+            #: невозможность, а не «урезать до −11 100 ₽».
+            reduced_lodging = Money(
+                amount=max(Decimal(0), lodging.amount - over.amount),
+                currency=ledger.budget.currency,
+            )
             violations.append(
                 make(ViolationCode.BUDGET_EXCEEDED, "plan",
                      expected=budget_for_plan.as_ru(), actual=total.as_ru(),
                      evidence={"over_by": over.as_ru(),
                                "lodging_now": lodging.as_ru(),
-                               "reduce_lodging_to": (lodging - over).as_ru()})
+                               "reduce_lodging_to": reduced_lodging.as_ru()})
             )
 
     # --- инвариант №2: план не может молча отступать от hard-полей -------------

@@ -94,6 +94,10 @@ def build_events(before: TripState, run: Run, trace_from: int, calls: list[ToolC
     if finalists and finalists != [c for c in before.candidates.destinations if c.ref.get("finalist") == "true"]:
         events.append(_event("candidates", kind="destination", items=[c.model_dump(mode="json") for c in finalists],
                              ranking_factors=["day_temp_c", "flight_h"]))
+    if run.alternatives:
+        events.append(_event("candidates", kind="alternative_destination",
+                             items=[item.model_dump(mode="json") for item in run.alternatives],
+                             ranking_factors=["season", "theme", "flight_h"]))
     chosen = _refs(state).get("destination")
     if chosen and state.candidates.hotels != before.candidates.hotels:
         hotels = [c for c in state.candidates.hotels if c.ref.get("destination") == chosen]

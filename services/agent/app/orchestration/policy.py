@@ -147,6 +147,18 @@ def questions_to_ask(state: TripState) -> list[QuestionSpec]:
         specs.append(_spec_for(path, request))
         if len(specs) == MAX_QUESTIONS_IN_FLIGHT:
             break
+    #: На старых/внешних state, где ещё нет inferred-предела, фраза «без долгих перелётов»
+    #: не должна пропустить 14-часовой вариант: спросим предел, если есть слот вопроса.
+    pref = " ".join(state.request.soft_preferences).lower()
+    limit = state.request.transport.max_hours_direct
+    if (len(specs) < MAX_QUESTIONS_IN_FLIGHT and limit.is_unknown
+            and "без долгих перел" in pref):
+        specs.append(QuestionSpec(
+            field="transport.max_hours_direct",
+            why="«Без долгих перелётов» нужно перевести в предел по времени",
+            options=("4 часа", "6 часов", "8 часов"),
+            allow_skip=False,
+        ))
     return specs
 
 

@@ -116,6 +116,16 @@ class TestBudgetLedger:
         assert ledger.over_budget is not None
         assert ledger.over_budget.amount == Decimal("1.00")
 
+    def test_per_person_remaining_uses_entire_party_budget(self):
+        ledger = BudgetLedger(
+            lines=[line("lodging-1", "75000")],
+            budget=Money(amount=Decimal(50000), currency="RUB"),
+            scope=BudgetScope.PER_PERSON,
+            party_size=2,
+        )
+        assert ledger.effective_budget.amount == Decimal("100000")
+        assert ledger.remaining.amount == Decimal("25000.00")
+
     def test_foreign_currency_line_blocks_total(self):
         bad = PriceLine(
             line_id="t-1",

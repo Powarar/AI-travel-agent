@@ -105,6 +105,14 @@ class TestCleanPlan:
     def test_nights_match_dates(self):
         assert len(baseline_plan().stays) == baseline_plan().nights == 7
 
+    def test_transfer_capacity_is_a_blocking_constraint(self):
+        plan = baseline_plan(adults=5)
+        violations = validate(plan, ledger_of(plan))
+        transfer = [item for item in violations
+                    if item.code == ViolationCode.OCCUPANCY_EXCEEDED
+                    and item.affected_component == "transfer"]
+        assert transfer and transfer[0].expected == "≤ 4"
+
 
 class TestTemporalBoundaries:
     def test_arrival_2350_misses_checkin_1500(self):

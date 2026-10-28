@@ -113,6 +113,12 @@ class TestDoubleCountingAndCurrency:
         )
         assert codes_of(plan, ledger) == set()
 
+    def test_repair_ceiling_never_becomes_negative(self):
+        plan = baseline_plan()
+        found = [v for v in validate(plan, ledger_of(plan, budget=1000))
+                 if v.code == ViolationCode.BUDGET_EXCEEDED]
+        assert found[0].evidence["reduce_lodging_to"] == "0 ₽"
+
     def test_two_sources_for_one_component_is_warning(self):
         from shared.contracts.money import PriceLine
 

@@ -24,9 +24,10 @@ from __future__ import annotations
 import logging
 import re
 import time
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
+from decimal import Decimal
 from enum import Enum
 from uuid import UUID, uuid4
 
@@ -40,16 +41,18 @@ from services.agent.app.llm.slots import (
     display,
 )
 from services.agent.app.orchestration import nodes, policy
-from services.agent.app.orchestration.graph import entry_step, tools_for
-from services.agent.app.orchestration.nodes import Composition, SearchResult
+from services.agent.app.orchestration.graph import affected, entry_step, tools_for
+from services.agent.app.orchestration.nodes import Composition, DestinationFact, SearchResult
 from services.agent.app.orchestration.policy import QuestionSpec
+from services.agent.app.repair import next_action
 from services.agent.app.tools.registry import REGISTRY, ToolCache
 from services.agent.app.validation.coherence import has_blocking, validate
 from services.agent.app.validation.inputs import Plan
-from shared.contracts.enums import EscalationStep, Outcome, RunStatus, Stage
+from shared.contracts.enums import ConstraintKind, DirectionMode, EscalationStep, Outcome, RunStatus, Stage
 from shared.contracts.money import BudgetLedger
 from shared.contracts.request import FieldValue, TripRequest
 from shared.contracts.state import Candidate, RunBudget, TripState
+from shared.contracts.violation import Violation
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +73,16 @@ SEARCH_OUTPUT: dict[str, str] = {
 #: Производные ключи аргументов: их считает код, в `TripRequest` их нет (registry.py).
 DERIVED_ARGS: frozenset[str] = frozenset({"destinations", "transport.arrival_time", "dates.month", "basket"})
 _NUMBER = re.compile(r"\d[\d \u00a0]*\d|\d")
+
+# Запросы о юридической гарантии и приёме платежа не являются параметрами поездки:
+# маршрутный подбор не может их выполнить или обещать. Проверяем в коде до слотов и
+# источников, чтобы такая реплика не тратила вопрос/поиск и не провоцировала модель на
+# неподтверждённую гарантию.
+_UNSUPPORTED_RE = re.compile(
+    r"\b(?:гарантир\w*\s+(?:мне\s+)?виз\w*|виз\w*\s+гарантир\w*|"
+    r"оплат\w*\s+карт\w*|примите\s+карт\w*)\b",
+    re.IGNORECASE,
+)
 
 
 @dataclass
@@ -110,6 +123,17 @@ class Run:
     #: сколько токенов провайдер насчитал на момент последней зарядки: `budgets.tokens`
     #: прирастает разностью, потому что один провайдер живёт дольше одного хода
     tokens_seen: int = 0
+    #: Данные пересборки — не решение и не часть TripState. Их читает HTTP/SSE-адаптер,
+    #: чтобы показать, что сохранилось от старого плана.
+    replan_step: EscalationStep | None = None
+    affected_components: set[str] = field(default_factory=set)
+    kept_components: list[str] = field(default_factory=list)
+    previous_components: dict[str, str] = field(default_factory=dict)
+    previous_version: int | None = None
+    diff_text: str | None = None
+    #: Похожие направления — не выбранный план и не ослабление explicit-города. HTTP-слой
+    #: показывает их отдельными карточками, из которых пользователь может начать новый запрос.
+    alternatives: list[DestinationFact] = field(default_factory=list)
 
 
 class InterruptedRun(BaseModel):
@@ -170,9 +194,27 @@ class Runtime:
             tokens_seen=self._tokens_baseline(),
         )
         before = run.state.request
+        run.previous_version = run.state.version
+        # Mock-order — подтверждение прошлого варианта, а не переносимый компонент нового
+        # плана. Показывать его как ``kept`` после изменения требований было бы неправдой.
+        run.previous_components = {
+            component: ref for component, ref in run.state.chosen.component_refs.items()
+            if component != "order"
+        }
+        if _UNSUPPORTED_RE.search(message):
+            run.unresolved.append("unsupported:visa_or_payment")
+            run.explanation = (
+                "Я могу подобрать маршрут и проверить данные источников, но не могу "
+                "гарантировать визу или принять оплату картой."
+            )
+            run.state = nodes.finish(
+                run.state, Outcome.UNSUPPORTED, wall_clock_ms=self._elapsed_ms(run)
+            )
+            return run
         delta = self._slot_parse(run, message)
         if delta is None:
             return self._stop_by_limit(run)
+        delta = self._contextual_delta(message, delta, before)
         run.state = nodes.apply_delta(run.state, delta)
         self._route(run, before)
         logger.info("run started trip=%s run=%s changed=%d tools=%s", base.trip_id, run.run_id,
@@ -462,6 +504,9 @@ class Runtime:
         run.state = nodes.record_violations(
             run.state, nodes.with_notes(violations, run.scratch.composition.notes))
         if has_blocking(violations):
+            repaired = self._repair(run, violations)
+            if repaired is not None:
+                return repaired
             return self._resolve_blocking(run)
         return run
 
@@ -521,10 +566,61 @@ class Runtime:
         return start, start + timedelta(days=max(plan.nights, 1))
 
     def _plan(self, run: Run) -> Run:
+        if run.previous_components and run.changed:
+            diff = self._slot_diff(run, run.previous_components, run.state.chosen.component_refs)
+            if diff is None:
+                return self._stop_by_limit(run)
+            run.diff_text = diff
+            run.trace.append(f"DIFF:versions={run.previous_version}->{run.state.version}")
         run.state = nodes.finish(run.state, Outcome.PLAN_READY, wall_clock_ms=self._elapsed_ms(run))
         logger.info("plan ready trip=%s version=%s total=%s", run.state.trip_id,
                     run.state.version, self._ledger(run).total.as_display())
         return run
+
+    def _repair(self, run: Run, violations: Sequence[Violation]) -> Run | None:
+        """Записать одну детерминированную попытку repair и при необходимости эскалировать.
+
+        Действие не имеет права подменять требование. Ступени 0/1 повторяют compose+validate
+        на памяти; ступень 2 открывает только инструменты из исходной дельты. Каждая попытка
+        помечается в состоянии до следующей полной валидации, поэтому повтор подписи и третья
+        итерация отбрасываются до каких-либо платных/сетевых работ.
+        """
+
+        from shared.contracts.state import RepairAttempt
+        blocking = [item for item in violations if item.is_blocking]
+        seen = {attempt.action_signature for attempt in run.state.repair_log}
+        for violation in blocking:
+            action = next_action(violation, seen)
+            if action is None:
+                continue
+            if run.state.budgets.repair_iterations >= run.state.budgets.repair_iterations_limit:
+                return None
+            attempt = RepairAttempt(
+                iteration=run.state.budgets.repair_iterations + 1,
+                violation_code=violation.code,
+                action_signature=action.signature,
+                affected_components=list(action.affected_components),
+                accepted=True,
+                note=action.note,
+            )
+            budgets = run.state.budgets.model_copy(update={
+                "repair_iterations": run.state.budgets.repair_iterations + 1,
+            })
+            run.state = run.state.next_version().model_copy(update={
+                "repair_log": [*run.state.repair_log, attempt], "budgets": budgets,
+                "stage": Stage.REPAIR,
+            })
+            run.trace.append(f"REPAIR:{action.step.value}:{action.signature}")
+            if action.step == EscalationStep.RE_SEARCH:
+                # Только уже затронутый дельтой re-search. Если repair просит более широкий
+                # поиск, T-08 не реализует ступень 3: вопрос/отказ остаётся честнее.
+                run.dirty |= set(tools_for(run.changed, action.step))
+                self._cache.invalidate(sorted(run.dirty))
+                run.state = nodes.set_stage(run.state, Stage.DECIDE)
+                return run
+            run.state = nodes.set_stage(run.state, Stage.SEARCH)
+            return run
+        return None
 
     # ------------------------------------------------------- исход и лимиты
 
@@ -542,10 +638,38 @@ class Runtime:
             # отказ обязан называться словами с числами (CONTRACTS.md, «Названное
             # направление», исход 3): строку собирает код из нарушений состояния
             run.explanation = nodes.refusal_text(run.state.violations)
+            self._attach_alternatives(run)
         logger.info("blocking left trip=%s outcome=%s unresolved=%s", run.state.trip_id,
                     outcome.value, run.unresolved)
         run.state = nodes.finish(run.state, outcome, wall_clock_ms=self._elapsed_ms(run))
         return run
+
+    def _attach_alternatives(self, run: Run) -> None:
+        """Для неизвестного явно названного города показать похожие направления отдельно.
+
+        Hard-ограничение не меняем и план не собираем: это именно следующий выбор человека.
+        Подбор использует те же сезон, тему, лимит перелёта и исключения, но снимает только
+        несуществующее название города.
+        """
+
+        named = run.state.request.direction.explicit.value
+        if not named or not any(v.code.value == "CANDIDATES_EMPTY" for v in run.state.violations):
+            return
+        args = self._args_for(run.state, "suggest_destinations")
+        args["direction.explicit"] = ""
+        args["direction.mode"] = DirectionMode.OPEN.value
+        source = self._sources.get("suggest_destinations")
+        if source is None or self._stop_reason(run):
+            return
+        self._charge(run, tool=1)
+        result, _ = self._cache.call(REGISTRY["suggest_destinations"], args,
+                                     lambda: source(args), now_s=self._clock())
+        if not isinstance(result, SearchResult):
+            return
+        run.alternatives = result.destinations[:3]
+        if run.alternatives:
+            labels = ", ".join(f"{item.name}, {item.country}" for item in run.alternatives)
+            run.explanation = f"{run.explanation} Похожие варианты для нового запроса: {labels}."
 
     def _stop_by_limit(self, run: Run) -> Run:
         """Обрыв по исчерпанному лимиту: причину называет счётчик, а не тот, кто её заметил.
@@ -666,7 +790,11 @@ class Runtime:
         scope = run.state.request.budget.scope.value
         if budget is None or scope is None or not run.state.chosen.items:
             raise ValueError("ledger needs a stated budget and committed plan lines")
-        return BudgetLedger(lines=list(run.state.chosen.items), budget=budget, scope=scope)
+        people = (run.state.request.party.adults.value or 2) + len(
+            run.state.request.party.children.value or []
+        )
+        return BudgetLedger(lines=list(run.state.chosen.items), budget=budget, scope=scope,
+                            party_size=people)
 
     def _template(self, explanation: Explanation) -> str:
         base = (f"{explanation.headline}: {explanation.nights} ночей, "
@@ -722,6 +850,14 @@ class Runtime:
             return None
         self._charge(run, llm=1)
         text = self._slots.explain(explanation)
+        self._charge_tokens(run)
+        return text
+
+    def _slot_diff(self, run: Run, old_plan: dict[str, str], new_plan: dict[str, str]) -> str | None:
+        if self._stop_reason(run):
+            return None
+        self._charge(run, llm=1)
+        text = self._slots.diff(old_plan, new_plan)
         self._charge_tokens(run)
         return text
 
@@ -791,12 +927,63 @@ class Runtime:
         run.fetched = set()
         step = entry_step(run.changed)
         run.dirty = set(tools_for(run.changed, step))
+        run.replan_step = step
+        run.affected_components = set(affected(run.changed))
+        run.kept_components = sorted(
+            component for component in run.previous_components
+            if component not in run.affected_components
+        )
         if step == EscalationStep.RE_SEARCH:
             # ступень 2 = точечный re-search: у грязных инструментов кэш сбрасывается,
             # чистые остаются тёплыми (CONTRACTS.md, «Ступени эскалации дельты»)
             self._cache.invalidate(sorted(run.dirty))
         logger.info("routed trip=%s changed=%s step=%d tools=%s", run.state.trip_id,
                     sorted(run.changed), step.value, sorted(run.dirty))
+
+    @staticmethod
+    def _contextual_delta(message: str, delta: TripRequest, before: TripRequest) -> TripRequest:
+        """Дополнить относительные дельты предыдущим подтверждённым контекстом.
+
+        Слот parse получает только новое сообщение, поэтому «на два дня позже» и
+        «бюджет −30%» без этого шага не несут конкретного typed-значения. Здесь нет
+        догадки: сдвиг возможен только при известных старых датах/бюджете.
+        """
+
+        from shared.contracts.enums import ConstraintKind
+        from shared.contracts.money import Money
+        from shared.contracts.request import FieldValue
+
+        text = message.lower().replace("−", "-")
+        adjusted = delta.model_copy(deep=True)
+        # Первый запрос без названного места законно открывает подбор. В последующей
+        # реплике тот же default не является изменением направления и не должен грязнить
+        # весь граф (иначе «на троих» становилось re-search вместо ступени 1).
+        if not before.direction.mode.is_unknown and adjusted.direction.explicit.is_unknown:
+            adjusted.direction.mode = FieldValue[DirectionMode].unknown(kind=ConstraintKind.HARD)
+        shift = re.search(r"на\s+(\d+|два)\s+дн(?:я|ей)\s+позже", text)
+        if shift and before.dates.start.value and before.dates.end.value:
+            days = 2 if shift.group(1) == "два" else int(shift.group(1))
+            shifted_start = before.dates.start.value + timedelta(days=days)
+            shifted_end = before.dates.end.value + timedelta(days=days)
+            adjusted.dates.start = FieldValue[date].known(
+                shifted_start, kind=ConstraintKind.HARD
+            )
+            adjusted.dates.end = FieldValue[date].known(
+                shifted_end, kind=ConstraintKind.HARD
+            )
+            adjusted.nights = FieldValue[int].inferred(
+                (shifted_end - shifted_start).days,
+                kind=ConstraintKind.HARD, source="dates", confidence=1.0,
+            )
+        reduction = re.search(r"бюджет\s*(?:-|минус)\s*(\d{1,2})\s*%", text)
+        if reduction and before.budget.amount.value is not None:
+            percent = Decimal(reduction.group(1)) / Decimal(100)
+            old = before.budget.amount.value
+            adjusted.budget.amount = FieldValue[Money].known(
+                Money(amount=old.amount * (Decimal(1) - percent), currency=old.currency),
+                kind=ConstraintKind.HARD,
+            )
+        return adjusted
 
 
 def unverified_numbers(text: str, state: TripState, ledger: BudgetLedger) -> list[str]:

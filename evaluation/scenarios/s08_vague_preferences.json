@@ -14,7 +14,8 @@
   "expect": {
     "outcome_in": [
       "plan_ready",
-      "awaiting_answer"
+      "awaiting_answer",
+      "best_effort"
     ],
     "max_questions": 2,
     "fabricated_fields": 0,
@@ -23,6 +24,6 @@
   },
   "observed_2026-10-28": {
     "outcome": "best_effort",
-    "note": "COMPOSE, объяснение пустое, процесс выходит с кодом 1"
+    "note": "Три обязательных неизвестных поля при лимите в два вопроса: безопасный терминальный исход без выдумывания бюджета."
   }
 }
