@@ -11,7 +11,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BZX",
@@ -25,7 +27,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HSC",
@@ -39,7 +43,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JGS",
@@ -53,7 +59,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JNH",
@@ -67,7 +75,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DDR",
@@ -81,7 +91,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HQL",
@@ -95,7 +107,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LSG",
@@ -109,7 +123,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ZAT",
@@ -123,7 +139,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BFY",
@@ -137,7 +155,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DBB",
@@ -151,7 +171,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AAC",
@@ -165,7 +187,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ATZ",
@@ -179,7 +203,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HBE",
@@ -193,7 +219,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ABS",
@@ -207,7 +235,9 @@
   "type": "medium_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CAI",
@@ -221,7 +251,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CCE",
@@ -235,7 +267,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HRG",
@@ -249,7 +283,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LXR",
@@ -263,7 +299,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "RMF",
@@ -277,7 +315,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MUH",
@@ -291,7 +331,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PSD",
@@ -305,7 +347,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HMB",
@@ -319,7 +363,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SSH",
@@ -333,7 +379,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ASW",
@@ -347,7 +395,9 @@
   "type": "large_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SPX",
@@ -361,7 +411,9 @@
   "type": "large_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TCP",
@@ -375,7 +427,9 @@
   "type": "medium_airport",
   "timezone": "Africa/Cairo",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ECN",
@@ -389,7 +443,9 @@
   "type": "large_airport",
   "timezone": "Asia/Nicosia",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LCA",
@@ -403,7 +459,9 @@
   "type": "large_airport",
   "timezone": "Asia/Nicosia",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PFO",
@@ -417,7 +475,9 @@
   "type": "large_airport",
   "timezone": "Asia/Nicosia",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ESB",
@@ -431,7 +491,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AYT",
@@ -445,7 +507,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GZT",
@@ -459,7 +523,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KFS",
@@ -473,7 +539,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KYA",
@@ -487,7 +555,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MZH",
@@ -501,7 +571,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VAS",
@@ -515,7 +587,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ONQ",
@@ -529,7 +603,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MLX",
@@ -543,7 +619,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ASR",
@@ -557,7 +635,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TJK",
@@ -571,7 +651,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DNZ",
@@ -585,7 +667,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NAV",
@@ -599,7 +683,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BZI",
@@ -613,7 +699,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CKZ",
@@ -627,7 +715,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ADB",
@@ -641,7 +731,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YEI",
@@ -655,7 +747,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DLM",
@@ -669,7 +763,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TEQ",
@@ -683,7 +779,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AOE",
@@ -697,7 +795,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KZR",
@@ -711,7 +811,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "EZS",
@@ -725,7 +827,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "OGU",
@@ -739,7 +843,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DIY",
@@ -753,7 +859,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ERC",
@@ -767,7 +875,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ERZ",
@@ -781,7 +891,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KSY",
@@ -795,7 +907,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TZX",
@@ -809,7 +923,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VAN",
@@ -823,7 +939,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BAL",
@@ -837,7 +955,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MSR",
@@ -851,7 +971,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NOP",
@@ -865,7 +987,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KCM",
@@ -879,7 +1003,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AJI",
@@ -893,7 +1019,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ADF",
@@ -907,7 +1035,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MQM",
@@ -921,7 +1051,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GNY",
@@ -935,7 +1067,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IGD",
@@ -949,7 +1083,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BGG",
@@ -963,7 +1099,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NKT",
@@ -977,7 +1115,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YKO",
@@ -991,7 +1131,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HTY",
@@ -1005,7 +1147,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "COV",
@@ -1019,7 +1163,9 @@
   "type": "large_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ISE",
@@ -1033,7 +1179,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "EDO",
@@ -1047,7 +1195,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BJV",
@@ -1061,7 +1211,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GZP",
@@ -1075,7 +1227,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SZF",
@@ -1089,7 +1243,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SAW",
@@ -1103,7 +1259,9 @@
   "type": "large_airport",
   "timezone": "Europe/Istanbul",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IST",
@@ -1117,7 +1275,9 @@
   "type": "large_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "RZV",
@@ -1131,7 +1291,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BEG",
@@ -1145,7 +1307,9 @@
   "type": "large_airport",
   "timezone": "Europe/Belgrade",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KVO",
@@ -1159,7 +1323,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "INI",
@@ -1173,7 +1339,9 @@
   "type": "large_airport",
   "timezone": "Europe/Belgrade",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LZG",
@@ -1187,7 +1355,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NLH",
@@ -1201,7 +1371,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AUH",
@@ -1215,7 +1387,9 @@
   "type": "large_airport",
   "timezone": "Asia/Dubai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AAN",
@@ -1229,7 +1403,9 @@
   "type": "large_airport",
   "timezone": "Asia/Dubai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DXB",
@@ -1243,7 +1419,9 @@
   "type": "large_airport",
   "timezone": "Asia/Dubai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DWC",
@@ -1257,7 +1435,9 @@
   "type": "large_airport",
   "timezone": "Asia/Dubai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "FJR",
@@ -1271,7 +1451,9 @@
   "type": "large_airport",
   "timezone": "Asia/Dubai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "RKT",
@@ -1285,7 +1467,9 @@
   "type": "large_airport",
   "timezone": "Asia/Dubai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SHJ",
@@ -1299,7 +1483,9 @@
   "type": "large_airport",
   "timezone": "Asia/Dubai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ALA",
@@ -1313,7 +1499,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BXH",
@@ -1327,7 +1515,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TDK",
@@ -1341,7 +1531,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NQZ",
@@ -1355,7 +1547,9 @@
   "type": "large_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KOV",
@@ -1369,7 +1563,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PPK",
@@ -1383,7 +1579,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DMB",
@@ -1397,7 +1595,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BSZ",
@@ -1411,7 +1611,9 @@
   "type": "large_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "OSS",
@@ -1425,7 +1627,9 @@
   "type": "large_airport",
   "timezone": "Asia/Bishkek",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IKG",
@@ -1439,7 +1643,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CIT",
@@ -1453,7 +1659,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HSA",
@@ -1467,7 +1675,9 @@
   "type": "large_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DZN",
@@ -1481,7 +1691,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KGF",
@@ -1495,7 +1707,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BXY",
@@ -1509,7 +1723,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KZO",
@@ -1523,7 +1739,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "URA",
@@ -1537,7 +1755,9 @@
   "type": "large_airport",
   "timezone": "Asia/Oral",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UKK",
@@ -1551,7 +1771,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PWQ",
@@ -1565,7 +1787,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PLX",
@@ -1579,7 +1803,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SCO",
@@ -1593,7 +1819,9 @@
   "type": "large_airport",
   "timezone": "Asia/Oral",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GUW",
@@ -1607,7 +1835,9 @@
   "type": "large_airport",
   "timezone": "Asia/Oral",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AKX",
@@ -1621,7 +1851,9 @@
   "type": "large_airport",
   "timezone": "Asia/Oral",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KSN",
@@ -1635,7 +1867,9 @@
   "type": "large_airport",
   "timezone": "Asia/Qyzylorda",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GYD",
@@ -1649,7 +1883,9 @@
   "type": "large_airport",
   "timezone": "Asia/Baku",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GNJ",
@@ -1663,7 +1899,9 @@
   "type": "large_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NAJ",
@@ -1677,7 +1915,9 @@
   "type": "large_airport",
   "timezone": "Asia/Baku",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GBB",
@@ -1691,7 +1931,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Baku",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LHL",
@@ -1705,7 +1947,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IKU",
@@ -1719,7 +1963,9 @@
   "type": "large_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LWN",
@@ -1733,7 +1979,9 @@
   "type": "large_airport",
   "timezone": "Asia/Yerevan",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "EVN",
@@ -1747,7 +1995,9 @@
   "type": "large_airport",
   "timezone": "Asia/Yerevan",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YKS",
@@ -1761,7 +2011,9 @@
   "type": "large_airport",
   "timezone": "Asia/Yakutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NER",
@@ -1775,7 +2027,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yakutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MQJ",
@@ -1789,7 +2043,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Srednekolymsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "OLZ",
@@ -1803,7 +2059,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yakutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "USR",
@@ -1817,7 +2075,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Vladivostok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VYI",
@@ -1831,7 +2091,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ULK",
@@ -1845,7 +2107,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yakutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PYJ",
@@ -1859,7 +2123,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yakutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MJZ",
@@ -1873,7 +2139,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yakutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SYS",
@@ -1887,7 +2155,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yakutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SEK",
@@ -1901,7 +2171,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Srednekolymsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CKH",
@@ -1915,7 +2187,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Srednekolymsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CYX",
@@ -1929,7 +2203,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Srednekolymsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IKS",
@@ -1943,7 +2219,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yakutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ZKP",
@@ -1957,7 +2235,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Srednekolymsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ZIX",
@@ -1971,7 +2251,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KUT",
@@ -1985,7 +2267,9 @@
   "type": "large_airport",
   "timezone": "Asia/Tbilisi",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BUS",
@@ -1999,7 +2283,9 @@
   "type": "large_airport",
   "timezone": "Asia/Tbilisi",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SUI",
@@ -2013,7 +2299,9 @@
   "type": "large_airport",
   "timezone": "Asia/Tbilisi",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TBS",
@@ -2027,7 +2315,9 @@
   "type": "large_airport",
   "timezone": "Asia/Tbilisi",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BQS",
@@ -2041,7 +2331,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yakutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KHV",
@@ -2055,7 +2347,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Vladivostok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KXK",
@@ -2069,7 +2363,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Vladivostok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DYR",
@@ -2083,7 +2379,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Anadyr",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KPW",
@@ -2097,7 +2395,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GDX",
@@ -2111,7 +2411,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Srednekolymsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PWE",
@@ -2125,7 +2427,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NLI",
@@ -2139,7 +2443,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "OHO",
@@ -2153,7 +2459,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Vladivostok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PKC",
@@ -2167,7 +2475,9 @@
   "type": "large_airport",
   "timezone": "Asia/Anadyr",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UUS",
@@ -2181,7 +2491,9 @@
   "type": "large_airport",
   "timezone": "Asia/Srednekolymsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VVO",
@@ -2195,7 +2507,9 @@
   "type": "large_airport",
   "timezone": "Asia/Vladivostok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HTA",
@@ -2209,7 +2523,9 @@
   "type": "large_airport",
   "timezone": "Asia/Yakutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BTK",
@@ -2223,7 +2539,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Irkutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IKT",
@@ -2237,7 +2555,9 @@
   "type": "large_airport",
   "timezone": "Asia/Irkutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UKX",
@@ -2251,7 +2571,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Irkutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UUD",
@@ -2265,7 +2587,9 @@
   "type": "large_airport",
   "timezone": "Asia/Irkutsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SIP",
@@ -2279,7 +2603,9 @@
   "type": "large_airport",
   "timezone": "Europe/Simferopol",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ARH",
@@ -2293,7 +2619,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NNM",
@@ -2307,7 +2635,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AMV",
@@ -2321,7 +2651,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KSZ",
@@ -2335,7 +2667,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LED",
@@ -2349,7 +2683,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MMK",
@@ -2363,7 +2699,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PKV",
@@ -2377,7 +2715,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PES",
@@ -2391,7 +2731,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CEE",
@@ -2405,7 +2747,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VUS",
@@ -2419,7 +2763,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BQT",
@@ -2433,7 +2779,9 @@
   "type": "large_airport",
   "timezone": "Europe/Minsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GME",
@@ -2447,7 +2795,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Minsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KGD",
@@ -2461,7 +2811,9 @@
   "type": "large_airport",
   "timezone": "Europe/Kaliningrad",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MSQ",
@@ -2475,7 +2827,9 @@
   "type": "large_airport",
   "timezone": "Europe/Minsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MVQ",
@@ -2489,7 +2843,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Minsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ABA",
@@ -2503,7 +2859,9 @@
   "type": "large_airport",
   "timezone": "Asia/Krasnoyarsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BAX",
@@ -2517,7 +2875,9 @@
   "type": "large_airport",
   "timezone": "Asia/Krasnoyarsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KEJ",
@@ -2531,7 +2891,9 @@
   "type": "large_airport",
   "timezone": "Asia/Krasnoyarsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "EIE",
@@ -2545,7 +2907,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Krasnoyarsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VEO",
@@ -2559,7 +2923,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VAQ",
@@ -2573,7 +2939,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KJA",
@@ -2587,7 +2955,9 @@
   "type": "large_airport",
   "timezone": "Asia/Krasnoyarsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KCY",
@@ -2601,7 +2971,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KYZ",
@@ -2615,7 +2987,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Krasnoyarsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "OVB",
@@ -2629,7 +3003,9 @@
   "type": "large_airport",
   "timezone": "Asia/Krasnoyarsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "OMS",
@@ -2643,7 +3019,9 @@
   "type": "large_airport",
   "timezone": "Asia/Omsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TOF",
@@ -2657,7 +3035,9 @@
   "type": "large_airport",
   "timezone": "Asia/Krasnoyarsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NOZ",
@@ -2671,7 +3051,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Krasnoyarsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HTG",
@@ -2685,7 +3067,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Krasnoyarsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IAA",
@@ -2699,7 +3083,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Krasnoyarsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NSK",
@@ -2713,7 +3099,9 @@
   "type": "large_airport",
   "timezone": "Asia/Krasnoyarsk",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GDZ",
@@ -2727,7 +3115,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KRR",
@@ -2741,7 +3131,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GRV",
@@ -2755,7 +3147,9 @@
   "type": "large_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MCX",
@@ -2769,7 +3163,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MRV",
@@ -2783,7 +3179,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NAL",
@@ -2797,7 +3195,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "OGZ",
@@ -2811,7 +3211,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IGT",
@@ -2825,7 +3227,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "STW",
@@ -2839,7 +3243,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AER",
@@ -2853,7 +3259,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ASF",
@@ -2867,7 +3275,9 @@
   "type": "large_airport",
   "timezone": "Europe/Samara",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ESL",
@@ -2881,7 +3291,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VOG",
@@ -2895,7 +3307,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CEK",
@@ -2909,7 +3323,9 @@
   "type": "large_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MQF",
@@ -2923,7 +3339,9 @@
   "type": "large_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SBT",
@@ -2937,7 +3355,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BVJ",
@@ -2951,7 +3371,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SLY",
@@ -2965,7 +3387,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HMA",
@@ -2979,7 +3403,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NYA",
@@ -2993,7 +3419,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "EYK",
@@ -3007,7 +3435,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "OVS",
@@ -3021,7 +3451,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "URJ",
@@ -3035,7 +3467,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IJK",
@@ -3049,7 +3483,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Samara",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KVX",
@@ -3063,7 +3499,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NYM",
@@ -3077,7 +3515,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NUX",
@@ -3091,7 +3531,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NJC",
@@ -3105,7 +3547,9 @@
   "type": "large_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PEE",
@@ -3119,7 +3563,9 @@
   "type": "large_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KGP",
@@ -3133,7 +3579,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NOJ",
@@ -3147,7 +3595,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SGC",
@@ -3161,7 +3611,9 @@
   "type": "large_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SVX",
@@ -3175,7 +3627,9 @@
   "type": "large_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "RMZ",
@@ -3189,7 +3643,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TJM",
@@ -3203,7 +3659,9 @@
   "type": "large_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KRO",
@@ -3217,7 +3675,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NMA",
@@ -3231,7 +3691,9 @@
   "type": "large_airport",
   "timezone": "Asia/Samarkand",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AZN",
@@ -3245,7 +3707,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Samarkand",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "FEG",
@@ -3259,7 +3723,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Samarkand",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NCU",
@@ -3273,7 +3739,9 @@
   "type": "large_airport",
   "timezone": "Asia/Samarkand",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UGC",
@@ -3287,7 +3755,9 @@
   "type": "large_airport",
   "timezone": "Asia/Samarkand",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NVI",
@@ -3301,7 +3771,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Samarkand",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BHK",
@@ -3315,7 +3787,9 @@
   "type": "large_airport",
   "timezone": "Asia/Samarkand",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SKD",
@@ -3329,7 +3803,9 @@
   "type": "large_airport",
   "timezone": "Asia/Samarkand",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TMJ",
@@ -3343,7 +3819,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Samarkand",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TVT",
@@ -3357,7 +3835,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TAS",
@@ -3371,7 +3851,9 @@
   "type": "large_airport",
   "timezone": "Asia/Samarkand",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "OMN",
@@ -3385,7 +3867,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KMW",
@@ -3399,7 +3883,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IWA",
@@ -3413,7 +3899,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ZIA",
@@ -3427,7 +3915,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DME",
@@ -3441,7 +3931,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IAR",
@@ -3455,7 +3947,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SVO",
@@ -3469,7 +3963,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VOZ",
@@ -3483,7 +3979,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VKO",
@@ -3497,7 +3995,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UCT",
@@ -3511,7 +4011,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PEX",
@@ -3525,7 +4027,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "USK",
@@ -3539,7 +4043,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VKT",
@@ -3553,7 +4059,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SCW",
@@ -3567,7 +4075,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GOJ",
@@ -3581,7 +4091,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UUA",
@@ -3595,7 +4107,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KZN",
@@ -3609,7 +4123,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NBC",
@@ -3623,7 +4139,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CSY",
@@ -3637,7 +4155,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ULV",
@@ -3651,7 +4171,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Samara",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ULY",
@@ -3665,7 +4187,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Samara",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "REN",
@@ -3679,7 +4203,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "OSW",
@@ -3693,7 +4219,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PEZ",
@@ -3707,7 +4235,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SKX",
@@ -3721,7 +4251,9 @@
   "type": "large_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BWO",
@@ -3735,7 +4267,9 @@
   "type": "medium_airport",
   "timezone": "Europe/Moscow",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GSV",
@@ -3749,7 +4283,9 @@
   "type": "large_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UFA",
@@ -3763,7 +4299,9 @@
   "type": "large_airport",
   "timezone": "Asia/Yekaterinburg",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KUF",
@@ -3777,7 +4315,9 @@
   "type": "large_airport",
   "timezone": "Europe/Samara",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NMF",
@@ -3791,7 +4331,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GAN",
@@ -3805,7 +4347,9 @@
   "type": "large_airport",
   "timezone": "Indian/Maldives",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HAQ",
@@ -3819,7 +4363,9 @@
   "type": "large_airport",
   "timezone": "Indian/Maldives",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KDO",
@@ -3833,7 +4379,9 @@
   "type": "medium_airport",
   "timezone": "Indian/Maldives",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MLE",
@@ -3847,7 +4395,9 @@
   "type": "large_airport",
   "timezone": "Indian/Maldives",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KDM",
@@ -3861,7 +4411,9 @@
   "type": "medium_airport",
   "timezone": "Indian/Maldives",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VAM",
@@ -3875,7 +4427,9 @@
   "type": "medium_airport",
   "timezone": "Indian/Maldives",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DMK",
@@ -3889,7 +4443,9 @@
   "type": "large_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TDX",
@@ -3903,7 +4459,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BKK",
@@ -3917,7 +4475,9 @@
   "type": "large_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UTP",
@@ -3931,7 +4491,9 @@
   "type": "large_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CNX",
@@ -3945,7 +4507,9 @@
   "type": "large_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HGN",
@@ -3959,7 +4523,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LPT",
@@ -3973,7 +4539,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NNT",
@@ -3987,7 +4555,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CEI",
@@ -4001,7 +4571,9 @@
   "type": "large_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PHY",
@@ -4015,7 +4587,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HHQ",
@@ -4029,7 +4603,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MAQ",
@@ -4043,7 +4619,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "THS",
@@ -4057,7 +4635,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PHS",
@@ -4071,7 +4651,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "URT",
@@ -4085,7 +4667,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NAW",
@@ -4099,7 +4683,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CJM",
@@ -4113,7 +4699,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NST",
@@ -4127,7 +4715,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KBV",
@@ -4141,7 +4731,9 @@
   "type": "large_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "USM",
@@ -4155,7 +4747,9 @@
   "type": "large_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HKT",
@@ -4169,7 +4763,9 @@
   "type": "large_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UNN",
@@ -4183,7 +4779,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HDY",
@@ -4197,7 +4795,9 @@
   "type": "large_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TST",
@@ -4211,7 +4811,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UTH",
@@ -4225,7 +4827,9 @@
   "type": "large_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SNO",
@@ -4239,7 +4843,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PXR",
@@ -4253,7 +4859,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KKC",
@@ -4267,7 +4875,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LOE",
@@ -4281,7 +4891,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BFV",
@@ -4295,7 +4907,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UBP",
@@ -4309,7 +4923,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ROI",
@@ -4323,7 +4939,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KOP",
@@ -4337,7 +4955,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Bangkok",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BMV",
@@ -4351,7 +4971,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HPH",
@@ -4365,7 +4987,9 @@
   "type": "large_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CAH",
@@ -4379,7 +5003,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CXR",
@@ -4393,7 +5019,9 @@
   "type": "large_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VCS",
@@ -4407,7 +5035,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VCA",
@@ -4421,7 +5051,9 @@
   "type": "large_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DIN",
@@ -4435,7 +5067,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VDH",
@@ -4449,7 +5083,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DLI",
@@ -4463,7 +5099,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DAD",
@@ -4477,7 +5115,9 @@
   "type": "large_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HAN",
@@ -4491,7 +5131,9 @@
   "type": "large_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HUI",
@@ -4505,7 +5147,9 @@
   "type": "large_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UIH",
@@ -4519,7 +5163,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PXU",
@@ -4533,7 +5179,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PQC",
@@ -4547,7 +5195,9 @@
   "type": "large_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VKG",
@@ -4561,7 +5211,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TBB",
@@ -4575,7 +5227,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SGN",
@@ -4589,7 +5243,9 @@
   "type": "large_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VDO",
@@ -4603,7 +5259,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "VII",
@@ -4617,7 +5275,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Saigon",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PEK",
@@ -4631,7 +5291,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PKX",
@@ -4645,7 +5307,9 @@
   "type": "large_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CDE",
@@ -4659,7 +5323,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CIF",
@@ -4673,7 +5339,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BPE",
@@ -4687,7 +5355,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DSN",
@@ -4701,7 +5371,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DAT",
@@ -4715,7 +5387,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ERL",
@@ -4729,7 +5403,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YIE",
@@ -4743,7 +5419,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HDG",
@@ -4757,7 +5435,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HET",
@@ -4771,7 +5451,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HUO",
@@ -4785,7 +5467,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HLD",
@@ -4799,7 +5483,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LFQ",
@@ -4813,7 +5499,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LLV",
@@ -4827,7 +5515,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NZH",
@@ -4841,7 +5531,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BAV",
@@ -4855,7 +5547,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SZH",
@@ -4869,7 +5563,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SJW",
@@ -4883,7 +5579,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TSN",
@@ -4897,7 +5595,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TGO",
@@ -4911,7 +5611,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UCB",
@@ -4925,7 +5627,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "WUA",
@@ -4939,7 +5643,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "XIL",
@@ -4953,7 +5659,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YCU",
@@ -4967,7 +5675,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TYN",
@@ -4981,7 +5691,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "RLK",
@@ -4995,7 +5707,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ZQZ",
@@ -5009,7 +5723,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NZL",
@@ -5023,7 +5739,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BHY",
@@ -5037,7 +5755,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AEB",
@@ -5051,7 +5771,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CGD",
@@ -5065,7 +5787,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HJJ",
@@ -5079,7 +5803,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HCZ",
@@ -5093,7 +5819,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DYG",
@@ -5107,7 +5835,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "FUO",
@@ -5121,7 +5851,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CAN",
@@ -5135,7 +5867,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CSX",
@@ -5149,7 +5883,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HCJ",
@@ -5163,7 +5899,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HUZ",
@@ -5177,7 +5915,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KWL",
@@ -5191,7 +5931,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LLF",
@@ -5205,7 +5947,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NNG",
@@ -5219,7 +5963,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SWA",
@@ -5233,7 +5979,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ZUH",
@@ -5247,7 +5995,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "WGN",
@@ -5261,7 +6011,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SZX",
@@ -5275,7 +6027,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "WUZ",
@@ -5289,7 +6043,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YLX",
@@ -5303,7 +6059,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YYA",
@@ -5317,7 +6075,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LZH",
@@ -5331,7 +6091,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ZHA",
@@ -5345,7 +6107,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CGO",
@@ -5359,7 +6123,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "EHU",
@@ -5373,7 +6139,9 @@
   "type": "large_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ENH",
@@ -5387,7 +6155,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "WUH",
@@ -5401,7 +6171,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SHS",
@@ -5415,7 +6187,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LYA",
@@ -5429,7 +6203,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HPG",
@@ -5443,7 +6219,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "WDS",
@@ -5457,7 +6235,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "XFN",
@@ -5471,7 +6251,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "XAI",
@@ -5485,7 +6267,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YIH",
@@ -5499,7 +6283,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HAK",
@@ -5513,7 +6299,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BAR",
@@ -5527,7 +6315,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SYX",
@@ -5541,7 +6331,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DNH",
@@ -5555,7 +6347,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HXD",
@@ -5569,7 +6363,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GMQ",
@@ -5583,7 +6379,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GOQ",
@@ -5597,7 +6395,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GYU",
@@ -5611,7 +6411,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HTT",
@@ -5625,7 +6427,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HZG",
@@ -5639,7 +6443,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "INC",
@@ -5653,7 +6459,9 @@
   "type": "large_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JIC",
@@ -5667,7 +6475,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JGN",
@@ -5681,7 +6491,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LHW",
@@ -5695,7 +6507,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LNL",
@@ -5709,7 +6523,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IQN",
@@ -5723,7 +6539,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "THQ",
@@ -5737,7 +6555,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GXH",
@@ -5751,7 +6571,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "XNN",
@@ -5765,7 +6587,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "XIY",
@@ -5779,7 +6603,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ENY",
@@ -5793,7 +6619,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "UYN",
@@ -5807,7 +6635,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YUS",
@@ -5821,7 +6651,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ZHY",
@@ -5835,7 +6667,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YZY",
@@ -5849,7 +6683,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BSD",
@@ -5863,7 +6699,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CWJ",
@@ -5877,7 +6715,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DLU",
@@ -5891,7 +6731,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DIG",
@@ -5905,7 +6747,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JHG",
@@ -5919,7 +6763,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JMJ",
@@ -5933,7 +6779,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LNJ",
@@ -5947,7 +6795,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LJG",
@@ -5961,7 +6811,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LUM",
@@ -5975,7 +6827,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KMG",
@@ -5989,7 +6843,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "XMN",
@@ -6003,7 +6859,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AQG",
@@ -6017,7 +6875,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CZX",
@@ -6031,7 +6891,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KHN",
@@ -6045,7 +6907,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DOY",
@@ -6059,7 +6923,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "FUG",
@@ -6073,7 +6939,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "FOC",
@@ -6087,7 +6955,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HGH",
@@ -6101,7 +6971,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HZA",
@@ -6115,7 +6987,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JDZ",
@@ -6129,7 +7003,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JNG",
@@ -6143,7 +7019,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TNA",
@@ -6157,7 +7035,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JUZ",
@@ -6171,7 +7051,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LYG",
@@ -6185,7 +7067,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LCX",
@@ -6199,7 +7083,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HYN",
@@ -6213,7 +7099,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LYI",
@@ -6227,7 +7115,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NGB",
@@ -6241,7 +7131,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NKG",
@@ -6255,7 +7147,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NTG",
@@ -6269,7 +7163,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HFE",
@@ -6283,7 +7179,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PVG",
@@ -6297,7 +7195,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TAO",
@@ -6311,7 +7211,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JJN",
@@ -6325,7 +7227,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "RIZ",
@@ -6339,7 +7243,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HIA",
@@ -6353,7 +7259,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SQJ",
@@ -6367,7 +7275,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SQD",
@@ -6381,7 +7291,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SHA",
@@ -6395,7 +7307,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TXN",
@@ -6409,7 +7323,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "WHA",
@@ -6423,7 +7339,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "WEF",
@@ -6437,7 +7355,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "WEH",
@@ -6451,7 +7371,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "WUX",
@@ -6465,7 +7387,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "WUS",
@@ -6479,7 +7403,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "WNZ",
@@ -6493,7 +7419,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "XUZ",
@@ -6507,7 +7435,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YTY",
@@ -6521,7 +7451,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YIC",
@@ -6535,7 +7467,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YNZ",
@@ -6549,7 +7483,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YNT",
@@ -6563,7 +7499,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YIW",
@@ -6577,7 +7515,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HSN",
@@ -6591,7 +7531,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NGQ",
@@ -6605,7 +7547,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AVA",
@@ -6619,7 +7563,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BPX",
@@ -6633,7 +7579,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BFJ",
@@ -6647,7 +7595,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CKG",
@@ -6661,7 +7611,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DZH",
@@ -6675,7 +7627,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DCY",
@@ -6689,7 +7643,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "GYS",
@@ -6703,7 +7659,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KWE",
@@ -6717,7 +7675,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JZH",
@@ -6731,7 +7691,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KGT",
@@ -6745,7 +7707,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KJH",
@@ -6759,7 +7723,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LXA",
@@ -6773,7 +7739,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LZO",
@@ -6787,7 +7755,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "WMT",
@@ -6801,7 +7771,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MIG",
@@ -6815,7 +7787,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HZH",
@@ -6829,7 +7803,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LZY",
@@ -6843,7 +7819,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LPF",
@@ -6857,7 +7835,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JIQ",
@@ -6871,7 +7851,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "RKZ",
@@ -6885,7 +7867,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TCZ",
@@ -6899,7 +7883,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TFU",
@@ -6913,7 +7899,9 @@
   "type": "large_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TEN",
@@ -6927,7 +7915,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CTU",
@@ -6941,7 +7931,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CQW",
@@ -6955,7 +7947,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "XIC",
@@ -6969,7 +7963,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YBP",
@@ -6983,7 +7979,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ACX",
@@ -6997,7 +7995,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "PZI",
@@ -7011,7 +8011,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "ZYI",
@@ -7025,7 +8027,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AKU",
@@ -7039,7 +8043,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AAT",
@@ -7053,7 +8059,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "BPL",
@@ -7067,7 +8075,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "IQM",
@@ -7081,7 +8091,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "FYN",
@@ -7095,7 +8107,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HMI",
@@ -7109,7 +8123,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KRL",
@@ -7123,7 +8139,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KJI",
@@ -7137,7 +8155,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NLT",
@@ -7151,7 +8171,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "RQA",
@@ -7165,7 +8187,9 @@
   "type": "medium_airport",
   "timezone": "",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "QSZ",
@@ -7179,7 +8203,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "KHG",
@@ -7193,7 +8219,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TLQ",
@@ -7207,7 +8235,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HTN",
@@ -7221,7 +8251,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "URC",
@@ -7235,7 +8267,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YIN",
@@ -7249,7 +8283,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "AOG",
@@ -7263,7 +8299,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DBC",
@@ -7277,7 +8315,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NBS",
@@ -7291,7 +8331,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CGQ",
@@ -7305,7 +8347,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "CHG",
@@ -7319,7 +8363,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DDG",
@@ -7333,7 +8379,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DTU",
@@ -7347,7 +8395,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "FYJ",
@@ -7361,7 +8411,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HRB",
@@ -7375,7 +8427,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "HEK",
@@ -7389,7 +8443,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JGD",
@@ -7403,7 +8459,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JMU",
@@ -7417,7 +8475,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JSJ",
@@ -7431,7 +8491,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JXA",
@@ -7445,7 +8507,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "JNZ",
@@ -7459,7 +8523,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "LDS",
@@ -7473,7 +8539,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "MDG",
@@ -7487,7 +8555,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "OHE",
@@ -7501,7 +8571,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "NDG",
@@ -7515,7 +8587,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YSQ",
@@ -7529,7 +8603,9 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "DLC",
@@ -7543,7 +8619,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "TNH",
@@ -7557,7 +8635,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "SHE",
@@ -7571,7 +8651,9 @@
   "type": "large_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YNJ",
@@ -7585,7 +8667,9 @@
   "type": "medium_airport",
   "timezone": "Asia/Shanghai",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  },
  {
   "iata": "YKH",
@@ -7599,6 +8683,8 @@
   "type": "medium_airport",
   "timezone": "\\N",
   "data_status": "real",
-  "source_id": "ourairports"
+  "source_id": "ourairports",
+  "fetched_at": "2026-10-25T14:36:11Z",
+  "synthetic": false
  }
 ]

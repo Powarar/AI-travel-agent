@@ -6,7 +6,9 @@
   "t_min": 3.5,
   "precip_mm_month": 195.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sochi",
@@ -15,7 +17,9 @@
   "t_min": 3.5,
   "precip_mm_month": 207.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sochi",
@@ -24,7 +28,9 @@
   "t_min": 4.9,
   "precip_mm_month": 143.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sochi",
@@ -33,7 +39,9 @@
   "t_min": 9.2,
   "precip_mm_month": 123.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sochi",
@@ -42,7 +50,9 @@
   "t_min": 12.4,
   "precip_mm_month": 127.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sochi",
@@ -51,7 +61,9 @@
   "t_min": 18.3,
   "precip_mm_month": 109.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sochi",
@@ -60,7 +72,9 @@
   "t_min": 20.5,
   "precip_mm_month": 122.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sochi",
@@ -69,7 +83,9 @@
   "t_min": 21.3,
   "precip_mm_month": 62.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sochi",
@@ -78,7 +94,9 @@
   "t_min": 17.7,
   "precip_mm_month": 148.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sochi",
@@ -87,7 +105,9 @@
   "t_min": 12.5,
   "precip_mm_month": 113.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sochi",
@@ -96,7 +116,9 @@
   "t_min": 8.4,
   "precip_mm_month": 172.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sochi",
@@ -105,7 +127,9 @@
   "t_min": 6.2,
   "precip_mm_month": 166.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "anapa",
@@ -114,7 +138,9 @@
   "t_min": 1.7,
   "precip_mm_month": 89.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "anapa",
@@ -123,7 +149,9 @@
   "t_min": 2.1,
   "precip_mm_month": 62.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "anapa",
@@ -132,7 +160,9 @@
   "t_min": 3.5,
   "precip_mm_month": 39.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "anapa",
@@ -141,7 +171,9 @@
   "t_min": 8.3,
   "precip_mm_month": 44.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "anapa",
@@ -150,7 +182,9 @@
   "t_min": 11.9,
   "precip_mm_month": 45.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "anapa",
@@ -159,7 +193,9 @@
   "t_min": 18.3,
   "precip_mm_month": 77.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "anapa",
@@ -168,7 +204,9 @@
   "t_min": 21.4,
   "precip_mm_month": 30.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "anapa",
@@ -177,7 +215,9 @@
   "t_min": 21.7,
   "precip_mm_month": 66.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "anapa",
@@ -186,7 +226,9 @@
   "t_min": 16.9,
   "precip_mm_month": 37.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "anapa",
@@ -195,7 +237,9 @@
   "t_min": 11.6,
   "precip_mm_month": 57.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "anapa",
@@ -204,7 +248,9 @@
   "t_min": 6.7,
   "precip_mm_month": 83.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "anapa",
@@ -213,7 +259,9 @@
   "t_min": 4.4,
   "precip_mm_month": 72.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gelendzhik",
@@ -222,7 +270,9 @@
   "t_min": 1.7,
   "precip_mm_month": 126.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gelendzhik",
@@ -231,7 +281,9 @@
   "t_min": 1.8,
   "precip_mm_month": 101.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gelendzhik",
@@ -240,7 +292,9 @@
   "t_min": 3.6,
   "precip_mm_month": 64.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gelendzhik",
@@ -249,7 +303,9 @@
   "t_min": 8.4,
   "precip_mm_month": 69.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gelendzhik",
@@ -258,7 +314,9 @@
   "t_min": 11.8,
   "precip_mm_month": 86.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gelendzhik",
@@ -267,7 +325,9 @@
   "t_min": 18.1,
   "precip_mm_month": 89.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gelendzhik",
@@ -276,7 +336,9 @@
   "t_min": 20.9,
   "precip_mm_month": 38.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gelendzhik",
@@ -285,7 +347,9 @@
   "t_min": 21.5,
   "precip_mm_month": 44.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gelendzhik",
@@ -294,7 +358,9 @@
   "t_min": 16.7,
   "precip_mm_month": 67.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gelendzhik",
@@ -303,7 +369,9 @@
   "t_min": 11.3,
   "precip_mm_month": 68.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gelendzhik",
@@ -312,7 +380,9 @@
   "t_min": 6.8,
   "precip_mm_month": 139.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gelendzhik",
@@ -321,7 +391,9 @@
   "t_min": 4.6,
   "precip_mm_month": 115.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yalta",
@@ -330,7 +402,9 @@
   "t_min": 2.0,
   "precip_mm_month": 80.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yalta",
@@ -339,7 +413,9 @@
   "t_min": 2.5,
   "precip_mm_month": 65.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yalta",
@@ -348,7 +424,9 @@
   "t_min": 3.6,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yalta",
@@ -357,7 +435,9 @@
   "t_min": 8.2,
   "precip_mm_month": 54.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yalta",
@@ -366,7 +446,9 @@
   "t_min": 12.0,
   "precip_mm_month": 43.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yalta",
@@ -375,7 +457,9 @@
   "t_min": 17.9,
   "precip_mm_month": 71.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yalta",
@@ -384,7 +468,9 @@
   "t_min": 21.2,
   "precip_mm_month": 25.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yalta",
@@ -393,7 +479,9 @@
   "t_min": 21.5,
   "precip_mm_month": 33.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yalta",
@@ -402,7 +490,9 @@
   "t_min": 16.9,
   "precip_mm_month": 40.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yalta",
@@ -411,7 +501,9 @@
   "t_min": 11.9,
   "precip_mm_month": 36.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yalta",
@@ -420,7 +512,9 @@
   "t_min": 7.4,
   "precip_mm_month": 104.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yalta",
@@ -429,7 +523,9 @@
   "t_min": 5.4,
   "precip_mm_month": 72.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sevastopol",
@@ -438,7 +534,9 @@
   "t_min": 2.0,
   "precip_mm_month": 59.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sevastopol",
@@ -447,7 +545,9 @@
   "t_min": 2.6,
   "precip_mm_month": 45.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sevastopol",
@@ -456,7 +556,9 @@
   "t_min": 3.3,
   "precip_mm_month": 35.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sevastopol",
@@ -465,7 +567,9 @@
   "t_min": 7.6,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sevastopol",
@@ -474,7 +578,9 @@
   "t_min": 11.3,
   "precip_mm_month": 38.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sevastopol",
@@ -483,7 +589,9 @@
   "t_min": 17.1,
   "precip_mm_month": 66.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sevastopol",
@@ -492,7 +600,9 @@
   "t_min": 20.0,
   "precip_mm_month": 22.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sevastopol",
@@ -501,7 +611,9 @@
   "t_min": 20.0,
   "precip_mm_month": 16.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sevastopol",
@@ -510,7 +622,9 @@
   "t_min": 15.8,
   "precip_mm_month": 35.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sevastopol",
@@ -519,7 +633,9 @@
   "t_min": 11.6,
   "precip_mm_month": 37.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sevastopol",
@@ -528,7 +644,9 @@
   "t_min": 7.2,
   "precip_mm_month": 72.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sevastopol",
@@ -537,7 +655,9 @@
   "t_min": 4.9,
   "precip_mm_month": 65.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alushta",
@@ -546,7 +666,9 @@
   "t_min": 1.4,
   "precip_mm_month": 55.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alushta",
@@ -555,7 +677,9 @@
   "t_min": 1.9,
   "precip_mm_month": 53.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alushta",
@@ -564,7 +688,9 @@
   "t_min": 3.3,
   "precip_mm_month": 35.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alushta",
@@ -573,7 +699,9 @@
   "t_min": 7.9,
   "precip_mm_month": 53.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alushta",
@@ -582,7 +710,9 @@
   "t_min": 11.8,
   "precip_mm_month": 38.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alushta",
@@ -591,7 +721,9 @@
   "t_min": 18.0,
   "precip_mm_month": 70.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alushta",
@@ -600,7 +732,9 @@
   "t_min": 21.0,
   "precip_mm_month": 30.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alushta",
@@ -609,7 +743,9 @@
   "t_min": 21.2,
   "precip_mm_month": 34.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alushta",
@@ -618,7 +754,9 @@
   "t_min": 16.3,
   "precip_mm_month": 28.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alushta",
@@ -627,7 +765,9 @@
   "t_min": 11.1,
   "precip_mm_month": 39.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alushta",
@@ -636,7 +776,9 @@
   "t_min": 6.7,
   "precip_mm_month": 94.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alushta",
@@ -645,7 +787,9 @@
   "t_min": 4.6,
   "precip_mm_month": 61.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sudak",
@@ -654,7 +798,9 @@
   "t_min": 0.6,
   "precip_mm_month": 40.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sudak",
@@ -663,7 +809,9 @@
   "t_min": 1.2,
   "precip_mm_month": 36.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sudak",
@@ -672,7 +820,9 @@
   "t_min": 3.0,
   "precip_mm_month": 25.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sudak",
@@ -681,7 +831,9 @@
   "t_min": 7.6,
   "precip_mm_month": 42.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sudak",
@@ -690,7 +842,9 @@
   "t_min": 11.6,
   "precip_mm_month": 39.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sudak",
@@ -699,7 +853,9 @@
   "t_min": 17.9,
   "precip_mm_month": 79.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sudak",
@@ -708,7 +864,9 @@
   "t_min": 20.9,
   "precip_mm_month": 31.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sudak",
@@ -717,7 +875,9 @@
   "t_min": 21.0,
   "precip_mm_month": 29.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sudak",
@@ -726,7 +886,9 @@
   "t_min": 16.2,
   "precip_mm_month": 25.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sudak",
@@ -735,7 +897,9 @@
   "t_min": 11.1,
   "precip_mm_month": 29.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sudak",
@@ -744,7 +908,9 @@
   "t_min": 6.1,
   "precip_mm_month": 60.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sudak",
@@ -753,7 +919,9 @@
   "t_min": 3.6,
   "precip_mm_month": 45.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "feodosiya",
@@ -762,7 +930,9 @@
   "t_min": 1.0,
   "precip_mm_month": 38.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "feodosiya",
@@ -771,7 +941,9 @@
   "t_min": 1.6,
   "precip_mm_month": 35.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "feodosiya",
@@ -780,7 +952,9 @@
   "t_min": 3.3,
   "precip_mm_month": 26.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "feodosiya",
@@ -789,7 +963,9 @@
   "t_min": 7.9,
   "precip_mm_month": 37.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "feodosiya",
@@ -798,7 +974,9 @@
   "t_min": 12.1,
   "precip_mm_month": 39.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "feodosiya",
@@ -807,7 +985,9 @@
   "t_min": 18.3,
   "precip_mm_month": 66.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "feodosiya",
@@ -816,7 +996,9 @@
   "t_min": 21.5,
   "precip_mm_month": 33.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "feodosiya",
@@ -825,7 +1007,9 @@
   "t_min": 21.4,
   "precip_mm_month": 35.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "feodosiya",
@@ -834,7 +1018,9 @@
   "t_min": 16.9,
   "precip_mm_month": 33.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "feodosiya",
@@ -843,7 +1029,9 @@
   "t_min": 11.7,
   "precip_mm_month": 26.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "feodosiya",
@@ -852,7 +1040,9 @@
   "t_min": 6.7,
   "precip_mm_month": 53.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "feodosiya",
@@ -861,7 +1051,9 @@
   "t_min": 3.9,
   "precip_mm_month": 48.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yevpatoriya",
@@ -870,7 +1062,9 @@
   "t_min": 1.0,
   "precip_mm_month": 44.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yevpatoriya",
@@ -879,7 +1073,9 @@
   "t_min": 1.6,
   "precip_mm_month": 36.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yevpatoriya",
@@ -888,7 +1084,9 @@
   "t_min": 2.8,
   "precip_mm_month": 28.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yevpatoriya",
@@ -897,7 +1095,9 @@
   "t_min": 7.8,
   "precip_mm_month": 48.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yevpatoriya",
@@ -906,7 +1106,9 @@
   "t_min": 11.7,
   "precip_mm_month": 46.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yevpatoriya",
@@ -915,7 +1117,9 @@
   "t_min": 17.7,
   "precip_mm_month": 63.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yevpatoriya",
@@ -924,7 +1128,9 @@
   "t_min": 20.6,
   "precip_mm_month": 43.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yevpatoriya",
@@ -933,7 +1139,9 @@
   "t_min": 20.4,
   "precip_mm_month": 31.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yevpatoriya",
@@ -942,7 +1150,9 @@
   "t_min": 16.2,
   "precip_mm_month": 25.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yevpatoriya",
@@ -951,7 +1161,9 @@
   "t_min": 11.5,
   "precip_mm_month": 32.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yevpatoriya",
@@ -960,7 +1172,9 @@
   "t_min": 6.2,
   "precip_mm_month": 66.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yevpatoriya",
@@ -969,7 +1183,9 @@
   "t_min": 3.8,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kislovodsk",
@@ -978,7 +1194,9 @@
   "t_min": -4.7,
   "precip_mm_month": 27.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kislovodsk",
@@ -987,7 +1205,9 @@
   "t_min": -4.3,
   "precip_mm_month": 32.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kislovodsk",
@@ -996,7 +1216,9 @@
   "t_min": -1.4,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kislovodsk",
@@ -1005,7 +1227,9 @@
   "t_min": 4.2,
   "precip_mm_month": 54.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kislovodsk",
@@ -1014,7 +1238,9 @@
   "t_min": 7.8,
   "precip_mm_month": 109.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kislovodsk",
@@ -1023,7 +1249,9 @@
   "t_min": 13.2,
   "precip_mm_month": 137.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kislovodsk",
@@ -1032,7 +1260,9 @@
   "t_min": 15.3,
   "precip_mm_month": 90.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kislovodsk",
@@ -1041,7 +1271,9 @@
   "t_min": 15.6,
   "precip_mm_month": 55.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kislovodsk",
@@ -1050,7 +1282,9 @@
   "t_min": 11.2,
   "precip_mm_month": 64.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kislovodsk",
@@ -1059,7 +1293,9 @@
   "t_min": 5.5,
   "precip_mm_month": 68.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kislovodsk",
@@ -1068,7 +1304,9 @@
   "t_min": 0.7,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kislovodsk",
@@ -1077,7 +1315,9 @@
   "t_min": -3.3,
   "precip_mm_month": 27.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pyatigorsk",
@@ -1086,7 +1326,9 @@
   "t_min": -3.7,
   "precip_mm_month": 27.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pyatigorsk",
@@ -1095,7 +1337,9 @@
   "t_min": -3.2,
   "precip_mm_month": 31.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pyatigorsk",
@@ -1104,7 +1348,9 @@
   "t_min": 0.0,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pyatigorsk",
@@ -1113,7 +1359,9 @@
   "t_min": 6.3,
   "precip_mm_month": 37.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pyatigorsk",
@@ -1122,7 +1370,9 @@
   "t_min": 9.9,
   "precip_mm_month": 92.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pyatigorsk",
@@ -1131,7 +1381,9 @@
   "t_min": 15.8,
   "precip_mm_month": 105.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pyatigorsk",
@@ -1140,7 +1392,9 @@
   "t_min": 17.9,
   "precip_mm_month": 62.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pyatigorsk",
@@ -1149,7 +1403,9 @@
   "t_min": 18.2,
   "precip_mm_month": 38.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pyatigorsk",
@@ -1158,7 +1414,9 @@
   "t_min": 13.0,
   "precip_mm_month": 65.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pyatigorsk",
@@ -1167,7 +1425,9 @@
   "t_min": 7.4,
   "precip_mm_month": 74.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pyatigorsk",
@@ -1176,7 +1436,9 @@
   "t_min": 2.4,
   "precip_mm_month": 49.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pyatigorsk",
@@ -1185,7 +1447,9 @@
   "t_min": -2.2,
   "precip_mm_month": 32.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minvody",
@@ -1194,7 +1458,9 @@
   "t_min": -3.5,
   "precip_mm_month": 24.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minvody",
@@ -1203,7 +1469,9 @@
   "t_min": -3.4,
   "precip_mm_month": 33.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minvody",
@@ -1212,7 +1480,9 @@
   "t_min": 0.4,
   "precip_mm_month": 42.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minvody",
@@ -1221,7 +1491,9 @@
   "t_min": 6.5,
   "precip_mm_month": 39.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minvody",
@@ -1230,7 +1502,9 @@
   "t_min": 10.4,
   "precip_mm_month": 95.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minvody",
@@ -1239,7 +1513,9 @@
   "t_min": 16.3,
   "precip_mm_month": 93.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minvody",
@@ -1248,7 +1524,9 @@
   "t_min": 18.5,
   "precip_mm_month": 54.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minvody",
@@ -1257,7 +1535,9 @@
   "t_min": 18.8,
   "precip_mm_month": 38.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minvody",
@@ -1266,7 +1546,9 @@
   "t_min": 13.6,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minvody",
@@ -1275,7 +1557,9 @@
   "t_min": 7.5,
   "precip_mm_month": 67.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minvody",
@@ -1284,7 +1568,9 @@
   "t_min": 2.5,
   "precip_mm_month": 43.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minvody",
@@ -1293,7 +1579,9 @@
   "t_min": -2.0,
   "precip_mm_month": 33.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belokurikha",
@@ -1302,7 +1590,9 @@
   "t_min": -15.3,
   "precip_mm_month": 33.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belokurikha",
@@ -1311,7 +1601,9 @@
   "t_min": -13.8,
   "precip_mm_month": 41.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belokurikha",
@@ -1320,7 +1612,9 @@
   "t_min": -7.1,
   "precip_mm_month": 36.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belokurikha",
@@ -1329,7 +1623,9 @@
   "t_min": 0.3,
   "precip_mm_month": 54.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belokurikha",
@@ -1338,7 +1634,9 @@
   "t_min": 8.8,
   "precip_mm_month": 60.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belokurikha",
@@ -1347,7 +1645,9 @@
   "t_min": 13.3,
   "precip_mm_month": 96.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belokurikha",
@@ -1356,7 +1656,9 @@
   "t_min": 15.8,
   "precip_mm_month": 79.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belokurikha",
@@ -1365,7 +1667,9 @@
   "t_min": 14.2,
   "precip_mm_month": 91.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belokurikha",
@@ -1374,7 +1678,9 @@
   "t_min": 7.8,
   "precip_mm_month": 70.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belokurikha",
@@ -1383,7 +1689,9 @@
   "t_min": 1.6,
   "precip_mm_month": 56.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belokurikha",
@@ -1392,7 +1700,9 @@
   "t_min": -7.0,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belokurikha",
@@ -1401,7 +1711,9 @@
   "t_min": -14.6,
   "precip_mm_month": 33.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "moscow",
@@ -1410,7 +1722,9 @@
   "t_min": -9.2,
   "precip_mm_month": 46.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "moscow",
@@ -1419,7 +1733,9 @@
   "t_min": -8.8,
   "precip_mm_month": 41.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "moscow",
@@ -1428,7 +1744,9 @@
   "t_min": -6.0,
   "precip_mm_month": 31.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "moscow",
@@ -1437,7 +1755,9 @@
   "t_min": 1.5,
   "precip_mm_month": 51.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "moscow",
@@ -1446,7 +1766,9 @@
   "t_min": 6.2,
   "precip_mm_month": 65.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "moscow",
@@ -1455,7 +1777,9 @@
   "t_min": 12.6,
   "precip_mm_month": 61.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "moscow",
@@ -1464,7 +1788,9 @@
   "t_min": 14.9,
   "precip_mm_month": 81.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "moscow",
@@ -1473,7 +1799,9 @@
   "t_min": 13.9,
   "precip_mm_month": 45.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "moscow",
@@ -1482,7 +1810,9 @@
   "t_min": 8.4,
   "precip_mm_month": 48.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "moscow",
@@ -1491,7 +1821,9 @@
   "t_min": 3.3,
   "precip_mm_month": 62.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "moscow",
@@ -1500,7 +1832,9 @@
   "t_min": -1.7,
   "precip_mm_month": 62.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "moscow",
@@ -1509,7 +1843,9 @@
   "t_min": -7.8,
   "precip_mm_month": 63.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "saint-petersburg",
@@ -1518,7 +1854,9 @@
   "t_min": -7.2,
   "precip_mm_month": 46.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "saint-petersburg",
@@ -1527,7 +1865,9 @@
   "t_min": -7.1,
   "precip_mm_month": 56.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "saint-petersburg",
@@ -1536,7 +1876,9 @@
   "t_min": -4.4,
   "precip_mm_month": 46.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "saint-petersburg",
@@ -1545,7 +1887,9 @@
   "t_min": -0.1,
   "precip_mm_month": 42.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "saint-petersburg",
@@ -1554,7 +1898,9 @@
   "t_min": 5.7,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "saint-petersburg",
@@ -1563,7 +1909,9 @@
   "t_min": 13.4,
   "precip_mm_month": 55.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "saint-petersburg",
@@ -1572,7 +1920,9 @@
   "t_min": 15.3,
   "precip_mm_month": 81.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "saint-petersburg",
@@ -1581,7 +1931,9 @@
   "t_min": 13.9,
   "precip_mm_month": 104.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "saint-petersburg",
@@ -1590,7 +1942,9 @@
   "t_min": 9.4,
   "precip_mm_month": 62.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "saint-petersburg",
@@ -1599,7 +1953,9 @@
   "t_min": 4.5,
   "precip_mm_month": 78.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "saint-petersburg",
@@ -1608,7 +1964,9 @@
   "t_min": -0.7,
   "precip_mm_month": 65.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "saint-petersburg",
@@ -1617,7 +1975,9 @@
   "t_min": -6.1,
   "precip_mm_month": 56.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kaliningrad",
@@ -1626,7 +1986,9 @@
   "t_min": -1.2,
   "precip_mm_month": 79.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kaliningrad",
@@ -1635,7 +1997,9 @@
   "t_min": -0.8,
   "precip_mm_month": 74.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kaliningrad",
@@ -1644,7 +2008,9 @@
   "t_min": -0.1,
   "precip_mm_month": 40.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kaliningrad",
@@ -1653,7 +2019,9 @@
   "t_min": 2.9,
   "precip_mm_month": 31.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kaliningrad",
@@ -1662,7 +2030,9 @@
   "t_min": 7.5,
   "precip_mm_month": 56.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kaliningrad",
@@ -1671,7 +2041,9 @@
   "t_min": 13.1,
   "precip_mm_month": 62.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kaliningrad",
@@ -1680,7 +2052,9 @@
   "t_min": 15.2,
   "precip_mm_month": 77.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kaliningrad",
@@ -1689,7 +2063,9 @@
   "t_min": 15.3,
   "precip_mm_month": 101.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kaliningrad",
@@ -1698,7 +2074,9 @@
   "t_min": 11.7,
   "precip_mm_month": 45.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kaliningrad",
@@ -1707,7 +2085,9 @@
   "t_min": 7.6,
   "precip_mm_month": 59.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kaliningrad",
@@ -1716,7 +2096,9 @@
   "t_min": 2.8,
   "precip_mm_month": 57.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kaliningrad",
@@ -1725,7 +2107,9 @@
   "t_min": -1.0,
   "precip_mm_month": 67.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kazan",
@@ -1734,7 +2118,9 @@
   "t_min": -12.7,
   "precip_mm_month": 54.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kazan",
@@ -1743,7 +2129,9 @@
   "t_min": -11.9,
   "precip_mm_month": 50.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kazan",
@@ -1752,7 +2140,9 @@
   "t_min": -6.5,
   "precip_mm_month": 31.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kazan",
@@ -1761,7 +2151,9 @@
   "t_min": 1.4,
   "precip_mm_month": 49.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kazan",
@@ -1770,7 +2162,9 @@
   "t_min": 7.5,
   "precip_mm_month": 49.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kazan",
@@ -1779,7 +2173,9 @@
   "t_min": 13.6,
   "precip_mm_month": 32.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kazan",
@@ -1788,7 +2184,9 @@
   "t_min": 16.4,
   "precip_mm_month": 49.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kazan",
@@ -1797,7 +2195,9 @@
   "t_min": 14.7,
   "precip_mm_month": 44.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kazan",
@@ -1806,7 +2206,9 @@
   "t_min": 8.8,
   "precip_mm_month": 33.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kazan",
@@ -1815,7 +2217,9 @@
   "t_min": 3.0,
   "precip_mm_month": 57.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kazan",
@@ -1824,7 +2228,9 @@
   "t_min": -3.4,
   "precip_mm_month": 58.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kazan",
@@ -1833,7 +2239,9 @@
   "t_min": -11.1,
   "precip_mm_month": 49.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nizhny-novgorod",
@@ -1842,7 +2250,9 @@
   "t_min": -11.2,
   "precip_mm_month": 48.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nizhny-novgorod",
@@ -1851,7 +2261,9 @@
   "t_min": -10.9,
   "precip_mm_month": 41.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nizhny-novgorod",
@@ -1860,7 +2272,9 @@
   "t_min": -5.9,
   "precip_mm_month": 32.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nizhny-novgorod",
@@ -1869,7 +2283,9 @@
   "t_min": 0.9,
   "precip_mm_month": 53.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nizhny-novgorod",
@@ -1878,7 +2294,9 @@
   "t_min": 6.5,
   "precip_mm_month": 69.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nizhny-novgorod",
@@ -1887,7 +2305,9 @@
   "t_min": 12.8,
   "precip_mm_month": 39.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nizhny-novgorod",
@@ -1896,7 +2316,9 @@
   "t_min": 15.6,
   "precip_mm_month": 76.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nizhny-novgorod",
@@ -1905,7 +2327,9 @@
   "t_min": 14.1,
   "precip_mm_month": 41.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nizhny-novgorod",
@@ -1914,7 +2338,9 @@
   "t_min": 8.5,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nizhny-novgorod",
@@ -1923,7 +2349,9 @@
   "t_min": 3.2,
   "precip_mm_month": 58.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nizhny-novgorod",
@@ -1932,7 +2360,9 @@
   "t_min": -2.4,
   "precip_mm_month": 58.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nizhny-novgorod",
@@ -1941,7 +2371,9 @@
   "t_min": -10.1,
   "precip_mm_month": 57.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ekaterinburg",
@@ -1950,7 +2382,9 @@
   "t_min": -16.1,
   "precip_mm_month": 22.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ekaterinburg",
@@ -1959,7 +2393,9 @@
   "t_min": -13.8,
   "precip_mm_month": 23.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ekaterinburg",
@@ -1968,7 +2404,9 @@
   "t_min": -8.4,
   "precip_mm_month": 17.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ekaterinburg",
@@ -1977,7 +2415,9 @@
   "t_min": -0.3,
   "precip_mm_month": 34.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ekaterinburg",
@@ -1986,7 +2426,9 @@
   "t_min": 6.4,
   "precip_mm_month": 38.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ekaterinburg",
@@ -1995,7 +2437,9 @@
   "t_min": 11.0,
   "precip_mm_month": 68.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ekaterinburg",
@@ -2004,7 +2448,9 @@
   "t_min": 14.4,
   "precip_mm_month": 66.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ekaterinburg",
@@ -2013,7 +2459,9 @@
   "t_min": 12.4,
   "precip_mm_month": 57.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ekaterinburg",
@@ -2022,7 +2470,9 @@
   "t_min": 6.4,
   "precip_mm_month": 36.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ekaterinburg",
@@ -2031,7 +2481,9 @@
   "t_min": 0.5,
   "precip_mm_month": 27.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ekaterinburg",
@@ -2040,7 +2492,9 @@
   "t_min": -7.5,
   "precip_mm_month": 37.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ekaterinburg",
@@ -2049,7 +2503,9 @@
   "t_min": -13.8,
   "precip_mm_month": 27.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "vladivostok",
@@ -2058,7 +2514,9 @@
   "t_min": -13.9,
   "precip_mm_month": 13.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "vladivostok",
@@ -2067,7 +2525,9 @@
   "t_min": -10.0,
   "precip_mm_month": 16.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "vladivostok",
@@ -2076,7 +2536,9 @@
   "t_min": -3.3,
   "precip_mm_month": 39.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "vladivostok",
@@ -2085,7 +2547,9 @@
   "t_min": 2.2,
   "precip_mm_month": 41.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "vladivostok",
@@ -2094,7 +2558,9 @@
   "t_min": 7.9,
   "precip_mm_month": 60.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "vladivostok",
@@ -2103,7 +2569,9 @@
   "t_min": 13.3,
   "precip_mm_month": 130.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "vladivostok",
@@ -2112,7 +2580,9 @@
   "t_min": 18.8,
   "precip_mm_month": 105.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "vladivostok",
@@ -2121,7 +2591,9 @@
   "t_min": 20.2,
   "precip_mm_month": 203.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "vladivostok",
@@ -2130,7 +2602,9 @@
   "t_min": 15.4,
   "precip_mm_month": 98.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "vladivostok",
@@ -2139,7 +2613,9 @@
   "t_min": 7.4,
   "precip_mm_month": 44.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "vladivostok",
@@ -2148,7 +2624,9 @@
   "t_min": -1.2,
   "precip_mm_month": 70.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "vladivostok",
@@ -2157,7 +2635,9 @@
   "t_min": -10.8,
   "precip_mm_month": 11.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-sakhalinsk",
@@ -2166,7 +2646,9 @@
   "t_min": -15.3,
   "precip_mm_month": 80.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-sakhalinsk",
@@ -2175,7 +2657,9 @@
   "t_min": -14.3,
   "precip_mm_month": 54.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-sakhalinsk",
@@ -2184,7 +2668,9 @@
   "t_min": -7.1,
   "precip_mm_month": 61.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-sakhalinsk",
@@ -2193,7 +2679,9 @@
   "t_min": -1.3,
   "precip_mm_month": 76.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-sakhalinsk",
@@ -2202,7 +2690,9 @@
   "t_min": 3.7,
   "precip_mm_month": 96.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-sakhalinsk",
@@ -2211,7 +2701,9 @@
   "t_min": 9.2,
   "precip_mm_month": 79.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-sakhalinsk",
@@ -2220,7 +2712,9 @@
   "t_min": 14.9,
   "precip_mm_month": 68.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-sakhalinsk",
@@ -2229,7 +2723,9 @@
   "t_min": 14.7,
   "precip_mm_month": 166.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-sakhalinsk",
@@ -2238,7 +2734,9 @@
   "t_min": 11.4,
   "precip_mm_month": 78.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-sakhalinsk",
@@ -2247,7 +2745,9 @@
   "t_min": 3.9,
   "precip_mm_month": 121.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-sakhalinsk",
@@ -2256,7 +2756,9 @@
   "t_min": -4.0,
   "precip_mm_month": 135.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-sakhalinsk",
@@ -2265,7 +2767,9 @@
   "t_min": -12.9,
   "precip_mm_month": 59.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kurilsk",
@@ -2274,7 +2778,9 @@
   "t_min": -7.3,
   "precip_mm_month": 131.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kurilsk",
@@ -2283,7 +2789,9 @@
   "t_min": -7.4,
   "precip_mm_month": 115.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kurilsk",
@@ -2292,7 +2800,9 @@
   "t_min": -4.1,
   "precip_mm_month": 154.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kurilsk",
@@ -2301,7 +2811,9 @@
   "t_min": 0.1,
   "precip_mm_month": 136.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kurilsk",
@@ -2310,7 +2822,9 @@
   "t_min": 4.2,
   "precip_mm_month": 108.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kurilsk",
@@ -2319,7 +2833,9 @@
   "t_min": 8.7,
   "precip_mm_month": 72.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kurilsk",
@@ -2328,7 +2844,9 @@
   "t_min": 13.6,
   "precip_mm_month": 96.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kurilsk",
@@ -2337,7 +2855,9 @@
   "t_min": 15.0,
   "precip_mm_month": 148.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kurilsk",
@@ -2346,7 +2866,9 @@
   "t_min": 13.2,
   "precip_mm_month": 107.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kurilsk",
@@ -2355,7 +2877,9 @@
   "t_min": 8.4,
   "precip_mm_month": 195.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kurilsk",
@@ -2364,7 +2888,9 @@
   "t_min": 2.8,
   "precip_mm_month": 236.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kurilsk",
@@ -2373,7 +2899,9 @@
   "t_min": -3.5,
   "precip_mm_month": 225.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-kurilsk",
@@ -2382,7 +2910,9 @@
   "t_min": -6.7,
   "precip_mm_month": 73.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-kurilsk",
@@ -2391,7 +2921,9 @@
   "t_min": -8.4,
   "precip_mm_month": 52.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-kurilsk",
@@ -2400,7 +2932,9 @@
   "t_min": -4.4,
   "precip_mm_month": 109.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-kurilsk",
@@ -2409,7 +2943,9 @@
   "t_min": 0.7,
   "precip_mm_month": 100.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-kurilsk",
@@ -2418,7 +2954,9 @@
   "t_min": 4.4,
   "precip_mm_month": 102.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-kurilsk",
@@ -2427,7 +2965,9 @@
   "t_min": 8.9,
   "precip_mm_month": 100.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-kurilsk",
@@ -2436,7 +2976,9 @@
   "t_min": 14.2,
   "precip_mm_month": 109.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-kurilsk",
@@ -2445,7 +2987,9 @@
   "t_min": 16.4,
   "precip_mm_month": 185.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-kurilsk",
@@ -2454,7 +2998,9 @@
   "t_min": 14.4,
   "precip_mm_month": 122.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-kurilsk",
@@ -2463,7 +3009,9 @@
   "t_min": 9.4,
   "precip_mm_month": 144.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-kurilsk",
@@ -2472,7 +3020,9 @@
   "t_min": 3.5,
   "precip_mm_month": 108.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yuzhno-kurilsk",
@@ -2481,7 +3031,9 @@
   "t_min": -3.2,
   "precip_mm_month": 80.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "petropavlovsk",
@@ -2490,7 +3042,9 @@
   "t_min": -13.0,
   "precip_mm_month": 64.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "petropavlovsk",
@@ -2499,7 +3053,9 @@
   "t_min": -12.9,
   "precip_mm_month": 50.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "petropavlovsk",
@@ -2508,7 +3064,9 @@
   "t_min": -7.7,
   "precip_mm_month": 110.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "petropavlovsk",
@@ -2517,7 +3075,9 @@
   "t_min": -3.2,
   "precip_mm_month": 95.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "petropavlovsk",
@@ -2526,7 +3086,9 @@
   "t_min": 0.4,
   "precip_mm_month": 102.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "petropavlovsk",
@@ -2535,7 +3097,9 @@
   "t_min": 5.5,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "petropavlovsk",
@@ -2544,7 +3108,9 @@
   "t_min": 10.0,
   "precip_mm_month": 58.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "petropavlovsk",
@@ -2553,7 +3119,9 @@
   "t_min": 10.0,
   "precip_mm_month": 106.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "petropavlovsk",
@@ -2562,7 +3130,9 @@
   "t_min": 6.6,
   "precip_mm_month": 90.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "petropavlovsk",
@@ -2571,7 +3141,9 @@
   "t_min": 1.3,
   "precip_mm_month": 120.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "petropavlovsk",
@@ -2580,7 +3152,9 @@
   "t_min": -4.5,
   "precip_mm_month": 119.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "petropavlovsk",
@@ -2589,7 +3163,9 @@
   "t_min": -10.9,
   "precip_mm_month": 109.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ulan-ude",
@@ -2598,7 +3174,9 @@
   "t_min": -25.0,
   "precip_mm_month": 7.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ulan-ude",
@@ -2607,7 +3185,9 @@
   "t_min": -22.4,
   "precip_mm_month": 7.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ulan-ude",
@@ -2616,7 +3196,9 @@
   "t_min": -11.7,
   "precip_mm_month": 8.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ulan-ude",
@@ -2625,7 +3207,9 @@
   "t_min": -3.0,
   "precip_mm_month": 13.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ulan-ude",
@@ -2634,7 +3218,9 @@
   "t_min": 3.6,
   "precip_mm_month": 30.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ulan-ude",
@@ -2643,7 +3229,9 @@
   "t_min": 10.8,
   "precip_mm_month": 45.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ulan-ude",
@@ -2652,7 +3240,9 @@
   "t_min": 15.0,
   "precip_mm_month": 84.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ulan-ude",
@@ -2661,7 +3251,9 @@
   "t_min": 12.5,
   "precip_mm_month": 61.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ulan-ude",
@@ -2670,7 +3262,9 @@
   "t_min": 5.6,
   "precip_mm_month": 41.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ulan-ude",
@@ -2679,7 +3273,9 @@
   "t_min": -3.0,
   "precip_mm_month": 10.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ulan-ude",
@@ -2688,7 +3284,9 @@
   "t_min": -11.1,
   "precip_mm_month": 13.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "ulan-ude",
@@ -2697,7 +3295,9 @@
   "t_min": -21.3,
   "precip_mm_month": 9.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "irkutsk",
@@ -2706,7 +3306,9 @@
   "t_min": -22.7,
   "precip_mm_month": 13.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "irkutsk",
@@ -2715,7 +3317,9 @@
   "t_min": -21.0,
   "precip_mm_month": 9.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "irkutsk",
@@ -2724,7 +3328,9 @@
   "t_min": -12.0,
   "precip_mm_month": 11.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "irkutsk",
@@ -2733,7 +3339,9 @@
   "t_min": -3.2,
   "precip_mm_month": 28.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "irkutsk",
@@ -2742,7 +3350,9 @@
   "t_min": 3.6,
   "precip_mm_month": 45.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "irkutsk",
@@ -2751,7 +3361,9 @@
   "t_min": 10.0,
   "precip_mm_month": 80.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "irkutsk",
@@ -2760,7 +3372,9 @@
   "t_min": 13.9,
   "precip_mm_month": 108.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "irkutsk",
@@ -2769,7 +3383,9 @@
   "t_min": 12.7,
   "precip_mm_month": 88.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "irkutsk",
@@ -2778,7 +3394,9 @@
   "t_min": 6.1,
   "precip_mm_month": 78.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "irkutsk",
@@ -2787,7 +3405,9 @@
   "t_min": -1.6,
   "precip_mm_month": 15.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "irkutsk",
@@ -2796,7 +3416,9 @@
   "t_min": -10.1,
   "precip_mm_month": 13.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "irkutsk",
@@ -2805,7 +3427,9 @@
   "t_min": -21.3,
   "precip_mm_month": 12.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gorno-altaysk",
@@ -2814,7 +3438,9 @@
   "t_min": -17.4,
   "precip_mm_month": 32.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gorno-altaysk",
@@ -2823,7 +3449,9 @@
   "t_min": -15.7,
   "precip_mm_month": 37.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gorno-altaysk",
@@ -2832,7 +3460,9 @@
   "t_min": -8.9,
   "precip_mm_month": 33.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gorno-altaysk",
@@ -2841,7 +3471,9 @@
   "t_min": -1.8,
   "precip_mm_month": 60.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gorno-altaysk",
@@ -2850,7 +3482,9 @@
   "t_min": 6.2,
   "precip_mm_month": 65.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gorno-altaysk",
@@ -2859,7 +3493,9 @@
   "t_min": 11.3,
   "precip_mm_month": 101.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gorno-altaysk",
@@ -2868,7 +3504,9 @@
   "t_min": 14.0,
   "precip_mm_month": 93.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gorno-altaysk",
@@ -2877,7 +3515,9 @@
   "t_min": 12.5,
   "precip_mm_month": 97.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gorno-altaysk",
@@ -2886,7 +3526,9 @@
   "t_min": 6.3,
   "precip_mm_month": 95.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gorno-altaysk",
@@ -2895,7 +3537,9 @@
   "t_min": 0.2,
   "precip_mm_month": 63.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gorno-altaysk",
@@ -2904,7 +3548,9 @@
   "t_min": -7.6,
   "precip_mm_month": 44.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gorno-altaysk",
@@ -2913,7 +3559,9 @@
   "t_min": -16.4,
   "precip_mm_month": 35.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "makhachkala",
@@ -2922,7 +3570,9 @@
   "t_min": 1.0,
   "precip_mm_month": 18.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "makhachkala",
@@ -2931,7 +3581,9 @@
   "t_min": 0.9,
   "precip_mm_month": 30.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "makhachkala",
@@ -2940,7 +3592,9 @@
   "t_min": 4.2,
   "precip_mm_month": 40.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "makhachkala",
@@ -2949,7 +3603,9 @@
   "t_min": 9.9,
   "precip_mm_month": 27.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "makhachkala",
@@ -2958,7 +3614,9 @@
   "t_min": 14.1,
   "precip_mm_month": 61.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "makhachkala",
@@ -2967,7 +3625,9 @@
   "t_min": 20.3,
   "precip_mm_month": 28.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "makhachkala",
@@ -2976,7 +3636,9 @@
   "t_min": 22.6,
   "precip_mm_month": 36.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "makhachkala",
@@ -2985,7 +3647,9 @@
   "t_min": 22.8,
   "precip_mm_month": 18.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "makhachkala",
@@ -2994,7 +3658,9 @@
   "t_min": 18.5,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "makhachkala",
@@ -3003,7 +3669,9 @@
   "t_min": 12.6,
   "precip_mm_month": 77.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "makhachkala",
@@ -3012,7 +3680,9 @@
   "t_min": 7.0,
   "precip_mm_month": 49.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "makhachkala",
@@ -3021,7 +3691,9 @@
   "t_min": 3.3,
   "precip_mm_month": 53.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sukhumi",
@@ -3030,7 +3702,9 @@
   "t_min": 1.8,
   "precip_mm_month": 158.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sukhumi",
@@ -3039,7 +3713,9 @@
   "t_min": 2.2,
   "precip_mm_month": 160.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sukhumi",
@@ -3048,7 +3724,9 @@
   "t_min": 4.2,
   "precip_mm_month": 160.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sukhumi",
@@ -3057,7 +3735,9 @@
   "t_min": 8.7,
   "precip_mm_month": 119.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sukhumi",
@@ -3066,7 +3746,9 @@
   "t_min": 12.1,
   "precip_mm_month": 132.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sukhumi",
@@ -3075,7 +3757,9 @@
   "t_min": 17.9,
   "precip_mm_month": 129.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sukhumi",
@@ -3084,7 +3768,9 @@
   "t_min": 20.4,
   "precip_mm_month": 112.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sukhumi",
@@ -3093,7 +3779,9 @@
   "t_min": 21.4,
   "precip_mm_month": 56.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sukhumi",
@@ -3102,7 +3790,9 @@
   "t_min": 17.3,
   "precip_mm_month": 206.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sukhumi",
@@ -3111,7 +3801,9 @@
   "t_min": 11.7,
   "precip_mm_month": 140.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sukhumi",
@@ -3120,7 +3812,9 @@
   "t_min": 7.3,
   "precip_mm_month": 159.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sukhumi",
@@ -3129,7 +3823,9 @@
   "t_min": 4.3,
   "precip_mm_month": 134.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gagra",
@@ -3138,7 +3834,9 @@
   "t_min": 3.1,
   "precip_mm_month": 201.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gagra",
@@ -3147,7 +3845,9 @@
   "t_min": 3.2,
   "precip_mm_month": 205.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gagra",
@@ -3156,7 +3856,9 @@
   "t_min": 5.0,
   "precip_mm_month": 165.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gagra",
@@ -3165,7 +3867,9 @@
   "t_min": 9.9,
   "precip_mm_month": 127.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gagra",
@@ -3174,7 +3878,9 @@
   "t_min": 12.9,
   "precip_mm_month": 139.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gagra",
@@ -3183,7 +3889,9 @@
   "t_min": 18.5,
   "precip_mm_month": 110.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gagra",
@@ -3192,7 +3900,9 @@
   "t_min": 20.7,
   "precip_mm_month": 113.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gagra",
@@ -3201,7 +3911,9 @@
   "t_min": 21.5,
   "precip_mm_month": 66.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gagra",
@@ -3210,7 +3922,9 @@
   "t_min": 18.0,
   "precip_mm_month": 140.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gagra",
@@ -3219,7 +3933,9 @@
   "t_min": 12.8,
   "precip_mm_month": 119.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gagra",
@@ -3228,7 +3944,9 @@
   "t_min": 8.4,
   "precip_mm_month": 169.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "gagra",
@@ -3237,7 +3955,9 @@
   "t_min": 5.6,
   "precip_mm_month": 153.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tbilisi",
@@ -3246,7 +3966,9 @@
   "t_min": -1.4,
   "precip_mm_month": 13.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tbilisi",
@@ -3255,7 +3977,9 @@
   "t_min": 0.1,
   "precip_mm_month": 23.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tbilisi",
@@ -3264,7 +3988,9 @@
   "t_min": 2.9,
   "precip_mm_month": 70.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tbilisi",
@@ -3273,7 +3999,9 @@
   "t_min": 8.3,
   "precip_mm_month": 61.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tbilisi",
@@ -3282,7 +4010,9 @@
   "t_min": 11.9,
   "precip_mm_month": 87.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tbilisi",
@@ -3291,7 +4021,9 @@
   "t_min": 18.0,
   "precip_mm_month": 70.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tbilisi",
@@ -3300,7 +4032,9 @@
   "t_min": 20.1,
   "precip_mm_month": 48.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tbilisi",
@@ -3309,7 +4043,9 @@
   "t_min": 20.4,
   "precip_mm_month": 22.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tbilisi",
@@ -3318,7 +4054,9 @@
   "t_min": 16.2,
   "precip_mm_month": 63.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tbilisi",
@@ -3327,7 +4065,9 @@
   "t_min": 10.2,
   "precip_mm_month": 53.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tbilisi",
@@ -3336,7 +4076,9 @@
   "t_min": 5.0,
   "precip_mm_month": 37.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tbilisi",
@@ -3345,7 +4087,9 @@
   "t_min": 0.4,
   "precip_mm_month": 20.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "batumi",
@@ -3354,7 +4098,9 @@
   "t_min": 2.8,
   "precip_mm_month": 225.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "batumi",
@@ -3363,7 +4109,9 @@
   "t_min": 3.0,
   "precip_mm_month": 199.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "batumi",
@@ -3372,7 +4120,9 @@
   "t_min": 4.9,
   "precip_mm_month": 215.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "batumi",
@@ -3381,7 +4131,9 @@
   "t_min": 9.2,
   "precip_mm_month": 89.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "batumi",
@@ -3390,7 +4142,9 @@
   "t_min": 12.2,
   "precip_mm_month": 136.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "batumi",
@@ -3399,7 +4153,9 @@
   "t_min": 17.9,
   "precip_mm_month": 149.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "batumi",
@@ -3408,7 +4164,9 @@
   "t_min": 20.4,
   "precip_mm_month": 272.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "batumi",
@@ -3417,7 +4175,9 @@
   "t_min": 21.4,
   "precip_mm_month": 155.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "batumi",
@@ -3426,7 +4186,9 @@
   "t_min": 18.5,
   "precip_mm_month": 269.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "batumi",
@@ -3435,7 +4197,9 @@
   "t_min": 13.4,
   "precip_mm_month": 319.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "batumi",
@@ -3444,7 +4208,9 @@
   "t_min": 9.0,
   "precip_mm_month": 244.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "batumi",
@@ -3453,7 +4219,9 @@
   "t_min": 5.4,
   "precip_mm_month": 179.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yerevan",
@@ -3462,7 +4230,9 @@
   "t_min": -4.1,
   "precip_mm_month": 23.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yerevan",
@@ -3471,7 +4241,9 @@
   "t_min": -1.7,
   "precip_mm_month": 26.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yerevan",
@@ -3480,7 +4252,9 @@
   "t_min": 2.6,
   "precip_mm_month": 68.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yerevan",
@@ -3489,7 +4263,9 @@
   "t_min": 8.6,
   "precip_mm_month": 55.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yerevan",
@@ -3498,7 +4274,9 @@
   "t_min": 11.7,
   "precip_mm_month": 99.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yerevan",
@@ -3507,7 +4285,9 @@
   "t_min": 18.0,
   "precip_mm_month": 20.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yerevan",
@@ -3516,7 +4296,9 @@
   "t_min": 20.6,
   "precip_mm_month": 25.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yerevan",
@@ -3525,7 +4307,9 @@
   "t_min": 21.1,
   "precip_mm_month": 7.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yerevan",
@@ -3534,7 +4318,9 @@
   "t_min": 16.8,
   "precip_mm_month": 13.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yerevan",
@@ -3543,7 +4329,9 @@
   "t_min": 9.7,
   "precip_mm_month": 44.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yerevan",
@@ -3552,7 +4340,9 @@
   "t_min": 3.8,
   "precip_mm_month": 28.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "yerevan",
@@ -3561,7 +4351,9 @@
   "t_min": -1.5,
   "precip_mm_month": 28.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "baku",
@@ -3570,7 +4362,9 @@
   "t_min": 2.9,
   "precip_mm_month": 20.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "baku",
@@ -3579,7 +4373,9 @@
   "t_min": 3.2,
   "precip_mm_month": 17.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "baku",
@@ -3588,7 +4384,9 @@
   "t_min": 5.6,
   "precip_mm_month": 32.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "baku",
@@ -3597,7 +4395,9 @@
   "t_min": 10.4,
   "precip_mm_month": 18.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "baku",
@@ -3606,7 +4406,9 @@
   "t_min": 14.6,
   "precip_mm_month": 33.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "baku",
@@ -3615,7 +4417,9 @@
   "t_min": 20.9,
   "precip_mm_month": 8.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "baku",
@@ -3624,7 +4428,9 @@
   "t_min": 23.2,
   "precip_mm_month": 11.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "baku",
@@ -3633,7 +4439,9 @@
   "t_min": 23.2,
   "precip_mm_month": 6.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "baku",
@@ -3642,7 +4450,9 @@
   "t_min": 19.6,
   "precip_mm_month": 15.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "baku",
@@ -3651,7 +4461,9 @@
   "t_min": 14.4,
   "precip_mm_month": 37.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "baku",
@@ -3660,7 +4472,9 @@
   "t_min": 9.4,
   "precip_mm_month": 32.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "baku",
@@ -3669,7 +4483,9 @@
   "t_min": 5.5,
   "precip_mm_month": 40.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "almaty",
@@ -3678,7 +4494,9 @@
   "t_min": -8.6,
   "precip_mm_month": 23.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "almaty",
@@ -3687,7 +4505,9 @@
   "t_min": -5.5,
   "precip_mm_month": 45.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "almaty",
@@ -3696,7 +4516,9 @@
   "t_min": 0.4,
   "precip_mm_month": 82.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "almaty",
@@ -3705,7 +4527,9 @@
   "t_min": 7.3,
   "precip_mm_month": 86.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "almaty",
@@ -3714,7 +4538,9 @@
   "t_min": 12.6,
   "precip_mm_month": 85.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "almaty",
@@ -3723,7 +4549,9 @@
   "t_min": 16.9,
   "precip_mm_month": 29.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "almaty",
@@ -3732,7 +4560,9 @@
   "t_min": 19.9,
   "precip_mm_month": 19.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "almaty",
@@ -3741,7 +4571,9 @@
   "t_min": 18.4,
   "precip_mm_month": 22.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "almaty",
@@ -3750,7 +4582,9 @@
   "t_min": 12.9,
   "precip_mm_month": 27.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "almaty",
@@ -3759,7 +4593,9 @@
   "t_min": 5.9,
   "precip_mm_month": 57.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "almaty",
@@ -3768,7 +4604,9 @@
   "t_min": -1.3,
   "precip_mm_month": 52.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "almaty",
@@ -3777,7 +4615,9 @@
   "t_min": -7.5,
   "precip_mm_month": 28.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bishkek",
@@ -3786,7 +4626,9 @@
   "t_min": -5.7,
   "precip_mm_month": 24.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bishkek",
@@ -3795,7 +4637,9 @@
   "t_min": -3.7,
   "precip_mm_month": 53.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bishkek",
@@ -3804,7 +4648,9 @@
   "t_min": 1.5,
   "precip_mm_month": 91.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bishkek",
@@ -3813,7 +4659,9 @@
   "t_min": 7.5,
   "precip_mm_month": 95.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bishkek",
@@ -3822,7 +4670,9 @@
   "t_min": 11.8,
   "precip_mm_month": 84.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bishkek",
@@ -3831,7 +4681,9 @@
   "t_min": 16.4,
   "precip_mm_month": 28.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bishkek",
@@ -3840,7 +4692,9 @@
   "t_min": 19.4,
   "precip_mm_month": 19.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bishkek",
@@ -3849,7 +4703,9 @@
   "t_min": 17.8,
   "precip_mm_month": 31.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bishkek",
@@ -3858,7 +4714,9 @@
   "t_min": 12.7,
   "precip_mm_month": 23.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bishkek",
@@ -3867,7 +4725,9 @@
   "t_min": 6.2,
   "precip_mm_month": 64.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bishkek",
@@ -3876,7 +4736,9 @@
   "t_min": -0.1,
   "precip_mm_month": 67.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bishkek",
@@ -3885,7 +4747,9 @@
   "t_min": -5.1,
   "precip_mm_month": 30.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "cholpon-ata",
@@ -3894,7 +4758,9 @@
   "t_min": -4.2,
   "precip_mm_month": 39.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "cholpon-ata",
@@ -3903,7 +4769,9 @@
   "t_min": -3.0,
   "precip_mm_month": 44.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "cholpon-ata",
@@ -3912,7 +4780,9 @@
   "t_min": 0.5,
   "precip_mm_month": 66.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "cholpon-ata",
@@ -3921,7 +4791,9 @@
   "t_min": 4.4,
   "precip_mm_month": 61.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "cholpon-ata",
@@ -3930,7 +4802,9 @@
   "t_min": 9.2,
   "precip_mm_month": 123.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "cholpon-ata",
@@ -3939,7 +4813,9 @@
   "t_min": 12.2,
   "precip_mm_month": 153.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "cholpon-ata",
@@ -3948,7 +4824,9 @@
   "t_min": 14.7,
   "precip_mm_month": 150.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "cholpon-ata",
@@ -3957,7 +4835,9 @@
   "t_min": 13.8,
   "precip_mm_month": 181.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "cholpon-ata",
@@ -3966,7 +4846,9 @@
   "t_min": 10.6,
   "precip_mm_month": 154.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "cholpon-ata",
@@ -3975,7 +4857,9 @@
   "t_min": 4.6,
   "precip_mm_month": 153.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "cholpon-ata",
@@ -3984,7 +4868,9 @@
   "t_min": 0.0,
   "precip_mm_month": 63.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "cholpon-ata",
@@ -3993,7 +4879,9 @@
   "t_min": -4.0,
   "precip_mm_month": 34.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "samarkand",
@@ -4002,7 +4890,9 @@
   "t_min": -3.0,
   "precip_mm_month": 55.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "samarkand",
@@ -4011,7 +4901,9 @@
   "t_min": 0.1,
   "precip_mm_month": 72.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "samarkand",
@@ -4020,7 +4912,9 @@
   "t_min": 4.1,
   "precip_mm_month": 100.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "samarkand",
@@ -4029,7 +4923,9 @@
   "t_min": 9.3,
   "precip_mm_month": 66.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "samarkand",
@@ -4038,7 +4934,9 @@
   "t_min": 13.9,
   "precip_mm_month": 84.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "samarkand",
@@ -4047,7 +4945,9 @@
   "t_min": 19.1,
   "precip_mm_month": 2.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "samarkand",
@@ -4056,7 +4956,9 @@
   "t_min": 21.5,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "samarkand",
@@ -4065,7 +4967,9 @@
   "t_min": 19.1,
   "precip_mm_month": 5.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "samarkand",
@@ -4074,7 +4978,9 @@
   "t_min": 14.4,
   "precip_mm_month": 4.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "samarkand",
@@ -4083,7 +4989,9 @@
   "t_min": 7.7,
   "precip_mm_month": 40.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "samarkand",
@@ -4092,7 +5000,9 @@
   "t_min": 2.6,
   "precip_mm_month": 50.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "samarkand",
@@ -4101,7 +5011,9 @@
   "t_min": -1.8,
   "precip_mm_month": 25.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bukhara",
@@ -4110,7 +5022,9 @@
   "t_min": -3.3,
   "precip_mm_month": 28.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bukhara",
@@ -4119,7 +5033,9 @@
   "t_min": 0.5,
   "precip_mm_month": 26.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bukhara",
@@ -4128,7 +5044,9 @@
   "t_min": 5.5,
   "precip_mm_month": 41.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bukhara",
@@ -4137,7 +5055,9 @@
   "t_min": 11.8,
   "precip_mm_month": 21.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bukhara",
@@ -4146,7 +5066,9 @@
   "t_min": 17.4,
   "precip_mm_month": 21.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bukhara",
@@ -4155,7 +5077,9 @@
   "t_min": 23.0,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bukhara",
@@ -4164,7 +5088,9 @@
   "t_min": 25.2,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bukhara",
@@ -4173,7 +5099,9 @@
   "t_min": 22.2,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bukhara",
@@ -4182,7 +5110,9 @@
   "t_min": 15.8,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bukhara",
@@ -4191,7 +5121,9 @@
   "t_min": 7.5,
   "precip_mm_month": 12.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bukhara",
@@ -4200,7 +5132,9 @@
   "t_min": 2.2,
   "precip_mm_month": 15.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bukhara",
@@ -4209,7 +5143,9 @@
   "t_min": -2.4,
   "precip_mm_month": 10.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tashkent",
@@ -4218,7 +5154,9 @@
   "t_min": -4.2,
   "precip_mm_month": 40.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tashkent",
@@ -4227,7 +5165,9 @@
   "t_min": -0.4,
   "precip_mm_month": 62.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tashkent",
@@ -4236,7 +5176,9 @@
   "t_min": 4.0,
   "precip_mm_month": 87.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tashkent",
@@ -4245,7 +5187,9 @@
   "t_min": 9.7,
   "precip_mm_month": 56.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tashkent",
@@ -4254,7 +5198,9 @@
   "t_min": 15.0,
   "precip_mm_month": 57.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tashkent",
@@ -4263,7 +5209,9 @@
   "t_min": 20.3,
   "precip_mm_month": 8.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tashkent",
@@ -4272,7 +5220,9 @@
   "t_min": 22.9,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tashkent",
@@ -4281,7 +5231,9 @@
   "t_min": 20.6,
   "precip_mm_month": 9.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tashkent",
@@ -4290,7 +5242,9 @@
   "t_min": 14.5,
   "precip_mm_month": 3.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tashkent",
@@ -4299,7 +5253,9 @@
   "t_min": 7.8,
   "precip_mm_month": 35.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tashkent",
@@ -4308,7 +5264,9 @@
   "t_min": 1.9,
   "precip_mm_month": 68.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "tashkent",
@@ -4317,7 +5275,9 @@
   "t_min": -3.6,
   "precip_mm_month": 34.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minsk",
@@ -4326,7 +5286,9 @@
   "t_min": -5.1,
   "precip_mm_month": 64.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minsk",
@@ -4335,7 +5297,9 @@
   "t_min": -4.9,
   "precip_mm_month": 48.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minsk",
@@ -4344,7 +5308,9 @@
   "t_min": -2.3,
   "precip_mm_month": 37.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minsk",
@@ -4353,7 +5319,9 @@
   "t_min": 2.5,
   "precip_mm_month": 68.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minsk",
@@ -4362,7 +5330,9 @@
   "t_min": 6.7,
   "precip_mm_month": 74.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minsk",
@@ -4371,7 +5341,9 @@
   "t_min": 13.5,
   "precip_mm_month": 89.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minsk",
@@ -4380,7 +5352,9 @@
   "t_min": 14.7,
   "precip_mm_month": 96.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minsk",
@@ -4389,7 +5363,9 @@
   "t_min": 14.5,
   "precip_mm_month": 67.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minsk",
@@ -4398,7 +5374,9 @@
   "t_min": 9.6,
   "precip_mm_month": 54.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minsk",
@@ -4407,7 +5385,9 @@
   "t_min": 5.2,
   "precip_mm_month": 64.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minsk",
@@ -4416,7 +5396,9 @@
   "t_min": 0.3,
   "precip_mm_month": 50.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "minsk",
@@ -4425,7 +5407,9 @@
   "t_min": -4.1,
   "precip_mm_month": 55.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belgrade",
@@ -4434,7 +5418,9 @@
   "t_min": -0.9,
   "precip_mm_month": 53.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belgrade",
@@ -4443,7 +5429,9 @@
   "t_min": 1.7,
   "precip_mm_month": 46.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belgrade",
@@ -4452,7 +5440,9 @@
   "t_min": 3.0,
   "precip_mm_month": 42.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belgrade",
@@ -4461,7 +5451,9 @@
   "t_min": 6.3,
   "precip_mm_month": 48.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belgrade",
@@ -4470,7 +5462,9 @@
   "t_min": 12.3,
   "precip_mm_month": 76.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belgrade",
@@ -4479,7 +5473,9 @@
   "t_min": 17.0,
   "precip_mm_month": 72.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belgrade",
@@ -4488,7 +5484,9 @@
   "t_min": 19.2,
   "precip_mm_month": 66.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belgrade",
@@ -4497,7 +5495,9 @@
   "t_min": 18.7,
   "precip_mm_month": 58.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belgrade",
@@ -4506,7 +5506,9 @@
   "t_min": 14.5,
   "precip_mm_month": 64.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belgrade",
@@ -4515,7 +5517,9 @@
   "t_min": 9.8,
   "precip_mm_month": 37.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belgrade",
@@ -4524,7 +5528,9 @@
   "t_min": 4.4,
   "precip_mm_month": 68.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "belgrade",
@@ -4533,7 +5539,9 @@
   "t_min": 1.7,
   "precip_mm_month": 70.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "antalya",
@@ -4542,7 +5550,9 @@
   "t_min": 6.4,
   "precip_mm_month": 141.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "antalya",
@@ -4551,7 +5561,9 @@
   "t_min": 6.2,
   "precip_mm_month": 120.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "antalya",
@@ -4560,7 +5572,9 @@
   "t_min": 7.4,
   "precip_mm_month": 74.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "antalya",
@@ -4569,7 +5583,9 @@
   "t_min": 11.2,
   "precip_mm_month": 34.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "antalya",
@@ -4578,7 +5594,9 @@
   "t_min": 15.5,
   "precip_mm_month": 63.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "antalya",
@@ -4587,7 +5605,9 @@
   "t_min": 19.8,
   "precip_mm_month": 25.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "antalya",
@@ -4596,7 +5616,9 @@
   "t_min": 24.6,
   "precip_mm_month": 8.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "antalya",
@@ -4605,7 +5627,9 @@
   "t_min": 24.2,
   "precip_mm_month": 8.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "antalya",
@@ -4614,7 +5638,9 @@
   "t_min": 20.9,
   "precip_mm_month": 19.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "antalya",
@@ -4623,7 +5649,9 @@
   "t_min": 16.3,
   "precip_mm_month": 37.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "antalya",
@@ -4632,7 +5660,9 @@
   "t_min": 11.6,
   "precip_mm_month": 76.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "antalya",
@@ -4641,7 +5671,9 @@
   "t_min": 8.6,
   "precip_mm_month": 207.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alanya",
@@ -4650,7 +5682,9 @@
   "t_min": 8.5,
   "precip_mm_month": 236.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alanya",
@@ -4659,7 +5693,9 @@
   "t_min": 8.3,
   "precip_mm_month": 157.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alanya",
@@ -4668,7 +5704,9 @@
   "t_min": 9.2,
   "precip_mm_month": 132.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alanya",
@@ -4677,7 +5715,9 @@
   "t_min": 13.2,
   "precip_mm_month": 60.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alanya",
@@ -4686,7 +5726,9 @@
   "t_min": 17.0,
   "precip_mm_month": 29.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alanya",
@@ -4695,7 +5737,9 @@
   "t_min": 21.0,
   "precip_mm_month": 12.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alanya",
@@ -4704,7 +5748,9 @@
   "t_min": 24.8,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alanya",
@@ -4713,7 +5759,9 @@
   "t_min": 24.9,
   "precip_mm_month": 5.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alanya",
@@ -4722,7 +5770,9 @@
   "t_min": 22.4,
   "precip_mm_month": 12.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alanya",
@@ -4731,7 +5781,9 @@
   "t_min": 18.6,
   "precip_mm_month": 15.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alanya",
@@ -4740,7 +5792,9 @@
   "t_min": 14.2,
   "precip_mm_month": 129.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "alanya",
@@ -4749,7 +5803,9 @@
   "t_min": 10.8,
   "precip_mm_month": 185.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kemer",
@@ -4758,7 +5814,9 @@
   "t_min": 8.4,
   "precip_mm_month": 145.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kemer",
@@ -4767,7 +5825,9 @@
   "t_min": 8.3,
   "precip_mm_month": 97.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kemer",
@@ -4776,7 +5836,9 @@
   "t_min": 9.5,
   "precip_mm_month": 74.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kemer",
@@ -4785,7 +5847,9 @@
   "t_min": 13.9,
   "precip_mm_month": 28.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kemer",
@@ -4794,7 +5858,9 @@
   "t_min": 17.9,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kemer",
@@ -4803,7 +5869,9 @@
   "t_min": 22.1,
   "precip_mm_month": 15.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kemer",
@@ -4812,7 +5880,9 @@
   "t_min": 26.5,
   "precip_mm_month": 2.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kemer",
@@ -4821,7 +5891,9 @@
   "t_min": 26.3,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kemer",
@@ -4830,7 +5902,9 @@
   "t_min": 23.1,
   "precip_mm_month": 11.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kemer",
@@ -4839,7 +5913,9 @@
   "t_min": 18.9,
   "precip_mm_month": 23.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kemer",
@@ -4848,7 +5924,9 @@
   "t_min": 14.1,
   "precip_mm_month": 72.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "kemer",
@@ -4857,7 +5935,9 @@
   "t_min": 10.8,
   "precip_mm_month": 221.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bodrum",
@@ -4866,7 +5946,9 @@
   "t_min": 9.1,
   "precip_mm_month": 111.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bodrum",
@@ -4875,7 +5957,9 @@
   "t_min": 8.9,
   "precip_mm_month": 69.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bodrum",
@@ -4884,7 +5968,9 @@
   "t_min": 9.7,
   "precip_mm_month": 62.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bodrum",
@@ -4893,7 +5979,9 @@
   "t_min": 13.6,
   "precip_mm_month": 27.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bodrum",
@@ -4902,7 +5990,9 @@
   "t_min": 17.3,
   "precip_mm_month": 19.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bodrum",
@@ -4911,7 +6001,9 @@
   "t_min": 21.8,
   "precip_mm_month": 13.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bodrum",
@@ -4920,7 +6012,9 @@
   "t_min": 25.0,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bodrum",
@@ -4929,7 +6023,9 @@
   "t_min": 24.7,
   "precip_mm_month": 2.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bodrum",
@@ -4938,7 +6034,9 @@
   "t_min": 21.9,
   "precip_mm_month": 4.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bodrum",
@@ -4947,7 +6045,9 @@
   "t_min": 17.7,
   "precip_mm_month": 32.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bodrum",
@@ -4956,7 +6056,9 @@
   "t_min": 13.6,
   "precip_mm_month": 102.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bodrum",
@@ -4965,7 +6067,9 @@
   "t_min": 11.6,
   "precip_mm_month": 159.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "marmaris",
@@ -4974,7 +6078,9 @@
   "t_min": 7.9,
   "precip_mm_month": 159.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "marmaris",
@@ -4983,7 +6089,9 @@
   "t_min": 7.6,
   "precip_mm_month": 93.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "marmaris",
@@ -4992,7 +6100,9 @@
   "t_min": 8.6,
   "precip_mm_month": 77.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "marmaris",
@@ -5001,7 +6111,9 @@
   "t_min": 12.6,
   "precip_mm_month": 48.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "marmaris",
@@ -5010,7 +6122,9 @@
   "t_min": 16.5,
   "precip_mm_month": 23.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "marmaris",
@@ -5019,7 +6133,9 @@
   "t_min": 21.1,
   "precip_mm_month": 15.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "marmaris",
@@ -5028,7 +6144,9 @@
   "t_min": 24.8,
   "precip_mm_month": 2.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "marmaris",
@@ -5037,7 +6155,9 @@
   "t_min": 24.4,
   "precip_mm_month": 3.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "marmaris",
@@ -5046,7 +6166,9 @@
   "t_min": 21.3,
   "precip_mm_month": 11.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "marmaris",
@@ -5055,7 +6177,9 @@
   "t_min": 16.9,
   "precip_mm_month": 42.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "marmaris",
@@ -5064,7 +6188,9 @@
   "t_min": 12.6,
   "precip_mm_month": 172.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "marmaris",
@@ -5073,7 +6199,9 @@
   "t_min": 10.3,
   "precip_mm_month": 249.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "istanbul",
@@ -5082,7 +6210,9 @@
   "t_min": 4.7,
   "precip_mm_month": 92.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "istanbul",
@@ -5091,7 +6221,9 @@
   "t_min": 4.7,
   "precip_mm_month": 75.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "istanbul",
@@ -5100,7 +6232,9 @@
   "t_min": 4.9,
   "precip_mm_month": 78.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "istanbul",
@@ -5109,7 +6243,9 @@
   "t_min": 8.7,
   "precip_mm_month": 75.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "istanbul",
@@ -5118,7 +6254,9 @@
   "t_min": 12.6,
   "precip_mm_month": 56.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "istanbul",
@@ -5127,7 +6265,9 @@
   "t_min": 18.1,
   "precip_mm_month": 51.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "istanbul",
@@ -5136,7 +6276,9 @@
   "t_min": 21.3,
   "precip_mm_month": 19.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "istanbul",
@@ -5145,7 +6287,9 @@
   "t_min": 21.9,
   "precip_mm_month": 15.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "istanbul",
@@ -5154,7 +6298,9 @@
   "t_min": 18.6,
   "precip_mm_month": 52.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "istanbul",
@@ -5163,7 +6309,9 @@
   "t_min": 14.3,
   "precip_mm_month": 40.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "istanbul",
@@ -5172,7 +6320,9 @@
   "t_min": 10.4,
   "precip_mm_month": 96.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "istanbul",
@@ -5181,7 +6331,9 @@
   "t_min": 7.8,
   "precip_mm_month": 84.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "hurghada",
@@ -5190,7 +6342,9 @@
   "t_min": 13.6,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "hurghada",
@@ -5199,7 +6353,9 @@
   "t_min": 13.9,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "hurghada",
@@ -5208,7 +6364,9 @@
   "t_min": 15.9,
   "precip_mm_month": 3.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "hurghada",
@@ -5217,7 +6375,9 @@
   "t_min": 19.9,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "hurghada",
@@ -5226,7 +6386,9 @@
   "t_min": 23.3,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "hurghada",
@@ -5235,7 +6397,9 @@
   "t_min": 26.5,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "hurghada",
@@ -5244,7 +6408,9 @@
   "t_min": 28.4,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "hurghada",
@@ -5253,7 +6419,9 @@
   "t_min": 28.7,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "hurghada",
@@ -5262,7 +6430,9 @@
   "t_min": 27.1,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "hurghada",
@@ -5271,7 +6441,9 @@
   "t_min": 23.4,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "hurghada",
@@ -5280,7 +6452,9 @@
   "t_min": 19.6,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "hurghada",
@@ -5289,7 +6463,9 @@
   "t_min": 16.0,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sharm",
@@ -5298,7 +6474,9 @@
   "t_min": 13.1,
   "precip_mm_month": 5.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sharm",
@@ -5307,7 +6485,9 @@
   "t_min": 13.7,
   "precip_mm_month": 4.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sharm",
@@ -5316,7 +6496,9 @@
   "t_min": 16.3,
   "precip_mm_month": 8.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sharm",
@@ -5325,7 +6507,9 @@
   "t_min": 21.6,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sharm",
@@ -5334,7 +6518,9 @@
   "t_min": 25.1,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sharm",
@@ -5343,7 +6529,9 @@
   "t_min": 28.1,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sharm",
@@ -5352,7 +6540,9 @@
   "t_min": 29.4,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sharm",
@@ -5361,7 +6551,9 @@
   "t_min": 29.7,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sharm",
@@ -5370,7 +6562,9 @@
   "t_min": 28.6,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sharm",
@@ -5379,7 +6573,9 @@
   "t_min": 24.5,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sharm",
@@ -5388,7 +6584,9 @@
   "t_min": 19.8,
   "precip_mm_month": 3.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sharm",
@@ -5397,7 +6595,9 @@
   "t_min": 15.8,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "dubai",
@@ -5406,7 +6606,9 @@
   "t_min": 14.1,
   "precip_mm_month": 50.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "dubai",
@@ -5415,7 +6617,9 @@
   "t_min": 15.7,
   "precip_mm_month": 18.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "dubai",
@@ -5424,7 +6628,9 @@
   "t_min": 18.1,
   "precip_mm_month": 17.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "dubai",
@@ -5433,7 +6639,9 @@
   "t_min": 21.0,
   "precip_mm_month": 26.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "dubai",
@@ -5442,7 +6650,9 @@
   "t_min": 24.6,
   "precip_mm_month": 4.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "dubai",
@@ -5451,7 +6661,9 @@
   "t_min": 28.0,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "dubai",
@@ -5460,7 +6672,9 @@
   "t_min": 30.8,
   "precip_mm_month": 4.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "dubai",
@@ -5469,7 +6683,9 @@
   "t_min": 30.3,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "dubai",
@@ -5478,7 +6694,9 @@
   "t_min": 27.3,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "dubai",
@@ -5487,7 +6705,9 @@
   "t_min": 23.9,
   "precip_mm_month": 2.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "dubai",
@@ -5496,7 +6716,9 @@
   "t_min": 20.5,
   "precip_mm_month": 4.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "dubai",
@@ -5505,7 +6727,9 @@
   "t_min": 16.4,
   "precip_mm_month": 9.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "abu-dhabi",
@@ -5514,7 +6738,9 @@
   "t_min": 17.5,
   "precip_mm_month": 26.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "abu-dhabi",
@@ -5523,7 +6749,9 @@
   "t_min": 18.1,
   "precip_mm_month": 10.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "abu-dhabi",
@@ -5532,7 +6760,9 @@
   "t_min": 20.5,
   "precip_mm_month": 15.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "abu-dhabi",
@@ -5541,7 +6771,9 @@
   "t_min": 23.3,
   "precip_mm_month": 15.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "abu-dhabi",
@@ -5550,7 +6782,9 @@
   "t_min": 27.0,
   "precip_mm_month": 7.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "abu-dhabi",
@@ -5559,7 +6793,9 @@
   "t_min": 30.1,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "abu-dhabi",
@@ -5568,7 +6804,9 @@
   "t_min": 32.0,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "abu-dhabi",
@@ -5577,7 +6815,9 @@
   "t_min": 31.9,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "abu-dhabi",
@@ -5586,7 +6826,9 @@
   "t_min": 29.9,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "abu-dhabi",
@@ -5595,7 +6837,9 @@
   "t_min": 27.4,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "abu-dhabi",
@@ -5604,7 +6848,9 @@
   "t_min": 23.9,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "abu-dhabi",
@@ -5613,7 +6859,9 @@
   "t_min": 19.8,
   "precip_mm_month": 3.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "phuket",
@@ -5622,7 +6870,9 @@
   "t_min": 24.3,
   "precip_mm_month": 35.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "phuket",
@@ -5631,7 +6881,9 @@
   "t_min": 24.6,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "phuket",
@@ -5640,7 +6892,9 @@
   "t_min": 25.1,
   "precip_mm_month": 69.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "phuket",
@@ -5649,7 +6903,9 @@
   "t_min": 25.5,
   "precip_mm_month": 112.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "phuket",
@@ -5658,7 +6914,9 @@
   "t_min": 25.6,
   "precip_mm_month": 204.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "phuket",
@@ -5667,7 +6925,9 @@
   "t_min": 25.2,
   "precip_mm_month": 192.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "phuket",
@@ -5676,7 +6936,9 @@
   "t_min": 25.0,
   "precip_mm_month": 198.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "phuket",
@@ -5685,7 +6947,9 @@
   "t_min": 24.8,
   "precip_mm_month": 198.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "phuket",
@@ -5694,7 +6958,9 @@
   "t_min": 24.5,
   "precip_mm_month": 272.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "phuket",
@@ -5703,7 +6969,9 @@
   "t_min": 24.1,
   "precip_mm_month": 296.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "phuket",
@@ -5712,7 +6980,9 @@
   "t_min": 24.2,
   "precip_mm_month": 295.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "phuket",
@@ -5721,7 +6991,9 @@
   "t_min": 24.2,
   "precip_mm_month": 137.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pattaya",
@@ -5730,7 +7002,9 @@
   "t_min": 22.9,
   "precip_mm_month": 24.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pattaya",
@@ -5739,7 +7013,9 @@
   "t_min": 24.0,
   "precip_mm_month": 52.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pattaya",
@@ -5748,7 +7024,9 @@
   "t_min": 25.7,
   "precip_mm_month": 60.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pattaya",
@@ -5757,7 +7035,9 @@
   "t_min": 26.8,
   "precip_mm_month": 77.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pattaya",
@@ -5766,7 +7046,9 @@
   "t_min": 27.0,
   "precip_mm_month": 140.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pattaya",
@@ -5775,7 +7057,9 @@
   "t_min": 27.0,
   "precip_mm_month": 110.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pattaya",
@@ -5784,7 +7068,9 @@
   "t_min": 26.4,
   "precip_mm_month": 189.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pattaya",
@@ -5793,7 +7079,9 @@
   "t_min": 26.4,
   "precip_mm_month": 158.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pattaya",
@@ -5802,7 +7090,9 @@
   "t_min": 25.8,
   "precip_mm_month": 295.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pattaya",
@@ -5811,7 +7101,9 @@
   "t_min": 24.7,
   "precip_mm_month": 271.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pattaya",
@@ -5820,7 +7112,9 @@
   "t_min": 24.3,
   "precip_mm_month": 105.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "pattaya",
@@ -5829,7 +7123,9 @@
   "t_min": 23.0,
   "precip_mm_month": 21.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bangkok",
@@ -5838,7 +7134,9 @@
   "t_min": 22.2,
   "precip_mm_month": 14.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bangkok",
@@ -5847,7 +7145,9 @@
   "t_min": 23.6,
   "precip_mm_month": 47.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bangkok",
@@ -5856,7 +7156,9 @@
   "t_min": 25.9,
   "precip_mm_month": 48.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bangkok",
@@ -5865,7 +7167,9 @@
   "t_min": 26.8,
   "precip_mm_month": 84.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bangkok",
@@ -5874,7 +7178,9 @@
   "t_min": 26.6,
   "precip_mm_month": 153.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bangkok",
@@ -5883,7 +7189,9 @@
   "t_min": 26.1,
   "precip_mm_month": 156.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bangkok",
@@ -5892,7 +7200,9 @@
   "t_min": 25.7,
   "precip_mm_month": 233.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bangkok",
@@ -5901,7 +7211,9 @@
   "t_min": 25.5,
   "precip_mm_month": 210.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bangkok",
@@ -5910,7 +7222,9 @@
   "t_min": 25.1,
   "precip_mm_month": 336.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bangkok",
@@ -5919,7 +7233,9 @@
   "t_min": 24.1,
   "precip_mm_month": 281.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bangkok",
@@ -5928,7 +7244,9 @@
   "t_min": 23.7,
   "precip_mm_month": 86.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "bangkok",
@@ -5937,7 +7255,9 @@
   "t_min": 22.2,
   "precip_mm_month": 15.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "da-nang",
@@ -5946,7 +7266,9 @@
   "t_min": 19.8,
   "precip_mm_month": 149.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "da-nang",
@@ -5955,7 +7277,9 @@
   "t_min": 20.3,
   "precip_mm_month": 75.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "da-nang",
@@ -5964,7 +7288,9 @@
   "t_min": 22.6,
   "precip_mm_month": 51.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "da-nang",
@@ -5973,7 +7299,9 @@
   "t_min": 24.5,
   "precip_mm_month": 104.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "da-nang",
@@ -5982,7 +7310,9 @@
   "t_min": 26.1,
   "precip_mm_month": 57.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "da-nang",
@@ -5991,7 +7321,9 @@
   "t_min": 27.2,
   "precip_mm_month": 60.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "da-nang",
@@ -6000,7 +7332,9 @@
   "t_min": 26.7,
   "precip_mm_month": 83.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "da-nang",
@@ -6009,7 +7343,9 @@
   "t_min": 26.7,
   "precip_mm_month": 84.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "da-nang",
@@ -6018,7 +7354,9 @@
   "t_min": 25.6,
   "precip_mm_month": 280.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "da-nang",
@@ -6027,7 +7365,9 @@
   "t_min": 24.2,
   "precip_mm_month": 607.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "da-nang",
@@ -6036,7 +7376,9 @@
   "t_min": 23.1,
   "precip_mm_month": 374.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "da-nang",
@@ -6045,7 +7387,9 @@
   "t_min": 21.1,
   "precip_mm_month": 341.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nha-trang",
@@ -6054,7 +7398,9 @@
   "t_min": 21.4,
   "precip_mm_month": 64.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nha-trang",
@@ -6063,7 +7409,9 @@
   "t_min": 21.7,
   "precip_mm_month": 40.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nha-trang",
@@ -6072,7 +7420,9 @@
   "t_min": 22.9,
   "precip_mm_month": 51.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nha-trang",
@@ -6081,7 +7431,9 @@
   "t_min": 24.4,
   "precip_mm_month": 56.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nha-trang",
@@ -6090,7 +7442,9 @@
   "t_min": 25.9,
   "precip_mm_month": 63.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nha-trang",
@@ -6099,7 +7453,9 @@
   "t_min": 26.4,
   "precip_mm_month": 39.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nha-trang",
@@ -6108,7 +7464,9 @@
   "t_min": 25.9,
   "precip_mm_month": 80.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nha-trang",
@@ -6117,7 +7475,9 @@
   "t_min": 25.9,
   "precip_mm_month": 75.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nha-trang",
@@ -6126,7 +7486,9 @@
   "t_min": 25.3,
   "precip_mm_month": 135.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nha-trang",
@@ -6135,7 +7497,9 @@
   "t_min": 24.3,
   "precip_mm_month": 268.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nha-trang",
@@ -6144,7 +7508,9 @@
   "t_min": 23.5,
   "precip_mm_month": 393.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "nha-trang",
@@ -6153,7 +7519,9 @@
   "t_min": 22.5,
   "precip_mm_month": 190.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sanya",
@@ -6162,7 +7530,9 @@
   "t_min": 18.7,
   "precip_mm_month": 22.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sanya",
@@ -6171,7 +7541,9 @@
   "t_min": 19.8,
   "precip_mm_month": 24.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sanya",
@@ -6180,7 +7552,9 @@
   "t_min": 22.4,
   "precip_mm_month": 16.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sanya",
@@ -6189,7 +7563,9 @@
   "t_min": 24.5,
   "precip_mm_month": 44.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sanya",
@@ -6198,7 +7574,9 @@
   "t_min": 26.3,
   "precip_mm_month": 118.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sanya",
@@ -6207,7 +7585,9 @@
   "t_min": 27.4,
   "precip_mm_month": 173.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sanya",
@@ -6216,7 +7596,9 @@
   "t_min": 26.9,
   "precip_mm_month": 191.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sanya",
@@ -6225,7 +7607,9 @@
   "t_min": 26.6,
   "precip_mm_month": 192.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sanya",
@@ -6234,7 +7618,9 @@
   "t_min": 25.8,
   "precip_mm_month": 226.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sanya",
@@ -6243,7 +7629,9 @@
   "t_min": 24.2,
   "precip_mm_month": 290.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sanya",
@@ -6252,7 +7640,9 @@
   "t_min": 22.5,
   "precip_mm_month": 42.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "sanya",
@@ -6261,7 +7651,9 @@
   "t_min": 19.3,
   "precip_mm_month": 30.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "male",
@@ -6270,7 +7662,9 @@
   "t_min": 26.6,
   "precip_mm_month": 89.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "male",
@@ -6279,7 +7673,9 @@
   "t_min": 26.9,
   "precip_mm_month": 40.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "male",
@@ -6288,7 +7684,9 @@
   "t_min": 26.9,
   "precip_mm_month": 72.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "male",
@@ -6297,7 +7695,9 @@
   "t_min": 27.2,
   "precip_mm_month": 132.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "male",
@@ -6306,7 +7706,9 @@
   "t_min": 27.1,
   "precip_mm_month": 278.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "male",
@@ -6315,7 +7717,9 @@
   "t_min": 27.2,
   "precip_mm_month": 92.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "male",
@@ -6324,7 +7728,9 @@
   "t_min": 26.8,
   "precip_mm_month": 172.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "male",
@@ -6333,7 +7739,9 @@
   "t_min": 26.8,
   "precip_mm_month": 192.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "male",
@@ -6342,7 +7750,9 @@
   "t_min": 26.4,
   "precip_mm_month": 215.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "male",
@@ -6351,7 +7761,9 @@
   "t_min": 26.5,
   "precip_mm_month": 191.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "male",
@@ -6360,7 +7772,9 @@
   "t_min": 26.2,
   "precip_mm_month": 253.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "male",
@@ -6369,7 +7783,9 @@
   "t_min": 26.3,
   "precip_mm_month": 239.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "larnaca",
@@ -6378,7 +7794,9 @@
   "t_min": 9.0,
   "precip_mm_month": 46.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "larnaca",
@@ -6387,7 +7805,9 @@
   "t_min": 8.6,
   "precip_mm_month": 32.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "larnaca",
@@ -6396,7 +7816,9 @@
   "t_min": 9.9,
   "precip_mm_month": 25.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "larnaca",
@@ -6405,7 +7827,9 @@
   "t_min": 13.8,
   "precip_mm_month": 23.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "larnaca",
@@ -6414,7 +7838,9 @@
   "t_min": 17.6,
   "precip_mm_month": 17.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "larnaca",
@@ -6423,7 +7849,9 @@
   "t_min": 21.2,
   "precip_mm_month": 5.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "larnaca",
@@ -6432,7 +7860,9 @@
   "t_min": 24.9,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "larnaca",
@@ -6441,7 +7871,9 @@
   "t_min": 24.5,
   "precip_mm_month": 2.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "larnaca",
@@ -6450,7 +7882,9 @@
   "t_min": 22.3,
   "precip_mm_month": 6.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "larnaca",
@@ -6459,7 +7893,9 @@
   "t_min": 19.3,
   "precip_mm_month": 11.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "larnaca",
@@ -6468,7 +7904,9 @@
   "t_min": 14.7,
   "precip_mm_month": 35.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "larnaca",
@@ -6477,7 +7915,9 @@
   "t_min": 11.1,
   "precip_mm_month": 45.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "paphos",
@@ -6486,7 +7926,9 @@
   "t_min": 9.3,
   "precip_mm_month": 121.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "paphos",
@@ -6495,7 +7937,9 @@
   "t_min": 8.6,
   "precip_mm_month": 59.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "paphos",
@@ -6504,7 +7948,9 @@
   "t_min": 9.9,
   "precip_mm_month": 45.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "paphos",
@@ -6513,7 +7959,9 @@
   "t_min": 13.0,
   "precip_mm_month": 30.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "paphos",
@@ -6522,7 +7970,9 @@
   "t_min": 16.5,
   "precip_mm_month": 15.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "paphos",
@@ -6531,7 +7981,9 @@
   "t_min": 20.1,
   "precip_mm_month": 7.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "paphos",
@@ -6540,7 +7992,9 @@
   "t_min": 23.3,
   "precip_mm_month": 0.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "paphos",
@@ -6549,7 +8003,9 @@
   "t_min": 23.6,
   "precip_mm_month": 1.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "paphos",
@@ -6558,7 +8014,9 @@
   "t_min": 21.5,
   "precip_mm_month": 4.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "paphos",
@@ -6567,7 +8025,9 @@
   "t_min": 17.7,
   "precip_mm_month": 15.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "paphos",
@@ -6576,7 +8036,9 @@
   "t_min": 14.1,
   "precip_mm_month": 63.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  },
  {
   "dest_code": "paphos",
@@ -6585,6 +8047,8 @@
   "t_min": 11.1,
   "precip_mm_month": 99.0,
   "data_status": "real",
-  "source_id": "open_meteo_archive"
+  "source_id": "open_meteo_archive",
+  "fetched_at": "2026-10-25T14:08:04Z",
+  "synthetic": false
  }
 ]

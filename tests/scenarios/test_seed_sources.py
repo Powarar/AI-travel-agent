@@ -16,6 +16,8 @@
 from __future__ import annotations
 
 import json
+import sys
+from collections import Counter
 from datetime import datetime, timezone
 from decimal import Decimal
 from uuid import UUID
@@ -23,6 +25,7 @@ from uuid import UUID
 import pytest
 
 from scripts import run_pipeline as rp
+from data.generators import common, run_all
 from services.agent.app.llm.slots import MockSlots
 from services.agent.app.orchestration.runtime import Runtime
 from services.agent.app.tools.seed_sources import catalog, hotel_search, weather_climate
@@ -182,4 +185,54 @@ class TestReproducibility:
         assert self._stable(first) == self._stable(second)
         #: одинаковый заказ: `checkout_mock` идемпотентен по хешу аргументов
         assert first["chosen"]["component_refs"]["order"] == second["chosen"]["component_refs"]["order"]
+
+
+def test_seed_catalog_has_the_expected_boundary_cases() -> None:
+    data = catalog()
+    assert len(data.destinations) >= 10
+    hotel_counts = Counter(row["dest_code"] for row in data.hotels)
+    assert sum(count >= 40 for count in hotel_counts.values()) >= 10
+    assert len(data.rates) > 10_000
+    assert min(date for _, date in data.rates) == "2026-11-01"
+    assert max(date for _, date in data.rates) == "2026-12-07"
+    assert len(data.rates) < len(data.hotels) * 37  # хотя бы одна ночь без ставки
+    assert any(leg["overnight"] for leg in data.legs)
+    assert any(not leg["direct"] for leg in data.legs)
+    assert any(datetime.fromisoformat(leg["arr_at"]).hour >= 18 for leg in data.legs)
+    assert all(row["source_id"] in data.fetched for row in data.hotels)
+    assert all(row["source_id"] in data.fetched for row in data.rates.values())
+    assert all(row["source_id"] in data.fetched for row in data.legs)
+    for rows in (
+        data.destinations, data.airports, data.climate.values(), data.hotels,
+        data.rates.values(), data.legs, data.transfers,
+    ):
+        assert all(row["fetched_at"] for row in rows)
+        assert all(row["synthetic"] == (row["data_status"] == "synthetic") for row in rows)
+
+
+def test_seed_sources_keep_bytes_when_source_metadata_is_unchanged(
+    tmp_path, monkeypatch,
+) -> None:
+    monkeypatch.setattr(common, "SEEDS_DIR", tmp_path)
+    monkeypatch.setitem(run_all.STEPS, "noop", lambda: None)
+    monkeypatch.setattr(sys, "argv", ["run_all.py", "noop"])
+    metadata = {
+        "source_id": "synthetic_seed",
+        "name": "Детерминированный генератор",
+        "url": "local",
+        "kind": "synthetic",
+    }
+    first = {**metadata, "fetched_at": "2026-10-25T14:55:41Z"}
+    (tmp_path / "sources.json").write_text(json.dumps([first]))
+
+    first_output = None
+    for _ in range(2):
+        monkeypatch.setattr(common, "_SOURCES", {})
+        common.source("synthetic_seed", metadata["name"], metadata["url"], metadata["kind"])
+        assert run_all.main() == 0
+        output = (tmp_path / "sources.json").read_bytes()
+        assert json.loads(output) == [first]
+        if first_output is not None:
+            assert output == first_output
+        first_output = output
 
