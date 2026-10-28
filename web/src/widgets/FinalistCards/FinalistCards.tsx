@@ -3,7 +3,6 @@ import type { CSSProperties } from 'react'
 import { finalists, monthName } from '../../shared/lib/plan'
 import type { TripState } from '../../shared/types/contracts'
 import { Icon } from '../../shared/ui/Icon/Icon'
-import { StatusBadge } from '../../shared/ui/StatusBadge/StatusBadge'
 
 import styles from './FinalistCards.module.scss'
 
@@ -16,7 +15,7 @@ export function FinalistCards({ state }: { state: TripState }) {
   const current = state.outcome === 'plan_ready'
   return (
     <section aria-labelledby="finalists-title">
-      <h3 id="finalists-title" className={styles.title}>Финалисты <small>агент сравнил {items.length} направления</small></h3>
+      <h3 id="finalists-title" className={styles.title}>Финалисты <small>сравнили {items.length} направления</small></h3>
       <div className={styles.grid}>
         {items.map((c, i) => {
           const isChosen = c.candidate_id === chosen
@@ -38,7 +37,6 @@ export function FinalistCards({ state }: { state: TripState }) {
                   <span><Icon name="plane" size={15} />{c.ref.flight_h ? `${c.ref.flight_h} ч` : '—'}<small>в пути</small></span>
                 </div>
                 {c.ref.why && <p className={styles.why}>{c.ref.why}</p>}
-                <StatusBadge status={c.data_status} prefix="данные" />
               </div>
             </article>
           )

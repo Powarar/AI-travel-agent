@@ -155,7 +155,7 @@ export class MockTripApi implements TripApi {
       store.state = { ...(store.state as TripState), version }
       events = [started, { event: 'answer_text', data: {
         block_id: 'mock', numbers_verified: true,
-        text: `Этой правки нет в записанном демо — план не изменён. Попробуйте: ${hint}.`,
+        text: `Так поменять поездку пока не получится — план остался прежним. Можно попробовать: ${hint}.`,
       } }]
     }
     store.runs[runId] = { run_id: runId, trip_id: tripId, status: store.state.run_status,

@@ -4,7 +4,6 @@ import { COMPONENT_LABEL } from '../../shared/lib/labels'
 import { componentCandidate, plural } from '../../shared/lib/plan'
 import type { Candidate, TripState } from '../../shared/types/contracts'
 import { Icon, type IconName } from '../../shared/ui/Icon/Icon'
-import { StatusBadge } from '../../shared/ui/StatusBadge/StatusBadge'
 
 import styles from './TripTimeline.module.scss'
 
@@ -66,7 +65,6 @@ export function TripTimeline({ state }: { state: TripState }) {
                 <strong>{d.title}</strong>
                 <span className={styles.lines}>{d.lines.join(' · ')}</span>
               </div>
-              <StatusBadge status={c!.data_status} />
             </li>
           )
         })}

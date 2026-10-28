@@ -66,7 +66,14 @@
   border: 1px solid var(--color-border);
 }
 
-.thinking { padding-block: 0.85rem; }
+.thinking {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-block: 0.75rem;
+}
+
+.status { color: var(--color-muted); font-size: 0.85rem; animation: fade-in 300ms ease both; }
 
 .agentTurn { display: flex; gap: 0.6rem; align-items: flex-start; }
 
@@ -78,61 +85,6 @@
   min-width: 0;
 }
 
-.activity {
-  border: 1px dashed var(--color-border-strong);
-  border-radius: 16px;
-  background: rgb(244 247 241 / 80%);
-  font-size: 0.8rem;
-
-  summary {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.5rem 0.7rem;
-    color: var(--color-text);
-    font-weight: 700;
-    cursor: pointer;
-    list-style: none;
-
-    &::-webkit-details-marker { display: none; }
-    &:focus-visible { outline: 2px solid var(--color-blue); outline-offset: 2px; border-radius: 16px; }
-  }
-
-  ol {
-    display: grid;
-    gap: 0.25rem;
-    margin: 0;
-    padding: 0 0.7rem 0.6rem 0.9rem;
-    list-style: none;
-  }
-
-  li {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    color: var(--color-muted);
-
-    svg { flex: none; color: var(--color-blue); }
-    small { margin-left: auto; color: var(--color-muted); font-variant-numeric: tabular-nums; }
-  }
-}
-
-.activityIcon {
-  display: grid;
-  place-items: center;
-  width: 1.3rem;
-  height: 1.3rem;
-  border-radius: 50%;
-  background: var(--color-blue);
-  color: #fff;
-}
-
-.activityMeta { margin-left: auto; color: var(--color-muted); font-weight: 500; }
-
-.ok svg { color: var(--color-ok) !important; }
-.accent { color: var(--color-blue) !important; font-weight: 700; }
-.warn { color: var(--color-warn) !important; svg { color: var(--color-warn) !important; } }
-.bad { color: var(--color-bad) !important; font-weight: 700; svg { color: var(--color-bad) !important; } }
 
 .error {
   display: flex;

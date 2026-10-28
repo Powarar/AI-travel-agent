@@ -20,7 +20,6 @@ export function CheckoutPanel({ state, order, busy, onCheckout }: Props) {
   const total = groupLedger(state.chosen.items).total
   return (
     <section className={`${styles.panel} ${order ? styles.done : ''}`.trim()} aria-labelledby="checkout-title">
-      <span className={styles.ribbon} role="note"><Icon name="shield" size={13} /> Симуляция: деньги не списываются</span>
       {order ? (
         <div className={styles.success} role="status">
           <div className={styles.burst} aria-hidden="true">
@@ -31,16 +30,13 @@ export function CheckoutPanel({ state, order, busy, onCheckout }: Props) {
             <path d="M15 27l7 7 15-16" />
           </svg>
           <h3 id="checkout-title">Поездка оформлена!</h3>
-          <p>Заказ <b>{order.order_id}</b>{order.idempotent_replay ? ' — повторное нажатие вернуло тот же заказ' : ''}</p>
-          <button type="button" className={styles.secondary} onClick={onCheckout} disabled={busy}>
-            Нажать ещё раз — заказ не задвоится
-          </button>
+          <p>Номер заказа <b>{order.order_id}</b>. Детали поездки отправим на почту.</p>
         </div>
       ) : (
         <div className={styles.cta}>
           <div>
-            <h3 id="checkout-title">Всё готово к оформлению</h3>
-            <p>{ready ? 'План собран без блокирующих нарушений.' : 'Оформить можно только готовый план без блокирующих нарушений.'}</p>
+            <h3 id="checkout-title">{ready ? 'Всё готово — можно оформлять' : 'Пока нечего оформлять'}</h3>
+            <p>{ready ? 'Перелёты, отель и трансферы — одним заказом.' : 'Сначала поправьте поездку в чате.'}</p>
           </div>
           <button type="button" className={styles.primary} onClick={onCheckout} disabled={!ready || busy}>
             {busy ? 'Оформляем…' : <>Оформить{total ? ` за ${formatMoney(total)}` : ''} <Icon name="arrow" size={18} /></>}

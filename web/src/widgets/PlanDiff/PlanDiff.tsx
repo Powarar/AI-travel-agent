@@ -14,7 +14,7 @@ interface Props {
   update: SSEPayloads['plan_updated']
 }
 
-/** Что поменялось после правки: по событию plan_updated, подписи — из обеих версий состояния. */
+/** Что поменялось после правки: было → стало, и что осталось как было. */
 export function PlanDiff({ previous, current, update }: Props) {
   const before = groupLedger(previous.chosen.items).total
   const after = groupLedger(current.chosen.items).total
@@ -26,17 +26,14 @@ export function PlanDiff({ previous, current, update }: Props) {
     <section className={`${styles.diff} motion-fade-up`} aria-labelledby="diff-title">
       <div className={styles.head}>
         <h3 id="diff-title"><Icon name="refresh" size={18} /> Что изменилось</h3>
-        <span className={styles.versions}>v{previous.version} → v{current.version}</span>
       </div>
-      <div className={styles.summary}>
-        <span className={styles.changedPill}>изменено {update.changed_components.length}</span>
-        <span className={styles.keptPill}>сохранено {update.kept_components.length}</span>
-        {delta && delta.amount !== '0' && (
+      {delta && delta.amount !== '0' && (
+        <div className={styles.summary}>
           <span className={`${styles.delta} ${cheaper ? styles.cheaper : styles.pricier}`}>
-            {cheaper ? '' : '+'}{formatMoney(delta)}
+            {cheaper ? 'дешевле на ' : 'дороже на '}{formatMoney(cheaper ? fromMinor(-toMinor(delta.amount), delta.currency) : delta)}
           </span>
-        )}
-      </div>
+        </div>
+      )}
       <ul className={styles.rows}>
         {update.changed_components.map((c, i) => (
           <li key={c} className={`${styles.row} ${styles.changed}`} style={{ '--i': i } as CSSProperties}>
@@ -49,7 +46,7 @@ export function PlanDiff({ previous, current, update }: Props) {
         {update.kept_components.map((c) => (
           <li key={c} className={`${styles.row} ${styles.kept}`}>
             <span className={styles.label}>{COMPONENT_LABEL[c] ?? c}</span>
-            <span className={styles.keptValue}><Icon name="check" size={14} /> {componentLabel(current, c)}</span>
+            <span className={styles.keptValue}><Icon name="check" size={14} /> {componentLabel(current, c)} — без изменений</span>
           </li>
         ))}
       </ul>

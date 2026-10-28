@@ -29,7 +29,6 @@ export function TripSummary({ state }: { state: TripState }) {
         <span className={`${styles.outcome} ${styles[state.outcome ?? 'unknown'] ?? ''}`.trim()}>
           {state.outcome ? OUTCOME_LABEL[state.outcome] : 'Собираем план'}
         </span>
-        <span className={styles.version}>версия {state.version}</span>
       </div>
       <div className={styles.main}>
         <div>

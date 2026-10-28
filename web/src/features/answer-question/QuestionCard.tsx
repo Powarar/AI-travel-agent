@@ -9,11 +9,10 @@ import styles from './QuestionCard.module.scss'
 interface Props {
   question: SSEPayloads['question']
   disabled: boolean
-  resumed: boolean
   onAnswer: (field: string, value: string, label?: string) => void
 }
 
-export function QuestionCard({ question, disabled, resumed, onAnswer }: Props) {
+export function QuestionCard({ question, disabled, onAnswer }: Props) {
   const [value, setValue] = useState('')
 
   function submit(event: FormEvent) {
@@ -25,7 +24,6 @@ export function QuestionCard({ question, disabled, resumed, onAnswer }: Props) {
     <div className={`${styles.card} motion-pop`} role="group" aria-label="Вопрос агента">
       <div className={styles.head}>
         <span className={styles.kicker}><Icon name="sparkle" size={14} /> {FIELD_LABEL[question.field] ?? question.field}</span>
-        {resumed && <span className={styles.resumed}><Icon name="refresh" size={12} /> продолжаем после перезагрузки</span>}
       </div>
       <div className={styles.chips}>
         {question.options.map((option, i) => (

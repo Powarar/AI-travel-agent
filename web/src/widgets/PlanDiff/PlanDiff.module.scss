@@ -18,19 +18,16 @@
   h3 { display: flex; align-items: center; gap: 0.4rem; margin: 0; color: var(--color-blue); font-size: 1.2rem; font-weight: 850; }
 }
 
-.versions { color: var(--color-muted); font-size: 0.8rem; font-weight: 750; }
 
 .summary { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
-.changedPill, .keptPill, .delta {
+.delta {
   padding: 0.25rem 0.7rem;
   border-radius: var(--radius-pill);
   font-size: 0.78rem;
   font-weight: 800;
 }
 
-.changedPill { background: var(--color-blue-soft); color: var(--color-blue); }
-.keptPill { background: var(--color-ok-soft); color: var(--color-ok); }
 .cheaper { background: var(--color-mojito); color: var(--color-blue-deep); }
 .pricier { background: var(--color-warn-soft); color: var(--color-warn); }
 

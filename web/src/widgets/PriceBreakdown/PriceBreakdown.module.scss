@@ -49,7 +49,7 @@
 
   li {
     display: grid;
-    grid-template-columns: 12px minmax(0, 1fr) auto auto;
+    grid-template-columns: 12px minmax(0, 1fr) auto;
     align-items: center;
     gap: 0.75rem;
     padding: 0.55rem 0;
@@ -68,11 +68,5 @@
   small { color: var(--color-muted); font-size: 0.75rem; font-weight: 500; }
 }
 
-.badges { display: flex; gap: 0.25rem; }
 .amount { font-variant-numeric: tabular-nums; white-space: nowrap; }
-.foot { margin: 0; color: var(--color-muted); font-size: 0.75rem; }
 
-@media (max-width: 540px) {
-  .rows li { grid-template-columns: 12px minmax(0, 1fr) auto; }
-  .badges { display: none; }
-}

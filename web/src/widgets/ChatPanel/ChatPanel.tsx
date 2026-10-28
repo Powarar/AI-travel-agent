@@ -33,7 +33,6 @@ export function ChatPanel({ session }: { session: TripSession }) {
   const blocks = useMemo(() => toBlocks(feed), [feed])
   const waiting = state?.run_status === 'interrupted'
   const hasPlan = Boolean(state && Object.keys(state.chosen.component_refs).length)
-  const lastAgent = [...blocks].reverse().find((b) => b.kind === 'agent')
   const tail = blocks[blocks.length - 1]
 
   useEffect(() => {
@@ -55,16 +54,11 @@ export function ChatPanel({ session }: { session: TripSession }) {
         {blocks.map((block) => block.kind === 'user' ? (
           <p key={block.id} className={`${styles.bubble} ${styles.userBubble} motion-fade-up`}>{block.text}</p>
         ) : (
-          <AgentTurn
-            key={block.id}
-            events={block.events}
-            live={busy && block === lastAgent && tail === block}
-            thinking={busy && block === tail}
-          />
+          <AgentTurn key={block.id} events={block.events} thinking={busy && block === tail} />
         ))}
-        {busy && tail?.kind === 'user' && <AgentTurn events={[]} live thinking />}
+        {busy && tail?.kind === 'user' && <AgentTurn events={[]} thinking />}
         {question && waiting && !busy && (
-          <QuestionCard question={question} disabled={busy} resumed={session.resumed} onAnswer={session.answer} />
+          <QuestionCard question={question} disabled={busy} onAnswer={session.answer} />
         )}
         {error && (
           <p className={styles.error} role="alert"><Icon name="alert" size={16} /> {error}</p>

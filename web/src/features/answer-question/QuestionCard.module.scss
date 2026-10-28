@@ -20,17 +20,6 @@
   text-transform: uppercase;
 }
 
-.resumed {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-mojito);
-  color: var(--color-blue-deep);
-  font-size: 0.7rem;
-  font-weight: 750;
-}
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
 

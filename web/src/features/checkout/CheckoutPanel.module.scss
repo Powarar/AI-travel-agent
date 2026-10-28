@@ -13,18 +13,6 @@
   p { margin: 0; color: var(--color-text); }
 }
 
-.ribbon {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  margin-bottom: 0.9rem;
-  padding: 0.3rem 0.75rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-text);
-  color: #fff;
-  font-size: 0.72rem;
-  font-weight: 800;
-}
 
 .cta {
   display: flex;
@@ -34,7 +22,7 @@
   gap: 1rem;
 }
 
-.primary, .secondary {
+.primary {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -59,14 +47,6 @@
   &:hover:not(:disabled) { transform: translateY(-2px) scale(1.02); box-shadow: 0 18px 34px rgb(14 65 210 / 34%); }
 }
 
-.secondary {
-  margin-top: 1rem;
-  min-height: 2.6rem;
-  padding: 0.5rem 1rem;
-  background: rgb(255 255 255 / 70%);
-  color: var(--color-blue);
-  font-size: 0.85rem;
-}
 
 .success {
   position: relative;

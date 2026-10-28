@@ -27,7 +27,7 @@ export function PlanningPage({ session, initialMessage, onExit }: Props) {
     <div className={styles.page}>
       <span className={`${styles.blob} ${styles.blobA}`} aria-hidden="true" />
       <span className={`${styles.blob} ${styles.blobB}`} aria-hidden="true" />
-      <PlanningHeader mode={session.mode} onNewTrip={onExit} />
+      <PlanningHeader onNewTrip={onExit} />
       <div className={styles.layout}>
         <aside className={styles.chat}>
           <ChatPanel session={session} />

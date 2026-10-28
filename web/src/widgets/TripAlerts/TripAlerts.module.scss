@@ -1,5 +1,3 @@
-.alerts { display: grid; gap: 0.5rem; }
-
 .alert {
   display: flex;
   gap: 0.75rem;
@@ -8,10 +6,10 @@
   background: var(--color-warn-soft);
   color: var(--color-warn);
 
-  div { display: grid; gap: 0.15rem; color: var(--color-text); font-size: 0.88rem; }
-  strong { color: var(--color-warn); }
+  div { display: grid; gap: 0.3rem; color: var(--color-text); font-size: 0.9rem; }
+  strong { color: var(--color-warn); font-size: 1rem; }
   svg { flex: none; margin-top: 0.1rem; }
-  code { color: var(--color-muted); font-size: 0.7rem; }
+  ul { margin: 0; padding-left: 1.1rem; line-height: 1.45; }
 }
 
 .blocking {
@@ -24,21 +22,12 @@
 .quote {
   position: relative;
   margin: 0;
-  padding: 1.2rem 1.3rem 1rem 4.2rem;
+  padding: 1.2rem 1.3rem 1.2rem 4.2rem;
   border-radius: var(--radius-card);
   background: var(--color-mojito-soft);
   box-shadow: inset 0 0 0 1px rgb(143 224 90 / 50%);
 
-  blockquote { margin: 0 0 0.6rem; font-size: 1rem; line-height: 1.55; }
-
-  figcaption {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    color: var(--color-ok);
-    font-size: 0.75rem;
-    font-weight: 700;
-  }
+  blockquote { margin: 0; font-size: 1rem; line-height: 1.55; }
 }
 
 .mark {
@@ -56,3 +45,5 @@
   font-size: 0.85rem;
   letter-spacing: -0.06em;
 }
+
+.hint { color: var(--color-muted); font-size: 0.82rem; }

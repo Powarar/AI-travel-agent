@@ -1,5 +1,3 @@
-@use '../../shared/styles/keyframes';
-
 .header {
   display: flex;
   align-items: center;
@@ -10,21 +8,6 @@
 
 .actions { display: flex; align-items: center; gap: 0.6rem; }
 
-.mode {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.4rem 0.8rem;
-  border-radius: var(--radius-pill);
-  background: rgb(255 255 255 / 75%);
-  color: var(--color-muted);
-  font-size: 0.78rem;
-  font-weight: 750;
-
-  i { width: 8px; height: 8px; border-radius: 50%; background: #ffb648; }
-}
-
-.live i { background: var(--color-ok); animation: pulse-ring 1.6s ease-out infinite; }
 
 .newTrip {
   display: inline-flex;
@@ -45,6 +28,5 @@
 }
 
 @media (max-width: 640px) {
-  .mode { display: none; }
   .newTrip span { display: none; }
 }
