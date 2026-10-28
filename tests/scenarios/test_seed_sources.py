@@ -125,12 +125,11 @@ class TestRefusalNamesNumbers:
         assert report.outcome == Outcome.INFEASIBLE
         assert report.order_id is None
         assert report.components == {}
-        assert "направлений в каталоге — 61" in report.explanation_text
-        assert "названо — гамбург" in report.explanation_text
+        assert "«Гамбург» нет среди 61 направлений" in report.explanation_text
 
     def test_refusal_is_russian_text_not_a_code(self) -> None:
         report = trip("хочу в гамбург с 12 по 17 ноября вдвоём, 150к")
-        assert report.explanation_text.startswith("Плана нет.")
+        assert report.explanation_text.startswith("Не получилось собрать поездку.")
         assert "CANDIDATES_EMPTY" not in report.explanation_text
 
     @pytest.mark.parametrize("code", NO_FLIGHT_DESTINATIONS)
@@ -140,8 +139,7 @@ class TestRefusalNamesNumbers:
         #: план чужого направления — тихая подмена hard-поля, её быть не может ни при каком исходе
         assert "destination" not in report.components
         assert report.order_id is None
-        assert any(label in report.explanation_text
-                   for label in ("направлений в выдаче — 0", "рейсов в выдаче — 0"))
+        assert report.explanation_text.startswith("Не получилось собрать поездку.")
 
     def test_catalog_spelling_of_the_name_still_refuses(self) -> None:
         #: каталог пишет названия латиницей («Gelendzhik»): пока разбор принимал только
@@ -271,8 +269,9 @@ class TestBudgetAcrossDestinations:
         blocking = [row for row in report.violations if row.endswith(":blocking")]
         assert blocking == ["BUDGET_EXCEEDED:blocking"]
         #: отказ по самому дешёвому из собранных: 166 950 ₽, а не 244 850 ₽ самого релевантного
-        assert "вышло 166 950 ₽" in report.explanation_text
-        assert "reduce_lodging_to" in report.explanation_text
+        assert "стоит 166 950 ₽ при бюджете 150 000 ₽" in report.explanation_text
+        assert "удешевить до 15 500 ₽" in report.explanation_text
+        assert "reduce_lodging_to" not in report.explanation_text
         #: отказ цитирует числа состояния в человекочитаемой форме («15 500 ₽») — guard не
         #: имеет права считать их выдумкой: на живом слоте №5 это вторая платная генерация
         assert report.invented_numbers == []

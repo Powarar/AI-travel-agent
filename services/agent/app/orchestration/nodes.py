@@ -1028,6 +1028,12 @@ def derive_defaults(request: TripRequest) -> TripRequest:
             derived.nights = FieldValue[int].inferred(
                 (end - start).days, kind=ConstraintKind.HARD, source="dates", confidence=1.0
             )
+    if derived.party.adults.is_unknown:
+        #: CONTRACTS.md: «unknown → 2 + DEFAULTED». Дефолт ставит код, а не парсер: у мок-слота
+        #: он был, у живого — нет, и «к морю из Москвы, до 45 000 ₽» без «вдвоём» уходил в
+        #: `infeasible` с «adults=None» (живой контур, 2026-10-28). `merge_request` не считает
+        #: defaulted конфликтом, поэтому следующее «нас трое» перезапишет его молча и верно.
+        derived.party.adults = FieldValue[int].defaulted(2, kind=ConstraintKind.HARD)
     if derived.lodging.rooms.is_unknown:
         people = (derived.party.adults.value or 2) + len(derived.party.children.value or [])
         derived.lodging.rooms = FieldValue[int].defaulted(1 if people <= 3 else 2, kind=ConstraintKind.HARD)
@@ -1223,18 +1229,43 @@ def refusal_text(violations: Sequence[Violation]) -> str:
     же требование, по которому `unverified_numbers` сверяет объяснение плана.
     """
 
-    lines: list[str] = []
-    for violation in violations:
-        if not violation.is_blocking:
-            continue
-        where = violation.affected_component
-        numbers = [f"{label} — {value}" for label, value in violation.evidence.items()
-                   if label != "destination" and value]
-        tail = f"; {', '.join(numbers)}" if numbers else ""
-        lines.append(f"{where}: ждали {violation.expected}, вышло {violation.actual}{tail}")
+    lines = [_refusal_line(violation) for violation in violations if violation.is_blocking]
     if not lines:
-        return "Плана нет: совместимых вариантов не нашлось."
-    return f"Плана нет. {'; '.join(lines)}."
+        return f"{_REFUSAL_HEAD} Подходящих вариантов не нашлось."
+    return f"{_REFUSAL_HEAD} {' '.join(lines)}"
+
+
+_REFUSAL_HEAD = "Не получилось собрать поездку."
+
+#: подписи компонентов для человека; `plan` — вся поездка, отдельной подписи не нужно
+_COMPONENT_RU: dict[str, str] = {
+    "destination": "Направление", "transport": "Перелёт", "transport_in": "Перелёт туда",
+    "transport_out": "Перелёт обратно", "hotel": "Отель", "hotels": "Отель",
+    "transfer": "Трансфер", "transfers": "Трансфер", "climate": "Погода",
+}
+
+
+def _refusal_line(violation: Violation) -> str:
+    """Одна причина отказа обычными словами; числа — те же, что в нарушении."""
+
+    ev = violation.evidence
+    if violation.code == ViolationCode.BUDGET_EXCEEDED and "over_by" in ev:
+        line = (f"Самый дешёвый вариант стоит {violation.actual} при бюджете {violation.expected} — "
+                f"на {ev['over_by']} дороже.")
+        cut = ev.get("reduce_lodging_to", "")
+        if cut and not cut.lstrip().startswith(("-", "−")):
+            return f"{line} Чтобы уложиться, проживание ({ev.get('lodging_now', '')}) нужно удешевить до {cut}."
+        return f"{line} Даже без проживания поездка дороже бюджета — поднимите бюджет или выберите место ближе."
+    named, catalog = ev.get("направлений названо"), ev.get("направлений в каталоге")
+    if violation.code == ViolationCode.CANDIDATES_EMPTY and named and catalog:
+        # число по контракту остаётся в отказе, но словами, а не счётчиком источника
+        return (f"Направления «{named.capitalize()}» нет среди {catalog} направлений, с которыми мы работаем — "
+                f"попробуйте другой город или опишите, какой отдых хочется.")
+    where = _COMPONENT_RU.get(violation.affected_component)
+    prefix = f"{where}: " if where else ""
+    if violation.code == ViolationCode.CANDIDATES_EMPTY:
+        return f"{prefix}не нашлось — {violation.expected}."
+    return f"{prefix}нужно {violation.expected}, а получилось {violation.actual}."
 
 
 def _empty(component: str, code: str, *, expected: str, actual: str,
