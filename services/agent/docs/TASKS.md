@@ -243,6 +243,7 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 
 ### T-10 · Retrieval и ранжирование
 
+**Статус:** ✅ done 2026-10-28 (П2) — `services/backend/app/{retrieval,ranking}/`. Hard-фильтр — один SELECT: направление/страна/исключения, каждая ночь вилки доступна в `stay_rates`, `min_nights` отеля и ставки, гости, `stars_min`, `budget_per_night_max`, удобства, питомцы. Вместимости в `hotels` нет, поэтому гости сверяются с `transfers.capacity` трансфера этого отеля (4 или 7 мест). Эмбеддинги — офлайн `HashingEmbedder` за протоколом `Embedder`, кэш по `content_hash`. Скоринг: `price` (min/цена ночи) 0.45, `similarity` 0.35, `stars` 0.20 с разбивкой. Замер `python -m services.backend.app.retrieval --query "бассейн для детей у моря"` на каталоге T-02 (14–21.11, 2 гостя): 575 кандидатов, SQL 24 мс, эмбеддинги+ранжирование 24 мс. `make test`: 296 passed, 1 skipped.
 **Владелец:** П2 · **Волна:** 2 · **Зависит:** T-02 · **Нужно для:** T-05 (гейту хватает SQL-фильтра,
 векторная часть подключается после)
 **Файлы:** `services/backend/app/retrieval/`, `services/backend/app/ranking/`,
