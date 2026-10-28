@@ -246,7 +246,10 @@ class TestRerankOnlyHybrid:
         out = capsys.readouterr().out
         assert code == 0
         assert "chat=mock (бесплатно), rerank=выключен" in out
-        assert "0 чат-вызовов" in out
+        #: «0 чат-вызовов» больше не строчка в тексте: план считается прогоном моков, и в
+        #: таблице видно столько, сколько слоты действительно сделают на этом входе
+        assert "чат-вызовов на ход: 2 при лимите 6" in out
+        assert "SL-3 relevance        0" in out
 
     def test_dry_run_json_carries_the_same_routing_as_the_console(self, capsys,
                                                                   monkeypatch) -> None:
@@ -266,3 +269,126 @@ class TestRerankOnlyHybrid:
         code = rp.main(["--provider", "aitunnel", "--rerank-only", "--dry-run"])
         assert code == 2
         assert "чат — моки" in capsys.readouterr().err
+
+
+class TestPreflightAndCallPlan:
+    """Готовность к платному прогону: проверка конфигурации и план вызовов до первого запроса.
+
+    Живой прогон стоит денег, и «примерно по одному вызову на слот» для него — не план. Числа
+    здесь считаются бесплатным прогоном моков на том же входе, а конфигурация проверяется до
+    конструирования провайдера: `httpx.Client` с пустым ключом собирается молча и падает
+    посреди уже оплаченного хода.
+    """
+
+    def test_the_plan_counts_calls_instead_of_guessing_them(self, capsys, monkeypatch) -> None:
+        monkeypatch.delenv("RERANK_MODEL", raising=False)
+        code = rp.main(["--provider", "mock", "--rerank-only", "--dry-run", "--json",
+                        "--repeat", "3", "--answer", "origin=Москва",
+                        "--answer", "dates.start=с 14 по 21"])
+        payload = json.loads(capsys.readouterr().out)
+        assert code == 0
+        plan = payload["plan"]
+        assert plan["per_run"] == {"SL-1 parse": 1, "SL-2 question": 2, "SL-3 relevance": 1,
+                                   "SL-4 finalists": 1, "SL-5 explain": 1, "SL-6 diff": 0}
+        assert plan["total"]["SL-5 explain"] == 3 and plan["repeat"] == 3
+        #: слот №3 идёт вне `llm_calls`, поэтому в лимит хода считаются только чат-слоты
+        assert plan["chat_calls_per_run"] == 5 and plan["llm_calls_limit"] == 6
+        assert plan["stopped_at"] is None and plan["outcome"] == "plan_ready"
+
+    def test_the_plan_stops_at_a_question_it_has_no_answer_for(self, capsys,
+                                                              monkeypatch) -> None:
+        """Без флага вопрос остаётся вопросом: план обрывается и говорит, где именно.
+
+        Доращивать его выдуманным ответом значило бы посчитать ход, которого на живом прогоне
+        не будет, — и недооценить ровно те слоты, что идут после вопроса.
+        """
+
+        monkeypatch.delenv("RERANK_MODEL", raising=False)
+        code = rp.main(["--provider", "mock", "--rerank-only", "--dry-run", "--json"])
+        plan = json.loads(capsys.readouterr().out)["plan"]
+        assert code == 0
+        assert plan["stopped_at"] == "origin"
+        assert plan["per_run"]["SL-4 finalists"] == 0 and plan["outcome"] is None
+
+    def test_a_missing_key_stops_the_run_before_the_provider_is_built(self, capsys,
+                                                                      monkeypatch) -> None:
+        monkeypatch.setenv("LLM_API_KEY", "")
+        monkeypatch.setenv("AITUNNEL_API_KEY", "")
+        monkeypatch.setenv("RERANK_MODEL", "qwen3-reranker-8b")
+        code = rp.main(["--provider", "aitunnel", "--dry-run"])
+        captured = capsys.readouterr()
+        assert code == 2 and captured.out == ""
+        assert "нет LLM_API_KEY" in captured.err
+
+    def test_an_empty_model_name_is_named_per_slot(self, capsys, monkeypatch) -> None:
+        """`model=""` — это не «не заплатим»: шлюз ответит ошибкой посреди хода.
+
+        Сообщением по слоту, а не одним «провайдер не собрался»: `LLM_MODEL_PARSE` и
+        `RERANK_MODEL` переопределяются независимо, и чинить надо ту переменную, которая пуста.
+        """
+
+        monkeypatch.setenv("LLM_API_KEY", "test-key-not-a-real-one")
+        for name in ("LLM_MODEL", "LLM_MODEL_PARSE", "LLM_MODEL_QUESTIONS",
+                     "LLM_MODEL_FINALISTS", "LLM_MODEL_EXPLAIN", "LLM_MODEL_DIFF"):
+            monkeypatch.setenv(name, "")
+        monkeypatch.delenv("RERANK_MODEL", raising=False)
+        code = rp.main(["--provider", "aitunnel", "--dry-run"])
+        captured = capsys.readouterr()
+        assert code == 2
+        assert "не задана модель слота SL-1 parse: LLM_MODEL_PARSE" in captured.err
+        assert "не задана модель слота SL-5 explain" in captured.err
+
+    def test_preflight_reports_the_key_without_ever_printing_it(self, capsys,
+                                                               monkeypatch) -> None:
+        monkeypatch.setenv("LLM_API_KEY", "sk-aitunnel-0123456789")
+        monkeypatch.setenv("RERANK_MODEL", "qwen3-reranker-8b")
+        rp.main(["--provider", "mock", "--rerank-only", "--dry-run"])
+        out = capsys.readouterr().out
+        assert "sk-aitunnel-0123456789" not in out
+        assert "ключ: задан, 22 символов" in out
+
+    def test_the_hybrid_dry_run_is_free_and_says_so(self, capsys, monkeypatch) -> None:
+        monkeypatch.setenv("LLM_API_KEY", "sk-aitunnel-0123456789")
+        monkeypatch.setenv("RERANK_MODEL", "qwen3-reranker-8b")
+        stub = StubReranker()
+        monkeypatch.setattr(Reranker, "from_config", classmethod(lambda cls: stub))
+        code = rp.main(["--provider", "mock", "--rerank-only", "--dry-run",
+                        "--answer", "origin=Москва", "--answer", "dates.start=с 14 по 21"])
+        out = capsys.readouterr().out
+        assert code == 0
+        assert "SL-3 relevance        1      1  /rerank — платно" in out
+        assert "чат — моки, бесплатно" in out
+
+    def test_sl3_metrics_say_how_much_it_ranked_and_whether_the_order_changed(self, capsys,
+                                                                             monkeypatch) -> None:
+        """Приёмка слота №3 — порядок отелей и время обращения: оба числа в `--json`.
+
+        `notes` для таблицы, а не для `jq`: «3 отеля» строкой не сравнивается между прогонами,
+        и «проранжировали, но порядок тот же» неотличим от «проранжировали и переставили».
+        """
+
+        monkeypatch.setenv("LLM_API_KEY", "sk-aitunnel-0123456789")
+        monkeypatch.setenv("RERANK_MODEL", "qwen3-reranker-8b")
+        stub = StubReranker()
+        monkeypatch.setattr(Reranker, "from_config", classmethod(lambda cls: stub))
+        code = rp.main(["--provider", "mock", "--rerank-only", "--json",
+                        "--answer", "origin=Москва", "--answer", "dates.start=с 14 по 21"])
+        payload = json.loads(capsys.readouterr().out)
+        assert code == 0
+        slot3 = next(row for row in payload["slots"] if row["slot"] == "SL-3 relevance")
+        assert slot3["calls"] == 1
+        assert slot3["docs"] == [5] and slot3["reordered"] == [True]
+        #: у чат-слотов измерять нечего — пустые списки, а не ноль, которого не было
+        slot1 = next(row for row in payload["slots"] if row["slot"] == "SL-1 parse")
+        assert slot1["docs"] == [] and slot1["reordered"] == []
+
+    def test_the_slots_table_prints_how_much_the_reranker_moved(self, capsys) -> None:
+        """Таблица слотов — про качество порядка, а не только про время одного обращения."""
+
+        measured = rp.MeasuredSlots(rp.ChatMockRerankLive(cast(Reranker, StubReranker())))
+        measured.soft_relevance("море", {"AYT-1": "a", "AYT-2": "b", "AYT-3": "c"})
+        measured.soft_relevance("море", {"AYT-1": "a"})
+        rp.print_slots(measured)
+        out = capsys.readouterr().out
+        assert "отелей на вызов 1…3" in out
+        assert "порядок источника изменён в 1 из 2" in out

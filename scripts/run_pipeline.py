@@ -47,14 +47,15 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from services.agent.app.llm.provider_openai_compatible import load_env_file, slots_from_config
+from services.agent.app.llm.provider_openai_compatible import DEFAULT_BASE_URL, load_env_file
+from services.agent.app.llm.provider_openai_compatible import slots_from_config
 from services.agent.app.llm.rerank import MODEL_ENV as RERANK_MODEL_ENV
 from services.agent.app.llm.rerank import Reranker
 from services.agent.app.llm.slots import Explanation, LLMSlots, MockSlots, display
 from services.agent.app.orchestration.runtime import Runtime, Source, unverified_numbers
 from shared.contracts.enums import Outcome
 from shared.contracts.money import BudgetLedger
-from shared.contracts.state import TripState
+from shared.contracts.state import RunBudget, TripState
 
 #: Сообщение золотого пути — то же, на котором стоят ассерты T-05: менять его здесь значит
 #: потерять сравнимость с тестом.
@@ -87,6 +88,11 @@ class MeasuredSlots:
         self._inner = inner
         self.ms: dict[str, list[float]] = {name: [] for name, _, _ in SLOTS}
         self.notes: dict[str, list[str]] = {name: [] for name, _, _ in SLOTS}
+        #: размеры входа и «поменяли ли порядок» — по слотам. Заполняет их только слот №3:
+        #: приёмка реранкера — качество порядка отелей и время одного обращения, и ни одно
+        #: из этого не выводится из `notes`, где те же числа записаны строкой для таблицы.
+        self.docs: dict[str, list[int]] = {name: [] for name, _, _ in SLOTS}
+        self.reordered: dict[str, list[bool]] = {name: [] for name, _, _ in SLOTS}
 
     @property
     def inner(self) -> LLMSlots:
@@ -113,6 +119,12 @@ class MeasuredSlots:
     def soft_relevance(self, query: str, documents: dict[str, str]) -> dict[str, float] | None:
         def call() -> dict[str, float] | None:
             scores = self._inner.soft_relevance(query, documents)
+            #: порядок источника против порядка реранкера — предмет приёмки слота №3, и считать
+            #: его надо здесь: по строке заметки в отчёте это число не восстановить, а `docs`
+            #: при `None` берётся со входа — обращения-то были, просто без скоров
+            self.docs["soft_relevance"].append(len(documents if scores is None else scores))
+            self.reordered["soft_relevance"].append(scores is not None
+                                                    and list(scores) != list(documents))
             self.notes["soft_relevance"].append("нет скоров — порядок источника"
                                                 if scores is None else f"{len(scores)} отелей")
             return scores
@@ -387,7 +399,6 @@ def print_routing(slots: LLMSlots, sources: str = "fixture") -> None:
     if isinstance(slots, ChatMockRerankLive):
         summary = routing_summary(slots)
         print(f"  chat={summary['chat']} (бесплатно), rerank={summary['rerank']}")
-        print("  на ход: 0 чат-вызовов, 1 /rerank на прогон, если слот №3 включён")
         return
     if isinstance(slots, MockSlots):
         print("  все слоты — моки T-05: сеть не трогается, денег нет")
@@ -395,8 +406,123 @@ def print_routing(slots: LLMSlots, sources: str = "fixture") -> None:
     models = slot_models(slots)
     for name, label, env_name in SLOTS:
         print(f"  {label:<16} {env_name:<20} {models[label]}")
-    print("  на ход: 1 чат-вызов на parse, по одному на каждый вопрос (лимит 2), 1 на finalists, "
-          "1 на explain + 1 /rerank, если слот №3 включён")
+
+
+class _PlanQuestion(Exception):
+    """Вопрос, на которого нет во флагах `--answer`: план обрывается на нём, а не доращивается.
+
+    Молча ответить моку «что-нибудь» значило бы посчитать план по ходу, которого на живом
+    прогоне не будет, — и недооценить его ровно на те слоты, что после вопроса.
+    """
+
+
+def paid_slots(provider: str, rerank_only: bool) -> dict[str, bool]:
+    """Платит ли прогон за чат и за `/rerank` — из собранной конфигурации, не из догадки.
+
+    Цен в репозитории нет: здесь только число обращений, а ₽ к нему прикладывает свою таблицу,
+    когда решает, запускать ли прогон.
+    """
+
+    live = provider.strip().lower() != "mock"
+    rerank_on = bool(os.environ.get(RERANK_MODEL_ENV, "").strip())
+    return {"chat": live and not rerank_only, "rerank": rerank_on and (live or rerank_only)}
+
+
+def env_check(provider: str, rerank_only: bool) -> tuple[list[str], list[str]]:
+    """Preflight конфигурации: что проверено и что помешает живому прогону.
+
+    Значение ключа не читается и не печатается — только «задан ли» и длина: по длине видно
+    пустую строку и обрезанный `.env`, а сам ключ не попадает ни в stdout, ни в JSON замеров.
+    """
+
+    paid = paid_slots(provider, rerank_only)
+    checks: list[str] = []
+    problems: list[str] = []
+    key = (os.environ.get("LLM_API_KEY") or os.environ.get("AITUNNEL_API_KEY") or "").strip()
+    base_url = (os.environ.get("LLM_BASE_URL") or DEFAULT_BASE_URL).strip()
+    if not paid["chat"] and not paid["rerank"]:
+        checks.append("платного здесь нет: чат на моках, /rerank выключен (RERANK_MODEL не задан)")
+        return checks, problems
+    checks.append(f"шлюз: {base_url}")
+    checks.append(f"ключ: {'задан, ' + str(len(key)) + ' символов' if key else 'НЕ ЗАДАН'}")
+    if not key:
+        problems.append("нет LLM_API_KEY (или AITUNNEL_API_KEY) — обращения к шлюзу не соберутся")
+    base = os.environ.get("LLM_MODEL", "").strip()
+    for name, label, env_name in SLOTS:
+        live = paid["rerank"] if name == "soft_relevance" else paid["chat"]
+        if not live:
+            continue
+        chosen = os.environ.get(env_name, "").strip() or base
+        if not chosen:
+            problems.append(f"не задана модель слота {label}: {env_name} или LLM_MODEL")
+        checks.append(f"{label:<16} {env_name:<20} {chosen or '(не задана)'}")
+    return checks, problems
+
+
+def plan_calls(message: str, answers: Mapping[str, str], sources: str, *,
+               repeat: int, now: datetime) -> dict[str, Any]:
+    """Сколько обращений сделает прогон — числа моков, а не строчка «примерно по одному».
+
+    Считается бесплатным прогоном тех же слотов T-05 на том же сообщении и тех же `--answer`:
+    форма хода от живого провайдера не меняется, меняется только содержимое ответов. Поэтому
+    числа можно получить до первого платного запроса, и на `--repeat` они умножаются ровно.
+    """
+
+    measured = MeasuredSlots(MockSlots())
+    runtime = Runtime(build_sources(sources), slots=measured)
+    stopped: str | None = None
+
+    def ask(path: str, question: str) -> str:
+        nonlocal stopped
+        stopped = path
+        raise _PlanQuestion
+
+    report = TurnReport()
+    try:
+        walk(runtime, message, answers, now=now, ask=ask, report=report)
+    except _PlanQuestion:
+        pass
+    per_run = {label: len(measured.ms[name]) for name, label, _ in SLOTS}
+    chat = sum(len(measured.ms[name]) for name, _, _ in SLOTS if name != "soft_relevance")
+    return {
+        "per_run": per_run,
+        "repeat": repeat,
+        "total": {label: count * repeat for label, count in per_run.items()},
+        "chat_calls_per_run": chat,
+        "llm_calls_limit": RunBudget().llm_calls_limit,
+        "stopped_at": stopped,
+        "outcome": None if report.outcome is None else report.outcome.value,
+        "tool_calls_per_run": report.tool_calls,
+        "source_calls_per_run": report.source_calls,
+    }
+
+
+def print_plan(plan: Mapping[str, Any], provider: str, rerank_only: bool) -> None:
+    """Таблица плана: что и сколько раз будет вызвано, и платно ли это в этой конфигурации."""
+
+    paid = paid_slots(provider, rerank_only)
+    print("\n=== план вызовов (посчитан моками T-05 на этом же входе; сеть не трогали)")
+    print(f"  {'слот':<16} {'на ход':>6} {'всего':>6}  чем")
+    for name, label, env_name in SLOTS:
+        count = plan["per_run"][label]
+        kind = ("/rerank" if name == "soft_relevance" else "чат")
+        if name == "diff":
+            kind += " — не вызывается до T-08"
+        elif kind == "чат":
+            kind += " — платно" if paid["chat"] else " — моки, бесплатно"
+        else:
+            kind += " — платно" if paid["rerank"] else " — выключен (RERANK_MODEL не задан)"
+        print(f"  {label:<16} {count:>6} {plan['total'][label]:>6}  {kind}")
+    print(f"  чат-вызовов на ход: {plan['chat_calls_per_run']} при лимите "
+          f"{plan['llm_calls_limit']}, обращений к источнику: "
+          f"{plan['source_calls_per_run']}, исход прогона: {plan['outcome']}")
+    if plan["chat_calls_per_run"] >= plan["llm_calls_limit"]:
+        print("  !! на ход чат-вызовов столько же, сколько лимит: до `explain` может не хватить, "
+              "и шаг упрётся в `budget_exhausted`")
+    if plan["stopped_at"] is not None:
+        print(f"  !! план оборвался на вопросе {plan['stopped_at']!r}: дайте "
+              f"--answer {plan['stopped_at']}=<значение>, иначе живой прогон встанет там же "
+              "и слоты после вопроса не посчитаны")
 
 
 def print_turn(report: TurnReport, message: str, index: int) -> None:
@@ -440,6 +566,13 @@ def print_slots(measured: MeasuredSlots) -> None:
         print(f"  {label:<16} {len(times):>7} {median:>9.0f} {_percentile(times, 0.95):>9.0f}  "
               f"{'; '.join(measured.notes[name])}")
     print(f"  токенов насчитал провайдер: {measured.tokens_used}")
+    ranked = measured.reordered["soft_relevance"]
+    if any(ranked):
+        #: «проранжировали и переставили» против «проранжировали, порядок тот же» — предмет
+        #: приёмки слота №3; в `notes` это те же числа, но строкой для чтения глазами
+        docs = measured.docs["soft_relevance"]
+        print(f"  слот №3: отелей на вызов {min(docs)}…{max(docs)}, "
+              f"порядок источника изменён в {sum(ranked)} из {len(ranked)}")
     failures = getattr(measured.inner, "failures", [])
     for item in failures:
         print(f"  отказ чата: slot={item.get('slot')} kind={item.get('kind')} "
@@ -517,6 +650,10 @@ def json_payload(reports: Sequence[TurnReport], measured: MeasuredSlots, *,
             {"slot": label, "env": env_name, "calls": len(measured.ms[name]),
              "p50_ms": round(_percentile(measured.ms[name], 0.5)),
              "p95_ms": round(_percentile(measured.ms[name], 0.95)),
+             #: размеры входа и «порядок изменился» — заполняет их только слот №3, у остальных
+             #: пустые списки: «не измерялось» и «измеряли, но было нечего» — разные числа
+             "docs": measured.docs[name],
+             "reordered": measured.reordered[name],
              "notes": measured.notes[name]}
             for name, label, env_name in SLOTS
         ],
@@ -628,6 +765,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         #: из первого инструмента посреди уже оплаченного прогона
         print(f"источник {args.sources!r} не собран: {error}", file=sys.stderr)
         return 2
+    #: preflight — до конструирования провайдера: `httpx.Client` с пустым ключом или `model=""`
+    #: собирается молча и падает на первом же запросе, то есть посреди уже оплаченного прогона
+    checks, problems = env_check(args.provider, args.rerank_only)
+    if problems:
+        for line in problems:
+            print(f"preflight: {line}", file=sys.stderr)
+        if any("модель" in line for line in problems):
+            #: пустое имя модели — не «не заплатим»: вызов с `model=""` отвечает ошибкой шлюза
+            #: посреди прогона, когда часть слотов уже оплачена
+            print("пустая модель слота — это не бесплатный прогон: живой вызов с `model=\"\"` "
+                  "отвечает ошибкой шлюза посреди хода", file=sys.stderr)
+        return 2
     try:
         slots = MeasuredSlots(build_slots(args.provider, args.rerank_only))
     except ValueError as error:
@@ -639,20 +788,34 @@ def main(argv: Sequence[str] | None = None) -> int:
     now = datetime.now(timezone.utc) if args.real_now else FIXTURE_NOW
     if not args.json:
         print_routing(slots.inner, args.sources)
+        if checks:
+            print("\n=== preflight")
+            for line in checks:
+                print(f"  {line}")
     if args.dry_run:
         # конструирование провайдера сети не трогает, а клиент надо закрыть: незакрытый
         # `httpx.Client` переживает процесс только в тестах
         close = getattr(slots.inner, "close", None)
         if callable(close):
             close()
+        #: план считается на моках и только для живой конфигурации: для `--provider mock`
+        #: он был бы таблицей «платим 0 за 0 вызовов», а платный прогон без плана — это
+        #: как раз то, чего `--dry-run` и был заведён не делать
+        plan = (plan_calls(args.message, answers, args.sources, repeat=args.repeat, now=now)
+                if args.provider != "mock" or args.rerank_only else None)
         if args.json:
             #: `routing` — те же два слова, что печатает консоль: фронту по dry-run надо знать,
             #: платит ли этот прогон (rerank=выключен) или нет, и брать это из одного места
-            print(json.dumps({"provider": args.provider, "sources": args.sources,
-                              "dry_run": True, "routing": routing_summary(slots.inner),
-                              "models": slot_models(slots.inner)},
-                             ensure_ascii=False, indent=2))
+            payload: dict[str, Any] = {"provider": args.provider, "sources": args.sources,
+                                       "dry_run": True, "routing": routing_summary(slots.inner),
+                                       "models": slot_models(slots.inner),
+                                       "preflight": {"checks": checks, "problems": problems}}
+            if plan is not None:
+                payload["plan"] = plan
+            print(json.dumps(payload, ensure_ascii=False, indent=2))
         else:
+            if plan is not None:
+                print_plan(plan, args.provider, args.rerank_only)
             print("\n--dry-run: прогон не начат, запросов к шлюзу не было")
         return 0
 
