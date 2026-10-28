@@ -263,7 +263,9 @@ def walk(runtime: Runtime, message: str, answers: Mapping[str, str], *, now: dat
     """Сообщение → ответы на висящие вопросы → checkout; путь поля берётся из состояния.
 
     Тот же порядок, что в тесте: диктует `awaiting_fields[0]`, поэтому прогон не может ответить
-    не на тот вопрос, если модель переставит вопросы местами.
+    не на тот вопрос, если модель переставит вопросы местами. Ответ, который узел не смог
+    прочесть, останавливает ход в `report.failed` — прогон остаётся прогоном с числами, а не
+    трекбеком из `nodes._apply_dates`.
     """
 
     run = runtime.start(message, now=now)
@@ -271,7 +273,16 @@ def walk(runtime: Runtime, message: str, answers: Mapping[str, str], *, now: dat
         path = run.state.awaiting_fields[0]
         raw = answers.get(path) or ask(path, run.texts.get(path, ""))
         report.answers.append((path, raw))
-        run = runtime.answer(run, path, raw, now=now)
+        try:
+            run = runtime.answer(run, path, raw, now=now)
+        except ValueError as error:
+            #: ответ, который узел не смог прочитать («2026-11-12» вместо «с 12 по 17»), — это
+            #: штатный провал прогона, а не трекбек: на живых слотах так отвечает и модель,
+            #: и человек в терминале. Состояние остаётся предыдущим (`answer` не менял его),
+            #: поэтому отчёт со счётчиками и числами хода всё равно отдаётся
+            report.failed = f"ответ на вопрос {path!r} не прочитан: {error}"
+            _fill(run, runtime, report)
+            return
     if run.state.outcome != Outcome.PLAN_READY:
         report.failed = (f"до checkout не дошли: outcome={run.state.outcome} "
                          f"status={run.state.run_status.value}")
@@ -608,6 +619,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     #: в `--json` ответ берём только из флага: печатать вопрос в stdout значит испортить
     #: JSON, а молча подставить ответ — значит сфабриковать прогон
     ask = _ask_refuse if args.json or not sys.stdin.isatty() else _ask_terminal
+    #: порядок важен: сборка источников ничего не стоит, а провайдер держит `httpx.Client`,
+    #: который на раннем выходе некому закрыть — поэтому «сида нет» проверяется первым
+    try:
+        sources: Mapping[str, Source] = build_sources(args.sources)
+    except FileNotFoundError as error:
+        #: `--sources seed` без `data/seeds`: сообщением-инструкцией, а не трекбеком
+        #: из первого инструмента посреди уже оплаченного прогона
+        print(f"источник {args.sources!r} не собран: {error}", file=sys.stderr)
+        return 2
     try:
         slots = MeasuredSlots(build_slots(args.provider, args.rerank_only))
     except ValueError as error:
@@ -616,7 +636,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("нужно в .env: LLM_PROVIDER=aitunnel, LLM_MODEL=<чат-модель>, LLM_API_KEY; "
               "слот №3 включается переменной RERANK_MODEL", file=sys.stderr)
         return 2
-    sources: Mapping[str, Source] = build_sources(args.sources)
     now = datetime.now(timezone.utc) if args.real_now else FIXTURE_NOW
     if not args.json:
         print_routing(slots.inner, args.sources)

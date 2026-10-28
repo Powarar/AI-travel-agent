@@ -80,6 +80,26 @@ class TestOfflineWalk:
         with pytest.raises(SystemExit):
             rp._answers_from_args(["origin"])
 
+    def test_unreadable_answer_is_a_failed_run_not_a_traceback(self, capsys) -> None:
+        """«2026-11-12» вместо «с 12 по 17» — прогон с результатом, а не падение узла.
+
+        Так отвечает и человек в терминале, и живая модель слота №2. Скрипт меряет за деньги:
+        трекбек посреди хода означал бы «заплачено, чисел нет», а фронт по `--json` получил бы
+        невалидный JSON вместо ответа.
+        """
+
+        code = rp.main(["--provider", "mock", "--json", "--answer", "origin=Москва",
+                        "--answer", "dates.start=2026-11-12"])
+        captured = capsys.readouterr()
+        assert code == 1 and captured.err == ""
+        payload = json.loads(captured.out)
+        run = payload["runs"][0]
+        assert "dates.start" in run["failed"] and "не прочитан" in run["failed"]
+        #: состояние останова отдаётся: сколько денег на этом входе уже сожжено
+        assert run["metrics"]["llm_calls"] == 3
+        assert [row["path"] for row in run["answers"]] == ["origin", "dates.start"]
+        assert payload["summary"]["reached_plan"] == 0
+
     def test_date_of_the_run_is_the_one_the_golden_numbers_were_counted_on(self) -> None:
         # 125 200 ₽ из ассертов T-05 посчитаны для этой даты; на реальной дате цены фикстур
         # разошлись бы с тестом, и прогон перестал бы быть тем же самым сценарием

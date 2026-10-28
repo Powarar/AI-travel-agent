@@ -27,6 +27,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
@@ -53,6 +54,14 @@ from services.agent.app.validation.inputs import HotelSpecs, StayNight, Transfer
 
 SEEDS_DIR = Path(__file__).resolve().parents[4] / "data" / "seeds"
 UTC = timezone.utc
+
+logger = logging.getLogger(__name__)
+
+#: файлы, без которых каталога нет: ровно тот список, что читает `catalog()`
+CATALOG_FILES: tuple[str, ...] = (
+    "sources.json", "destinations.json", "climate.json", "transport_legs.json",
+    "hotels.json", "stay_rates.json", "transfers.json", "gateways.json", "airports.json",
+)
 
 #: Балл подбора — нормализованная температура месяца поездки. Границы 0.05–0.95 не косметика:
 #: слот №4 сортирует по `score`, а неоценённый кандидат читает 0.0, поэтому оценённый обязан
@@ -92,6 +101,7 @@ class _Catalog:
     """Сид в памяти один раз: индексы вместо повторных сканов по 44 тысячам строк."""
 
     destinations: list[dict[str, Any]]
+    destination_tz: dict[str, str]
     climate: dict[tuple[str, int], dict[str, Any]]
     legs: list[dict[str, Any]]
     hotels: list[dict[str, Any]]
@@ -121,13 +131,47 @@ def _read(name: str) -> Any:
     return json.loads((SEEDS_DIR / name).read_text(encoding="utf-8"))
 
 
+class CatalogMissing(FileNotFoundError):
+    """`data/seeds` не собран: источник `seed` нечем читать.
+
+    Свой тип вместо голого `FileNotFoundError` — затем, чтобы `run_pipeline.py` отличал
+    «не собрал каталог» от «сломался файл по дороге» и отвечал оператору строкой-инструкцией,
+    а не трекбеком из середины хода.
+    """
+
+
+def require_catalog() -> None:
+    """Каталог на месте — иначе падать до первого запроса, а не посреди прогона.
+
+    Без проверки `--sources seed` при отсутствующем `data/seeds` доходил до ответа слота №1
+    и падал `FileNotFoundError` из первого инструмента: сеть уже была бы потрачена, а
+    оператор видел бы трекбек вместо «соберите сид или возьмите фикстуры».
+    """
+
+    missing = [name for name in CATALOG_FILES if not (SEEDS_DIR / name).is_file()]
+    if missing:
+        raise CatalogMissing(
+            f"нет файлов каталога в {SEEDS_DIR}: {', '.join(missing)}; "
+            "соберите сид (python3 data/generators/run_all.py) "
+            "или запустите прогон без --sources seed")
+
+
 @lru_cache(maxsize=1)
 def catalog() -> _Catalog:
     """Загрузка сида; кэш — потому что файлы за прогон не меняются, а сканов будет шесть."""
 
+    require_catalog()
     sources = cast("list[dict[str, Any]]", _read("sources.json"))
+    destinations = cast("list[dict[str, Any]]", _read("destinations.json"))
     return _Catalog(
-        destinations=cast("list[dict[str, Any]]", _read("destinations.json")),
+        destinations=destinations,
+        #: зона направления — единственный честный запасной вариант, когда у строки рейса
+        #: `arr_tz` пустой `\N` (68 сегментов сида); брать её с соседнего аэропорта или
+        #: переводить стрелки на глаз — значит подменить число
+        destination_tz={
+            str(row["code"]): str(row.get("timezone") or "")
+            for row in destinations
+        },
         climate={
             (str(row["dest_code"]), int(row["month"])): row
             for row in cast("list[dict[str, Any]]", _read("climate.json"))
@@ -285,17 +329,63 @@ def _hours(minutes: Decimal) -> float:
     return float((minutes / Decimal(60)).quantize(Decimal("0.1")))
 
 
-def _tz(name: str) -> timezone | ZoneInfo:
+#: в `airports.json` и `transport_legs.json` пустое значение зоны записано как `\N` (маркер
+#: NULL из дампа), а не как пустая строка
+_NULL_TZ = "\\N"
+
+
+def _usable_tz(name: str) -> ZoneInfo | None:
+    r"""Зона из строки сида, если она существует; `None` — если это `\N` или имя из выдумки."""
+
+    if not name or name == _NULL_TZ:
+        return None
     try:
         return ZoneInfo(name)
     except Exception:
+        return None
+
+
+def _tz(name: str, backup: str = "") -> timezone | ZoneInfo:
+    r"""Зона строки рейса; при `\N` — зона самого направления, и только без неё — UTC.
+
+    68 сегментов Иссык-Куля приходят с `\N`, а метка часа улетает наружу в `ref.arr_at`:
+    «прилёт 04:47+00:00» там, где пояс `+06:00`, — ложь в ответе. Запасная зона берётся из
+    той же таблицы (`destinations.json`), а не из головы. Несовместимость самого `arr_at`
+    с поясами — дыра сида, названная в CONTRACTS.md, и здесь мы её молча не чиним.
+    """
+
+    zone = _usable_tz(name) or _usable_tz(backup)
+    if zone is None:
+        logger.warning("seed row has no usable timezone (tz=%r backup=%r); using UTC",
+                       name, backup)
         return UTC
+    return zone
 
 
-def _aware(iso: str, tz_name: str) -> datetime:
-    """Местное время сида с его же зоной; без зоны — UTC, а не часовой пояс машины."""
+def _aware(iso: str, tz_name: str, backup: str = "") -> datetime:
+    """Местное время сида с его же зоной; без зоны — зона направления, а не пояс машины."""
 
-    return datetime.fromisoformat(iso).replace(tzinfo=_tz(tz_name))
+    return datetime.fromisoformat(iso).replace(tzinfo=_tz(tz_name, backup))
+
+
+def _local_day(iso: str) -> date | None:
+    """Дата из стенного времени строки сида (`2026-11-02T04:47`); кривая строка — `None`.
+
+    Пояс к этой дате пришивать незачем: сутки в столбце записаны местными часами, и
+    `date()` от зоны не меняется — зато `None` на непарсящейся строке отсеивает рейс,
+    а не пропускает его вслепую.
+    """
+
+    try:
+        return date.fromisoformat(iso[:10])
+    except ValueError:
+        return None
+
+
+def _destination_tz(code: str) -> str:
+    r"""Зона направления из `destinations.json` — единственный запасной вариант для `\N`."""
+
+    return catalog().destination_tz.get(code, "")
 
 
 def _expand(text: str) -> str:
@@ -481,10 +571,12 @@ def transport_search(args: Mapping[str, object]) -> SearchResult:
             and str(leg["dep_iata"]) in origin_iatas
         ]
         #: прилёт обязан быть в день заезда: рейс, приземляющийся на сутки позже, — это уже
-        #: другая поездка, и ночей под неё в ставках сида не будет
+        #: другая поездка, и ночей под неё в ставках сида не будет. День берётся из строки
+        #: сида напрямую (`2026-11-02T04:47` → 2 ноября): дата стенных часов от пояса не
+        #: зависит, а `_aware` на 68 строках с `\N` только шумел бы в лог
         if start is not None:
             inbound = [leg for leg in inbound
-                       if _aware(str(leg["arr_at"]), str(leg["arr_tz"])).date() == start]
+                       if _local_day(str(leg["arr_at"])) == start]
         if prefer_direct is True:
             inbound = [leg for leg in inbound if leg["direct"] is True]
         if overnight_ok is False:
@@ -499,7 +591,8 @@ def transport_search(args: Mapping[str, object]) -> SearchResult:
 def _pair(leg: Mapping[str, Any], end: date | None) -> TransportOffer:
     """Прямой сегмент из сида и обратный — его зеркало на дату конца вилки."""
 
-    arr = _aware(str(leg["arr_at"]), str(leg["arr_tz"]))
+    backup = _destination_tz(str(leg["dest_code"]))
+    arr = _aware(str(leg["arr_at"]), str(leg["arr_tz"]), backup)
     dep = _aware(str(leg["dep_at"]), str(leg["dep_tz"]))
     minutes = Decimal(leg["duration_min"])
     currency = leg.get("currency")
@@ -730,6 +823,12 @@ SEED_SOURCES: dict[str, Callable[[Mapping[str, object]], SearchResult]] = {
 
 
 def seed_sources() -> dict[str, Callable[[Mapping[str, object]], SearchResult]]:
-    """Копия реестра источников: `scripts/run_pipeline.py --sources seed`."""
+    """Копия реестра источников: `scripts/run_pipeline.py --sources seed`.
 
+    Проверка каталога здесь, а не только в `catalog()`: сборщик источников вызывается
+    прогоном до маршрутинга моделей, поэтому «сида нет» становится видно до первого платного
+    запроса, а не после ответа слота №1 посреди хода.
+    """
+
+    require_catalog()
     return dict(SEED_SOURCES)

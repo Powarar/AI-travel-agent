@@ -16,7 +16,8 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+import logging
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from uuid import UUID
 
@@ -25,7 +26,13 @@ import pytest
 from scripts import run_pipeline as rp
 from services.agent.app.llm.slots import MockSlots
 from services.agent.app.orchestration.runtime import Runtime
-from services.agent.app.tools.seed_sources import catalog, hotel_search, weather_climate
+from services.agent.app.tools import seed_sources as ss
+from services.agent.app.tools.seed_sources import (
+    catalog,
+    hotel_search,
+    transport_search,
+    weather_climate,
+)
 from shared.contracts.enums import Outcome
 
 UTC = timezone.utc
@@ -235,9 +242,67 @@ class TestBudgetAcrossDestinations:
         assert len(notes) == 2
         dropped = [violation for violation in report.state_dump["violations"]
                    if violation["severity"] == "warning"]
-        dropped = [violation for violation in report.state_dump["violations"]
-                   if violation["severity"] == "warning"]
         assert all(violation["expected"] and violation["actual"] for violation in dropped)
         #: каждое отпущенное направление названо кодом, а не «что-то не подошло»
         assert {violation["evidence"].get("destination") for violation in dropped} == {"dubai", "phuket"}
 
+
+
+class TestCatalogHasToBeThere:
+    """`--sources seed` без `data/seeds` встаёт до прогона, а не берёт чужие строки.
+
+    Гипотеза аудита была жёстче реальности: молча скатиться в фикстуры источник не мог —
+    он падал `FileNotFoundError`, но из первого инструмента, то есть после маршрутинга
+    моделей и, на живом провайдере, после оплаченного слота №1. Проверяем, что теперь это
+    остановка конфигурации: код 2 и строка с инструкцией вместо трекбека из середины хода.
+    """
+
+    def test_missing_catalog_is_named_file_by_file(self, tmp_path, monkeypatch) -> None:
+        missing = tmp_path / "no-seeds"
+        monkeypatch.setattr(ss, "SEEDS_DIR", missing)
+        with pytest.raises(ss.CatalogMissing) as caught:
+            ss.seed_sources()
+        message = str(caught.value)
+        assert str(missing) in message
+        #: названы именно отсутствующие файлы, а не «каталога нет» вообще
+        assert "destinations.json" in message and "stay_rates.json" in message
+        #: и сказано, откуда его взять
+        assert "run_all.py" in message
+
+    def test_pipeline_stops_with_code_two_and_clean_stdout(self, tmp_path, monkeypatch,
+                                                           capsys) -> None:
+        monkeypatch.setattr(ss, "SEEDS_DIR", tmp_path / "no-seeds")
+        code = rp.main(["--provider", "mock", "--sources", "seed", "--json"])
+        assert code == 2
+        captured = capsys.readouterr()
+        assert "источник 'seed' не собран" in captured.err
+        #: stdout в `--json` остаётся чистым: фронт не должен ловить текст ошибки вместо JSON
+        assert captured.out == ""
+
+    def test_fixture_run_does_not_need_the_catalog(self, tmp_path, monkeypatch) -> None:
+        #: дефолт прогона — фикстуры, и проверка каталога не имеет права её трогать
+        monkeypatch.setattr(ss, "SEEDS_DIR", tmp_path / "no-seeds")
+        assert rp.main(["--provider", "mock", "--dry-run"]) == 0
+
+
+class TestArrivalTimezoneIsTheSeedsOwn:
+    """Метка часа прилёта берётся из строк сида, а не из пояса машины.
+
+    68 сегментов Иссык-Куля приходят с `arr_tz = "\\N"`, и раньше им пришивался UTC: в
+    `ref.arr_at` улетало «16:17+00:00» там, где на земле пояс `+06:00`. Запасная зона —
+    `timezone` самого направления из `destinations.json`, то есть та же таблица сида.
+    """
+
+    def test_null_timezone_row_gets_the_destinations_zone(self, caplog) -> None:
+        with caplog.at_level(logging.WARNING):
+            result = transport_search({"destinations": ["cholpon-ata"], "origin": "Москва",
+                                       "dates.start": "2026-11-05",
+                                       "dates.end": "2026-11-12"})
+        offer = next(row for row in result.transport
+                     if row.arrival.leg_id == "flt-leg-SVO-IKU-2026-11-05-2")
+        assert offer.arrival.arr_at.utcoffset() == timedelta(hours=6)
+        assert offer.arrival.arr_at.isoformat().endswith("+06:00")
+        #: вылет остаётся в своей зоне: пояс прилёта не перекрашивает весь сегмент
+        assert offer.arrival.dep_at.utcoffset() == timedelta(hours=3)
+        #: шум о непригодной зоне больше не нужен: `\N` прикрыт зоной направления
+        assert "no usable timezone" not in caplog.text
