@@ -161,6 +161,7 @@ class Runtime:
             state=base,
             scratch=self._scratch.setdefault(base.trip_id, Scratch()),
             started_at=self._clock(),
+            tokens_seen=self._tokens_baseline(),
         )
         before = run.state.request
         delta = self._slot_parse(run, message)
@@ -258,6 +259,7 @@ class Runtime:
             trace=list(stored.trace),
             unresolved=list(stored.unresolved),
             started_at=self._clock(),
+            tokens_seen=self._tokens_baseline(),
         )
         logger.info("interrupted run loaded trip=%s run=%s awaiting=%s", stored.state.trip_id,
                     run.run_id, run.state.awaiting_fields)
@@ -725,12 +727,23 @@ class Runtime:
         })
         run.state = run.state.model_copy(update={"budgets": budgets})
 
+    def _tokens_baseline(self) -> int:
+        """Сколько токенов провайдер насчитал СЕЙЧАС: с этого числа и считается ход.
+
+        Один `LLMSlots` живёт дольше хода (и в проде, и в `--repeat 9`), поэтому разность
+        обязана отнимать счётчик на старте хода. Без неё второй прогон прирастает первым, и
+        в `--repeat` стоимость растёт лесенкой: на живом замере 2026-10-28 второй ход показал
+        14 504 токена вместо 7 257 своих, и девятый — 62 246.
+        """
+
+        return int(getattr(self._slots, "tokens_used", 0) or 0)
+
     def _charge_tokens(self, run: Run) -> None:
         """Приращение счётчика провайдера → `budgets.tokens`: учёт стоимости хода в состоянии.
 
         Поле есть в контракте с T-01 и всегда было нулём: «сколько стоил ход» приходилось
         считать по логам. Разность, а не абсолют, — потому что один провайдер обслуживает
-        несколько ходов подряд, а счётчик хода обнуляется на `start()`.
+        несколько ходов подряд, а отсечку хода задаёт `tokens_seen` на его старте.
         """
 
         total = int(getattr(self._slots, "tokens_used", 0) or 0)

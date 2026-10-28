@@ -345,6 +345,22 @@ class TestRuntimeWiring:
         assert budgets.llm_calls == 5
         assert budgets.tokens == 120
 
+    def test_the_second_turn_on_one_provider_pays_only_for_itself(self) -> None:
+        """Один `LLMSlots` живёт дольше хода, и лесенка токенов в `--repeat` была настоящей.
+
+        Снято живым прогоном 2026-10-28: второй ход показал 14 504 токена вместо 7 257 своих,
+        девятый — 62 246. Разность считалась от нуля, а не от счётчика провайдера на старте
+        хода, и «сколько стоил запрос» росло просто потому, что мы уже что-то считали.
+        """
+
+        slots = RankedSlots({"AYT-FAM": 0.9})
+        engine = Runtime(SOURCES, slots=slots)  # type: ignore[arg-type]
+        first = golden_run_on(engine)
+        second = golden_run_on(engine)
+        assert first.state.budgets.tokens == 120
+        assert second.state.budgets.tokens == 120, "второй ход оплатил первый"
+        assert slots.tokens_used == 240, "провайдер-то как раз считает накопительно"
+
     def test_unavailable_slot_leaves_the_plan_identical(self) -> None:
         slots = UnavailableSlots({})
         engine = Runtime(SOURCES, slots=slots)  # type: ignore[arg-type]
