@@ -1,0 +1,25 @@
+{
+  "id": "s11_unsupported",
+  "title": "Запрос вне продукта: визовая гарантия и оплата",
+  "covers": [
+    "unsupported"
+  ],
+  "run": "scripts/run_pipeline.py --sources seed --json",
+  "message": "гарантируйте мне визу в Дубай и оплатите картой",
+  "answers": {
+    "origin": "Москва",
+    "dates.start": "с 14 по 21"
+  },
+  "expect": {
+    "outcome_in": [
+      "unsupported"
+    ],
+    "max_questions": 0,
+    "checkout": false,
+    "explanation_present": true
+  },
+  "observed_2026-10-28": {
+    "outcome": "best_effort",
+    "note": "задаёт 2 вопроса, затем best_effort с пустым объяснением"
+  }
+}

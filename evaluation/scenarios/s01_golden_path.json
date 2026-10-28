@@ -1,0 +1,31 @@
+{
+  "id": "s01_golden_path",
+  "title": "Тёплое море в ноябре втроём с ребёнком, без долгих перелётов",
+  "covers": [
+    "golden_path",
+    "clarification"
+  ],
+  "run": "scripts/run_pipeline.py --sources seed --json",
+  "message": "хочу к тёплому морю в ноябре вдвоём с ребёнком, 200к, без долгих перелётов",
+  "answers": {
+    "origin": "Москва",
+    "dates.start": "с 14 по 21"
+  },
+  "expect": {
+    "outcome_in": [
+      "plan_ready"
+    ],
+    "max_questions": 2,
+    "blocking_violations": 0,
+    "invented_numbers": 0,
+    "checkout": true,
+    "ledger_matches_total": true,
+    "hard_respected": [
+      "transport.max_hours_direct: «без долгих перелётов» не даёт план с 14-часовым перелётом без вопроса или user_approved"
+    ]
+  },
+  "observed_2026-10-28": {
+    "outcome": "plan_ready",
+    "note": "Паттайя, перелёт 14.2 ч в одну сторону: «без долгих перелётов» не стало ограничением"
+  }
+}

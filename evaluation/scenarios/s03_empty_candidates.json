@@ -1,0 +1,31 @@
+{
+  "id": "s03_empty_candidates",
+  "title": "Направления нет в каталоге — пустое множество кандидатов",
+  "covers": [
+    "empty_candidates"
+  ],
+  "run": "scripts/run_pipeline.py --sources seed --json",
+  "message": "хочу в Гамбург с 14 по 21 ноября из Москвы вдвоём, бюджет 300000",
+  "answers": {},
+  "expect": {
+    "outcome_in": [
+      "infeasible"
+    ],
+    "violation_codes": [
+      "CANDIDATES_EMPTY"
+    ],
+    "numbers_in_refusal": true,
+    "no_substitution": "план другого города не выдаётся",
+    "checkout": false
+  },
+  "variants": [
+    {
+      "message": "Гамбург с 14 по 21 ноября из Москвы вдвоём, бюджет 300000",
+      "note": "то же без предлога «в»"
+    }
+  ],
+  "observed_2026-10-28": {
+    "outcome": "infeasible",
+    "note": "с «в» — infeasible с числами; без «в» — plan_ready в Паттайе: названное направление потерялось и подменилось"
+  }
+}

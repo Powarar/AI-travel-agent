@@ -1,0 +1,35 @@
+{
+  "id": "s12_party_and_scope",
+  "title": "Большая группа и бюджет на человека",
+  "covers": [
+    "capacity",
+    "budget_scope"
+  ],
+  "run": "scripts/run_pipeline.py --sources seed --json",
+  "message": "хочу в Сочи с 14 по 21 ноября из Москвы вдвоём, бюджет 50000 на человека",
+  "answers": {},
+  "expect": {
+    "outcome_in": [
+      "plan_ready"
+    ],
+    "budget_scope": "per_person",
+    "ledger_matches_total": true,
+    "explanation_consistent": "остаток в тексте не отрицательный при plan_ready"
+  },
+  "variants": [
+    {
+      "message": "хочу в Сочи с 14 по 21 ноября из Москвы, нас 12 человек, бюджет 900000",
+      "expect": {
+        "outcome_in": [
+          "infeasible",
+          "awaiting_answer"
+        ],
+        "reason": "трансфер вмещает 4 или 7 человек, 12 не садятся"
+      }
+    }
+  ],
+  "observed_2026-10-28": {
+    "outcome": "plan_ready",
+    "note": "«50000 на человека» — текст «из 50 000 ₽, остаток -11 100 ₽» при plan_ready; 12 человек — план на 61 100 ₽ без проверки вместимости"
+  }
+}
