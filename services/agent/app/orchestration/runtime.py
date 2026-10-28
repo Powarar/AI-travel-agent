@@ -566,6 +566,15 @@ class Runtime:
         return start, start + timedelta(days=max(plan.nights, 1))
 
     def _plan(self, run: Run) -> Run:
+        #: `affected()` — консервативный прогноз до поиска. В отчёт же должна попасть
+        #: фактическая разница refs после пересборки, иначе UI помечает сменившийся рейс
+        #: как сохранённый.
+        if run.previous_components:
+            current = run.state.chosen.component_refs
+            run.kept_components = sorted(
+                component for component, ref in run.previous_components.items()
+                if current.get(component) == ref
+            )
         if run.previous_components and run.changed:
             diff = self._slot_diff(run, run.previous_components, run.state.chosen.component_refs)
             if diff is None:
