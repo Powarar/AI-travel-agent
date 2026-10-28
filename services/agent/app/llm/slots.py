@@ -21,6 +21,7 @@ from pydantic import BaseModel, Field
 from services.agent.app.llm.schemas import (
     CHILD_WORD_RE,
     DEFAULT_CHILD_AGE,
+    THEME_WORDS,
     month_of,
     number_from_words,
     range_days,
@@ -47,16 +48,9 @@ _ADULTS_WORDS = {
     #: и голое «один» вернуло бы 1 взрослых там, где едет одиннадцать человек.
     "еду один": 1, "лечу один": 1, "полечу один": 1, "едем один": 1, "в одиночку": 1,
 }
-_THEME_WORDS = {
-    Theme.BEACH: ("морю", "море", "пляж"),
-    Theme.NATURE: ("гор", "лес", "природа"),
-    Theme.CITY: ("город",),
-    Theme.CULTURE: ("музе", "культур", "истори"),
-    Theme.FOOD: ("гастро", "еда", "ресторан"),
-}
-#: Таблица месяцев живёт в `schemas.month_of`: со своими окончаниями здесь она
-#: разошлась бы с живой строкой ровно на «с 28 октября по 5 ноября», а два разборщика
-#: обязаны давать одну дату.
+#: Таблица месяцев живёт в `schemas.month_of`, слова тем — в `schemas.THEME_WORDS`: со своими
+#: окончаниями здесь они разошлись бы с живой строкой ровно на «с 28 октября по 5 ноября» и на
+#: «отель у моря», а два разборщика обязаны давать одну дату и одну тему.
 #: Стоп-слова направления — два набора, и это не косметика. Префикс удобен: падеж дописывает
 #: окончание, и «в пути», «на неделю», «в аэропорт» отсеиваются одним началом. Но четыре
 #: префикса глушили названия мест, которых в каталоге полон отбор: «тур» → страна «Турция»,
@@ -266,7 +260,7 @@ class MockSlots:
             request.direction.mode = FieldValue[DirectionMode].defaulted(
                 DirectionMode.OPEN, kind=ConstraintKind.HARD
             )
-        themes = [theme for theme, words in _THEME_WORDS.items() if any(word in lowered for word in words)]
+        themes = [theme for theme, words in THEME_WORDS.items() if any(word in lowered for word in words)]
         if themes:
             request.themes = FieldValue[list[Theme]].known(themes, kind=ConstraintKind.SOFT, source="user")
         request.soft_preferences = [

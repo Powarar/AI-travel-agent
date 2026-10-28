@@ -18,9 +18,34 @@ from typing import cast
 import pytest
 
 from scripts import run_pipeline as rp
+from services.agent.app.llm import provider_openai_compatible as provider_mod
+from services.agent.app.llm import rerank as rerank_mod
 from services.agent.app.llm.rerank import RerankHit, Reranker
 from services.agent.app.llm.slots import MockSlots
 from services.agent.app.orchestration.runtime import Runtime
+
+
+def _no_env_file(path: object = None) -> None:
+    """Заглушка читателя `.env`: файл разработчика не участвует в офлайн-гейте."""
+
+
+#: Маршрут слотов целиком живёт в `.env`, а `rp.main()` вызывает `load_env_file()` сам. Значит
+#: `monkeypatch.delenv("RERANK_MODEL")` в тесте ничего не отключает: setdefault возвращает
+#: строку из файла, и прогон «посмотреть preflight» собирает живой реранкер — то есть тесты
+#: зависели бы от того, что П1 оставил в локальном конфиге после замера. Здесь файл глушится,
+#: а переменные очищаются; живой путь тесты включают только явным `setenv`.
+_ROUTE_ENV = ("LLM_PROVIDER", "LLM_MODEL", "LLM_MODEL_PARSE", "LLM_MODEL_QUESTIONS",
+              "LLM_MODEL_FINALISTS", "LLM_MODEL_EXPLAIN", "LLM_MODEL_DIFF",
+              "LLM_TEMPERATURE", "LLM_TEMPERATURE_EXPLAIN", "RERANK_MODEL",
+              "RERANK_MODEL_FALLBACK", "LLM_API_KEY", "AITUNNEL_API_KEY")
+
+
+@pytest.fixture(autouse=True)
+def hermetic_routing(monkeypatch):
+    for module in (rp, provider_mod, rerank_mod):
+        monkeypatch.setattr(module, "load_env_file", _no_env_file)
+    for name in _ROUTE_ENV:
+        monkeypatch.delenv(name, raising=False)
 
 
 class CountingSlots(MockSlots):
@@ -254,6 +279,10 @@ class TestRerankOnlyHybrid:
     def test_dry_run_json_carries_the_same_routing_as_the_console(self, capsys,
                                                                   monkeypatch) -> None:
         monkeypatch.setenv("RERANK_MODEL", "qwen3-reranker-8b")
+        #: ключ нужен и здесь: `/rerank` на этом флаге — оплачиваемый слот, и preflight
+        #: требует ключ для любого платного пути. Раньше он приходил из `.env` разработчика
+        #: невидимо для теста — ровно та зависимость, которую `hermetic_routing` убирает.
+        monkeypatch.setenv("LLM_API_KEY", "sk-test-not-a-real-key")
         stub = StubReranker()
         monkeypatch.setattr(Reranker, "from_config",
                             classmethod(lambda cls: stub))  # имя настоящее, клиент подменный

@@ -39,8 +39,10 @@ from services.agent.app.llm.provider_openai_compatible import (
     _env_optional,
 )
 from services.agent.app.llm.schemas import (
+    THEME_WORDS,
     ParsedDelta,
     ParseSchema,
+    _to_themes,
     apply_deltas,
     range_days,
 )
@@ -396,6 +398,27 @@ class TestProvenanceGuard:
         result = apply_deltas(deltas, "хочу к тёплому морю и в горы", year=YEAR)
         assert Theme.BEACH in result.request.themes.value
         assert Theme.NATURE in result.request.themes.value
+
+    @pytest.mark.parametrize("phrase", [
+        "нужен отель у моря",
+        "хочу к тёплому морю",
+        "еду на побережье",
+        "поеду в горы",
+        "ищем природу",
+        "еду на озеро",
+    ])
+    def test_both_parsers_read_the_same_theme_from_the_same_case(self, phrase: str) -> None:
+        """Мок и коэрсер над ответом модели обязаны сходиться на падежах, а не только на «море».
+
+        Таблица `THEME_WORDS` одна на оба пути (как `month_of` для дат). Со словарём мока из
+        «море/морю/пляж» родительный «у моря» терялся, `themes` оставались неизвестны, запрос
+        слота №3 выходил пустым — и на платном прогоне реранк не вызывался бы вообще.
+        """
+
+        mock_themes = MockSlots().parse(f"{phrase} в ноябре").themes.value
+        coerced = _to_themes(phrase)
+        assert mock_themes == coerced, f"{phrase}: мок {mock_themes}, коэрсер {coerced}"
+        assert mock_themes and set(mock_themes) <= set(THEME_WORDS)
 
 
 class TestContractOverModelJudgement:

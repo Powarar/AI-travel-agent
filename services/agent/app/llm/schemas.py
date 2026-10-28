@@ -295,9 +295,12 @@ CHILD_WORD_RE = re.compile(r"ребён|ребен|дет[еёи]|младен|�
 #: статус остаётся `defaulted` — код обязан показать, что это его предположение.
 DEFAULT_CHILD_AGE = 7
 
-#: Русские слова к значениям `Theme` — как в моке T-05, иначе «море» не станет пляжем.
-_THEME_WORDS = {
-    Theme.BEACH: ("мор", "пляж", "берег"),
+#: Русские слова к значениям `Theme` — одна таблица на оба парсера (детерминированный мок T-05
+#: и `apply_deltas` над ответом модели), как `month_of` для дат. Со своей таблицей в `slots.py`
+#: мок терял падежи: «отель у моря» не содержал ни «море», ни «морю», themes оставались
+#: неизвестны, запрос слота №3 выходил пустым, и оплаченный `/rerank` не вызывался вовсе.
+THEME_WORDS = {
+    Theme.BEACH: ("мор", "пляж", "берег", "береж"),
     Theme.NATURE: ("гор", "лес", "природ", "озер"),
     Theme.CITY: ("город", "центр"),
     Theme.CULTURE: ("музе", "культур", "истори", "экскурси"),
@@ -544,7 +547,7 @@ def _to_themes(raw: str) -> list[Theme]:
     """
 
     lowered = raw.lower()
-    themes = [theme for theme, words in _THEME_WORDS.items() if any(word in lowered for word in words)]
+    themes = [theme for theme, words in THEME_WORDS.items() if any(word in lowered for word in words)]
     for name in (item.strip() for item in re.split(r"[,;\s]+", lowered) if item.strip()):
         for theme in Theme:
             if theme.value == name:

@@ -27,7 +27,7 @@ from services.agent.app.llm.slots import Explanation, MockSlots
 from services.agent.app.orchestration import nodes
 from services.agent.app.orchestration.nodes import SearchResult, apply_relevance, merge_results
 from services.agent.app.orchestration.runtime import Runtime
-from shared.contracts.enums import DataStatus
+from shared.contracts.enums import DataStatus, Theme
 from shared.contracts.money import BudgetLedger, Money
 from shared.contracts.state import Candidate, TripState
 from tests.scenarios.test_golden_path import (
@@ -100,6 +100,20 @@ class TestQueryAndDocument:
         assert "без долгих перелётов" in query
         #: английское значение enum в русском запросе — мусор: реранкер скорит лексику
         assert "beach" not in query
+
+    def test_a_genitive_case_does_not_switch_the_paid_slot_off(self) -> None:
+        """«отель у моря» обязаны давать запрос: без него `/rerank` не вызывается вовсе.
+
+        Мок T-05 искал «море» и «морю» целыми формами, а падеж «моря» не содержал ни одной —
+        `themes` оставались неизвестны, запрос выходил пустым, и runtime пропускал слот №3.
+        На платном прогоне это выглядит как «мы заплатили за ноль»: реранк оплачивается только
+        когда его вызвали, а план вызовов считается моками на том же входе.
+        """
+
+        request = MockSlots().parse("нужен атмосферный отель у моря в сочи с 12 по 17 ноября")
+        assert nodes.relevance_query(request).strip() != ""
+        #: и падеж, и stem: «у моря», «к морю», «на побережье» — одна тема
+        assert request.themes.value == [Theme.BEACH]
 
     def test_document_carries_amenities_translated(self) -> None:
         candidate = Candidate(
