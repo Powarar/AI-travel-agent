@@ -866,9 +866,9 @@ def _within_budget_or_best(
         #: достижимо только если лимит проставился позже: план без числа превышения не отдаём
         return best, None, None
     note = make(ViolationCode.BUDGET_EXCEEDED, "plan",
-                expected=limit.as_display(), actual=cheapest.as_display(),
+                expected=limit.as_ru(), actual=cheapest.as_ru(),
                 evidence={"destination": destination,
-                          "over_by": (cheapest - limit).as_display(),
+                          "over_by": (cheapest - limit).as_ru(),
                           "hotels": str(len(ordered))})
     return cheapest_hotel, None, note.model_copy(update={"severity": Severity.WARNING})
 
@@ -1052,7 +1052,7 @@ def _destination_candidate(fact: DestinationFact) -> Candidate:
             "sea_temp_c": _shown(fact.sea_temp_c),
             "day_temp_c": "",
             "flight_h": fact.flight_h,
-            "est_total": "" if fact.est_total is None else fact.est_total.as_display(),
+            "est_total": "" if fact.est_total is None else fact.est_total.as_ru(),
             "source_id": fact.source_id,
         },
         score=fact.score,

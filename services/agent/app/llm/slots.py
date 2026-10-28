@@ -33,6 +33,7 @@ from shared.contracts.enums import (
     Theme,
 )
 from shared.contracts.money import BudgetLedger, Money
+from shared.contracts.months import month_label
 from shared.contracts.request import FieldValue, TripRequest
 from shared.contracts.state import Candidate
 
@@ -93,7 +94,7 @@ def _budget_from(lowered: str) -> Decimal | None:
     """Сумма из фразы о бюджете. Разряды с пробелом и «к»/«тысяч»/«млн» — один механизм.
 
     Раньше было два независимых шаблона («150к» где угодно и «бюджет 150000»): «бюджет
-    120 000 рублей» и «бюджет 90 тысяч» не ловились neither, а «150к» в начале сообщения без
+    120 000 рублей» и «бюджет 90 тысяч» не ловились вообще, а «150к» в начале сообщения без
     слова «бюджет» — только первым шаблоном.
     """
 
@@ -335,14 +336,17 @@ class MockSlots:
     def formulate(self, spec: QuestionSpec) -> str:
         """Слот №2: код решил, какой путь поля добить — модель даёт формулировку."""
 
+        #: `why` из политики — конец фразы без точки; без разделителя получалось «…нечего
+        #: искать в перелётах Варианты: Москва», то есть два несвязанных предложения в строке
+        lead = spec.why.rstrip(". ")
         if spec.evidence:
             details = ", ".join(f"{key.replace('_', ' ')} {value}" for key, value in spec.evidence.items())
             return (
-                f"{spec.why} Сейчас так: {details}. "
+                f"{lead}. Сейчас так: {details}. "
                 f"Как поступить — {', '.join(f'«{option}»' for option in spec.options)}?"
             )
         if spec.options:
-            return f"{spec.why} Варианты: {', '.join(spec.options)}."
+            return f"{lead}. Варианты: {', '.join(spec.options)}."
         return spec.why
 
     def soft_relevance(self, query: str,
@@ -381,7 +385,9 @@ class MockSlots:
         """
 
         parts = [
-            f"{explanation.headline}",
+            #: заголовок — отдельная фраза, а не обрывок: без границы склеивалось в «Таиланд,
+            #: Pattaya Заезд 14.11, выезд 21.11»
+            f"{explanation.headline}.",
             f"Заезд {explanation.check_in:%d.%m}, выезд {explanation.check_out:%d.%m} — "
             f"{explanation.nights} ночей.",
         ]
@@ -395,8 +401,10 @@ class MockSlots:
                    #: статус `unknown`
                    f"Воздух +{air} °C" if air else "")
         if weather:
-            month = explanation.facts.get("climate_month")
-            tail = f" в {month}" if month else ""
+            #: месяц по-русски: `climate_month` — ключ источника `2026-11`, и в строке для
+            #: человека он читается как техническая заглушка
+            named_month = month_label(explanation.facts.get("climate_month"))
+            tail = f" в {named_month}" if named_month else ""
             parts.append(f"{weather}{tail}" + (f", перелёт {flight} ч в одну сторону." if flight else "."))
         elif flight:
             parts.append(f"Перелёт {flight} ч в одну сторону.")
@@ -422,11 +430,14 @@ class MockSlots:
 
 
 def display(money: Money) -> str:
-    """«148 900 ₽» — разделение разрядов, сумма берётся готовой из `BudgetLedger`."""
+    """«148 900 ₽» — один формат суммы на весь текст: `Money.as_ru`.
 
-    quantized = money.rounded().amount
-    digits = f"{int(quantized):,}".replace(",", " ")
-    return f"{digits} ₽"
+    Прежняя версия приписывала знак рубля любой валюте ledger'а: USD-прогон показал бы
+    «1200 ₽» вместо «1 200 USD». Формат теперь живёт рядом с `Money` и знает, у какой валюты
+    есть свой знак, а какая остаётся ISO-кодом.
+    """
+
+    return money.as_ru()
 
 
 def _money_line(explanation: Explanation) -> str:
@@ -449,20 +460,28 @@ def _finalist_reason(candidate: Candidate) -> str:
     а «короткий перелёт» у Паттайи — 9 с лишним часов. Guard такие слова не ловит:
     `_without_invented_numbers` вычитает цифры, а утверждения оставляет как есть. Причина
     собирается по presence-check, и отсутствие числа означает молчание про этот признак.
+
+    Числа погода даёт только после `weather_climate`, поэтому слот №4 в рантайме идёт за
+    климатом, а не сразу за подбором (`runtime._collect`): выбранная до погоды тройка
+    оставалась бы с причиной «перелёт …» там, где температура и есть ответ на «к тёплому
+    морю». Воздух подписан «воздух», а не «море»: в сиде климата воды нет.
     """
 
     name = candidate.ref.get("name", candidate.candidate_id)
     parts: list[str] = []
     sea = candidate.ref.get("sea_temp_c", "")
     air = candidate.ref.get("day_temp_c", "")
-    month = candidate.ref.get("climate_month", "")
+    month = month_label(candidate.ref.get("climate_month", ""))
     if sea:
-        parts.append(f"море +{sea} °C")
+        parts.append(f"море +{sea} °C" + (f" в {month}" if month else ""))
     elif air:
         parts.append(f"воздух +{air} °C" + (f" в {month}" if month else ""))
     flight = candidate.ref.get("flight_h", "")
     if flight:
-        parts.append(f"перелёт {flight} ч")
+        #: оговорка обязательна: `flight_h` направления — прикидка источника подбора, а в
+        #: объяснении плана стоит длительность собранных сегментов. Без неё одна карточка
+        #: спорила бы сама с собой: «перелёт 12.2 ч» рядом с «перелёт 14.2 ч в одну сторону»
+        parts.append(f"перелёт {flight} ч по данным подбора")
     if not parts:
         #: чисел источника нет — причина обязана быть про фильтр, а не про погоду
         parts.append("прошёл hard-фильтры подбора")

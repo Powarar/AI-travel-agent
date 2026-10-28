@@ -851,3 +851,51 @@ class TestClimateMonth:
         assert run.state.request.dates.start.value == date(2026, 10, 28)
         assert run.state.request.dates.end.value == date(2026, 11, 5)
         assert asked and set(asked) == {"2026-10"}
+
+
+class TestUserVisibleText:
+    """Что читает человек: подписи чисел, месяц по-русски и слот №4 после климата.
+
+    Пустая строка в `ref` означает «не показывать», а не «показать пусто», а число обязано
+    быть подписано тем, чем оно посчитано (CONTRACTS.md, «Что видит человек»). Отдельная
+    граница — порядок: выбранная до погоды тройка не может объяснить «тёплое море» температурой,
+    которой у неё ещё нет.
+    """
+
+    def test_question_breaks_sentences_and_names_the_month_in_russian(self, runtime: Runtime) -> None:
+        run = runtime.start(MESSAGE, now=NOW)
+        #: прежняя склейка давала «…нечего искать в перелётах Варианты: Москва»
+        assert ". Варианты: " in run.texts["origin"]
+        assert "в перелётах Варианты" not in run.texts["origin"]
+        run = walk_question(run, runtime, "Москва")
+        #: `dates.month` = «2026-11» — ключ источника; в вопросе он звучит по-русски
+        assert "вилку в ноябре" in run.texts["dates.start"]
+        assert "11-м месяце" not in run.texts["dates.start"]
+
+    def test_finalist_reason_carries_the_number_it_was_picked_for(self, runtime: Runtime) -> None:
+        run = golden_run(runtime)
+        picked = [candidate for candidate in run.state.candidates.destinations
+                  if candidate.ref.get("finalist") == "true"]
+        assert len(picked) == 3
+        for candidate in picked:
+            reason = candidate.ref["why"]
+            sea, air = candidate.ref["sea_temp_c"], candidate.ref["day_temp_c"]
+            assert sea and air                                # фикстура даёт оба числа
+            assert f"море +{sea} °C" in reason                # вода названа водой
+            assert "воздух" not in reason                     # и не названа воздух наоборот
+            assert f"перелёт {candidate.ref['flight_h']} ч по данным подбора" in reason
+            assert "в ноябре" in reason and "2026-11" not in reason
+
+    def test_climate_arrives_before_the_shortlist_without_an_extra_call(self, runtime: Runtime) -> None:
+        run = golden_run(runtime)
+        #: вызовов не стало больше: климат до выбора тройки спрашивается на весь отбор одним
+        #: обращением, иначе показанным направлениям нечем было бы объяснить «тёплое море»
+        assert run.state.budgets.tool_calls == 6
+        filled = [candidate for candidate in run.state.candidates.destinations
+                  if candidate.ref.get("day_temp_c")]
+        assert len(filled) == len(run.state.candidates.destinations)
+
+    def test_explanation_separates_the_headline_from_the_rest(self, runtime: Runtime) -> None:
+        run = golden_run(runtime)
+        assert run.explanation.startswith("Турция, Анталья. Заезд ")
+        assert "в ноябре" in run.explanation and "2026-11" not in run.explanation

@@ -410,10 +410,10 @@ def validate(plan: Plan, ledger: BudgetLedger, state: TripRequest | TripState | 
             )
             violations.append(
                 make(ViolationCode.BUDGET_EXCEEDED, "plan",
-                     expected=budget_for_plan.as_display(), actual=total.as_display(),
-                     evidence={"over_by": over.as_display(),
-                               "lodging_now": lodging.as_display(),
-                               "reduce_lodging_to": (lodging - over).as_display()})
+                     expected=budget_for_plan.as_ru(), actual=total.as_ru(),
+                     evidence={"over_by": over.as_ru(),
+                               "lodging_now": lodging.as_ru(),
+                               "reduce_lodging_to": (lodging - over).as_ru()})
             )
 
     # --- инвариант №2: план не может молча отступать от hard-полей -------------
@@ -435,8 +435,8 @@ def validate(plan: Plan, ledger: BudgetLedger, state: TripRequest | TripState | 
             if claimed_budget.value != ledger.budget:
                 violations.append(
                     make(ViolationCode.HARD_CONSTRAINT_UNSATISFIED, "budget",
-                         expected=claimed_budget.value.as_display(),
-                         actual=ledger.budget.as_display(),
+                         expected=claimed_budget.value.as_ru(),
+                         actual=ledger.budget.as_ru(),
                          field_path="budget.amount",
                          evidence={"why": "замер считается от названного бюджета, не от подменённого"})
                 )

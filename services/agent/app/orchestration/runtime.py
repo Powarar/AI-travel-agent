@@ -359,8 +359,18 @@ class Runtime:
         Финалистов слот №4 выбирает сразу после подбора направлений и до того, как по ним
         пойдут перелёты, отели и трансферы: иначе повторный подбор на дельте отдал бы
         источникам все двенадцать кодов вместо трёх.
+
+        Внутри этого окна есть ещё одна граница — климат. Причина слота №4 собирается из
+        `ref` выбранного кандидата, а температуры лежат в `ref` только после `weather_climate`:
+        выбранный до него «тёплый» финалист остаётся с причиной про перелёт, хотя число пришло
+        следующим же вызовом того же прохода. Поэтому если климат в этом проходе ещё не взят,
+        слот №4 ждёт его на один шаг (`weather_climate` идёт вторым в обоих списках), а если
+        он уже взят — его данные в `ref` лежат, и ждать нечего. Обращения к источникам
+        ожидание не меняет: климат для кандидатов без финалистов спрашивается на весь отбор.
         """
 
+        #: подбор направлений отработал, климата в этом проходе ещё нет — слот №4 на паузе
+        awaiting_climate = False
         for name in names:
             if not self._needs(run, name):
                 continue
@@ -371,6 +381,11 @@ class Runtime:
             run.fetched.add(name)
             run.state = nodes.absorb(run.state, name, result)
             if name == "suggest_destinations":
+                awaiting_climate = "weather_climate" not in run.fetched
+                if not awaiting_climate:
+                    run = self._finalists(run)
+            elif name == "weather_climate" and awaiting_climate:
+                awaiting_climate = False
                 run = self._finalists(run)
             elif name == "hotel_search":
                 run = self._relevance(run)
@@ -573,12 +588,15 @@ class Runtime:
 
     @staticmethod
     def _climate_missing(state: TripState) -> bool:
-        """Климат спрашиваем только для финалистов — их показывает пользователю.
+        """Спросить ли климат: пока финалистов нет — по всему отбору, после — по показанным.
 
-        Проверка по всем двенадцати кандидатам никогда не стала бы удовлетворена (`absorb`
-        дописывает температуру лишь трём выбранным), и каждый следующий ход открывал бы
-        `weather_climate` заново: кэш вернул бы тот же ответ, но `tool_calls` вырос бы на
-        пустом месте — а лимит хода именно для таких обращений и придуман.
+        Проверка «есть ли температура у всех кандидатов» никогда не стала бы удовлетворена,
+        если бы климат пришёл после слота №4: `absorb` дописывает число лишь трём выбранным,
+        и каждый следующий ход открывал бы `weather_climate` заново: кэш вернул бы тот же
+        ответ, но `tool_calls` вырос бы на пустом месте — а лимит хода именно для таких
+        обращений и придуман. Поэтому порядок в `_collect` иной: климат идёт до финалистов и
+        закрывает весь отбор одним вызовом, а `destination_codes` до выбора троек отдаёт
+        именно все коды.
         """
 
         picked = [candidate for candidate in state.candidates.destinations
@@ -765,9 +783,16 @@ def unverified_numbers(text: str, state: TripState, ledger: BudgetLedger) -> lis
     «152 000 ₽» вместо посчитанных 148 900 ₽ (`docs/LLM-BOUNDARY.md`, антигаллюцинационный
     guard). Источники чисел: состояние (даты, состав, `ref` кандидатов) и ledger — его
     `total`/`remaining`/`breakdown`, потому что их вычисляет код из тех же линий.
+
+    Пробелы вырезаны с обеих сторон сравнения, потому что сумма живёт в состоянии уже
+    отформатированной для человека («150 000 ₽» в `expected` нарушения). Без этого guard
+    считал бы выдумкой число, которое он сам же положил в состояние, и на живом слоте №5
+    это стоило бы второй платной генерации плюс отката на шаблон. То же правило у
+    `_without_invented_numbers` — два счётчика честности обязаны сходиться.
     """
 
-    haystack = state.model_dump_json() + ledger.model_dump_json() + _ledger_numbers(ledger)
+    haystack = (state.model_dump_json() + ledger.model_dump_json() + _ledger_numbers(ledger))
+    haystack = haystack.replace(" ", "").replace("\u00a0", "")
     found: list[str] = []
     for token in _NUMBER.findall(text):
         normalized = token.replace(" ", "").replace("\u00a0", "")

@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import re
 from decimal import Decimal
 from uuid import UUID, uuid4
 
@@ -80,6 +81,12 @@ def run_with(scores: dict[str, float]) -> tuple[Runtime, RankedSlots, object]:
 def relevance_of(run) -> dict[str, str]:
     return {candidate.candidate_id: candidate.ref.get("relevance", "")
             for candidate in run.state.candidates.hotels}
+
+
+def ruble(value: str) -> Decimal:
+    """«125 200 ₽» → Decimal: сумма в нарушениях лежит уже отформатированной для человека."""
+
+    return Decimal(re.sub(r"[^\d.]", "", value.replace("\u00a0", " ")))
 
 
 class TestQueryAndDocument:
@@ -248,7 +255,7 @@ class TestComposeUsesRelevance:
         #: пережить сборку, иначе отказ будет выглядеть как «мы не считали»
         assert [note.code.value for note in composition.notes] == ["BUDGET_EXCEEDED"]
         assert composition.notes[0].is_blocking is False
-        assert composition.notes[0].evidence["over_by"] == "65200 RUB"
+        assert composition.notes[0].evidence["over_by"] == "65 200 ₽"
 
     def test_when_no_destination_fits_the_refusal_names_the_closest_one(self) -> None:
         """Ни одно направление не влезло → отказ по самому дешёвому из собранных, а не по первому в списке.
@@ -268,7 +275,7 @@ class TestComposeUsesRelevance:
         missed = {note.evidence["destination"]: note.actual for note in composition.notes}
         assert set(missed) == {"AYT", "HKT", "HER"}
         assert all(not note.is_blocking for note in composition.notes)
-        assert Decimal(missed["AYT"].split()[0]) == total
+        assert ruble(missed["AYT"]) == total
 
     def test_an_over_budget_destination_does_not_hide_the_cheap_one(self) -> None:
         """Баг питча: самое релевантное направление не влезло, и прогон врал «плана нет».

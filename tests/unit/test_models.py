@@ -65,6 +65,22 @@ class TestMoney:
         assert Money(amount=Decimal("148900.005"), currency="RUB").as_display() == "148900.01 RUB"
         assert Money(amount=Decimal("148900"), currency="RUB").as_display() == "148900 RUB"
 
+    def test_ru_form_groups_digits_and_signs_only_known_currencies(self):
+        #: форма для человека: разряды через пробел и знак там, где знак у нас задан; USD
+        #: остаётся ISO-кодом — «$» для неё мы придумывать не вправе
+        assert Money(amount=Decimal("150000"), currency="RUB").as_ru() == "150 000 ₽"
+        assert Money(amount=Decimal("1234.5"), currency="RUB").as_ru() == "1 234.50 ₽"
+        assert Money(amount=Decimal("1200"), currency="USD").as_ru() == "1 200 USD"
+
+    def test_ru_and_display_carry_the_same_number(self):
+        """`as_ru` — только вид: guard сверяет цифры без пробелов и обязан узнать обе формы."""
+
+        def digits(text: str) -> str:
+            return "".join(ch for ch in text if ch.isdigit())
+
+        value = Money(amount=Decimal("166950"), currency="RUB")
+        assert digits(value.as_ru()) == digits(value.as_display()) == "166950"
+
 
 class TestBudgetLedger:
     def test_total_is_sum_of_included_lines(self):

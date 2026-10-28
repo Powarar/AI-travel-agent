@@ -140,6 +140,24 @@ class TestCatalogGapsStayGaps:
         assert reasons
         assert all("море" not in reason for reason in reasons)
         assert all("перелёт " in reason for reason in reasons)
+        #: слот №4 идёт после климата, поэтому температура в причине есть, названа воздухом
+        #: и месяцем поездки, а не ключом источника «2026-11»
+        assert all("воздух +" in reason for reason in reasons)
+        assert all(" в ноябре" in reason and "2026-11" not in reason for reason in reasons)
+
+    def test_a_direction_without_flight_data_gets_no_hollow_flight_phrase(self) -> None:
+        """Геленджик: `flight_h` пустой — и в строке нет «перелёт  ч».
+
+        Пустая строка в `ref` означает «не показывать» (CONTRACTS.md, «Что видит человек»),
+        иначе карточка направления без рейсов утверждала бы часы перелёта без числа.
+        """
+
+        report = trip("хочу в геленджик с 12 по 17 ноября вдвоём, 150к")
+        candidate = next(item for item in report.state_dump["candidates"]["destinations"]
+                         if item["candidate_id"] == "gelendzhik")
+        assert candidate["ref"]["flight_h"] == ""
+        assert "перелёт" not in candidate["ref"]["why"]
+        assert "воздух +" in candidate["ref"]["why"]
 
 
 class TestPartyConstraints:
@@ -207,8 +225,11 @@ class TestBudgetAcrossDestinations:
         blocking = [row for row in report.violations if row.endswith(":blocking")]
         assert blocking == ["BUDGET_EXCEEDED:blocking"]
         #: отказ по самому дешёвому из собранных: 166 950 ₽, а не 244 850 ₽ самого релевантного
-        assert "вышло 166950 RUB" in report.explanation_text
+        assert "вышло 166 950 ₽" in report.explanation_text
         assert "reduce_lodging_to" in report.explanation_text
+        #: отказ цитирует числа состояния в человекочитаемой форме («15 500 ₽») — guard не
+        #: имеет права считать их выдумкой: на живом слоте №5 это вторая платная генерация
+        assert report.invented_numbers == []
         #: остальные направления не потерялись: они warnings с своими числами
         notes = [row for row in report.violations if row.endswith(":warning")]
         assert len(notes) == 2

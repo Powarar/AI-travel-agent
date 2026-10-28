@@ -47,7 +47,7 @@ class TestBudgetThresholds:
         total = total_of(plan)
         violations = [v for v in validate(plan, ledger_of(plan, budget=total - 1000))
                       if v.code == ViolationCode.BUDGET_EXCEEDED]
-        assert violations[0].evidence["over_by"] == "1000 RUB"
+        assert violations[0].evidence["over_by"] == "1 000 ₽"
         assert violations[0].suggested_actions
 
     def test_transfer_excluded_from_budget_still_counted_separately(self):
@@ -66,9 +66,9 @@ class TestBudgetThresholds:
         found = [v for v in validate(plan, ledger_of(plan, budget=50000))
                  if v.code == ViolationCode.BUDGET_EXCEEDED]
         # всего 65 000 против 50 000 → перебор 15 000; отель 35 000 → потолок 20 000
-        assert found[0].evidence["over_by"] == "15000 RUB"
-        assert found[0].evidence["lodging_now"] == "35000 RUB"
-        assert found[0].evidence["reduce_lodging_to"] == "20000 RUB"
+        assert found[0].evidence["over_by"] == "15 000 ₽"
+        assert found[0].evidence["lodging_now"] == "35 000 ₽"
+        assert found[0].evidence["reduce_lodging_to"] == "20 000 ₽"
 
 
 class TestDoubleCountingAndCurrency:
@@ -102,7 +102,7 @@ class TestDoubleCountingAndCurrency:
         )
         found = [v for v in validate(plan, ledger) if v.code == ViolationCode.BUDGET_EXCEEDED]
         # 15 000 на двоих = 30 000, а ночи стоят 35 000
-        assert found[0].expected == "30000 RUB"
+        assert found[0].expected == "30 000 ₽"
 
     def test_per_person_budget_that_fits_after_scaling_is_not_a_violation(self):
         plan = baseline_plan(adults=2, party_total=2)

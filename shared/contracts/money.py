@@ -12,6 +12,10 @@ from shared.contracts.enums import BudgetScope, CostScope, DataStatus, PriceKind
 
 _CENTS = Decimal("0.01")
 _CURRENCY_RE = re.compile(r"^[A-Z]{3}$")
+#: Знак валюты для человекочитаемой строки: только у тех валют, чей знак мы не выдумываем.
+#: Всё остальное остаётся ISO-кодом (`as_ru`), потому что «$» за USD без курса — та же
+#: подмена, что и температура, которой в данных нет.
+_SYMBOLS = {"RUB": "₽"}
 
 
 def _to_decimal(value: object) -> Decimal:
@@ -90,12 +94,26 @@ class Money(BaseModel):
         return Money(amount=self.amount.quantize(_CENTS, rounding=ROUND_HALF_UP), currency=self.currency)
 
     def as_display(self) -> str:
-        """Без копеек при целом значении — для человекочитаемых сумм в тексте."""
+        """Машиночитаемая сумма: «150000 RUB». Её отдаём источникам как аргумент и в лог."""
 
         quantized = self.rounded().amount
         if quantized == quantized.to_integral_value():
             return f"{int(quantized)} {self.currency}"
         return f"{quantized} {self.currency}"
+
+    def as_ru(self) -> str:
+        """Сумма для человека: «150 000 ₽», при дробной — «1 234.50 USD».
+
+        Отличается от `as_display` ровно видом: разряды через пробел и знак валюты там, где
+        он у нас задан. Численное значение то же, поэтому `unverified_numbers` сверяет обе
+        формы одинаково — сравнение идёт по цифрам без пробелов. ISO-код остаётся для всего,
+        чего мы не решаемся подписывать знаком: «1 200 USD» честнее, чем выдуманный «$».
+        """
+
+        quantized = self.rounded().amount
+        grouped = (f"{int(quantized):,}" if quantized == quantized.to_integral_value()
+                   else f"{quantized:,}")
+        return f"{grouped.replace(',', ' ')} {_SYMBOLS.get(self.currency, self.currency)}"
 
 
 class PriceLine(BaseModel):

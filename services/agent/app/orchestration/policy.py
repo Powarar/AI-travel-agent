@@ -33,6 +33,7 @@ from shared.contracts.enums import (
     Severity,
     Stage,
 )
+from shared.contracts.months import month_label
 from shared.contracts.request import FieldValue, TripRequest
 from shared.contracts.state import TripState
 from shared.contracts.violation import Violation
@@ -167,7 +168,10 @@ def _spec_for(path: str, request: TripRequest) -> QuestionSpec:
         )
     if path == "dates.start":
         month = request.dates.start.value.month if request.dates.start.value else None
-        hint = f"в {month}-м месяце" if month else "когда едем"
+        #: месяц по-русски, а не «в 11-м месяце»: вопрос читает человек, а номер — это ключ
+        #: источника (`dates.month`), показывать его пользователю не за чем
+        named = month_label(month)
+        hint = f"в {named}" if named else "когда едем"
         return QuestionSpec(
             field="dates.start",
             why=f"Назовите вилку {hint} — например «с 14 по 21», или пропустите",
