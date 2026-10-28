@@ -74,7 +74,7 @@ eval:
 .PHONY: lint
 lint:
 	$(PYTHON) -m mypy services/backend/app services/agent/app shared/contracts
-	@if rg -n 'import (openai|instructor|litellm|anthropic)' services/agent/app/validation; then exit 1; fi
+	@if grep -rnE '^\s*(import|from) (openai|instructor|litellm|anthropic)' services/agent/app/validation; then exit 1; fi
 
 .PHONY: bot
 bot:

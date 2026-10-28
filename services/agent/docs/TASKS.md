@@ -101,6 +101,7 @@ SQL-фильтра без векторов, T-09 сокращается до 6 �
 
 ### T-11 · Окружение, миграции, CI
 
+**Статус:** ✅ done 2026-10-28 (П2) — `make up/seed/test/eval/lint`, миграции 0001–0003, CI с pgvector, миграциями, `make test` и `make lint`. Запрет LLM-импортов в `validation/` переведён с `rg` на `grep`: без установленного `rg` проверка молча проходила. Замер «с чистого клона без сети» в README не записан.
 **Владелец:** П2 · **Волна:** 0 · **Зависит:** — · **Нужно для:** T-02, T-06, T-12
 **Файлы:** `docker-compose.yml`, `Makefile`, `services/backend/app/db/migrations/`,
 `.github/workflows/ci.yml`, `.env.example`
