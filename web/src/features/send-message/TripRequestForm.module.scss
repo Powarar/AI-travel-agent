@@ -9,14 +9,3 @@
 .suggestionsList { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 .action { display: flex; justify-content: flex-end; }
 
-.preview {
-  margin-top: 1.5rem;
-  padding: 1.1rem 1.25rem;
-  border-radius: var(--radius-input);
-  background: var(--color-blue-soft);
-  color: var(--color-text);
-
-  strong { color: var(--color-blue); }
-  p { margin: 0.5rem 0; overflow-wrap: anywhere; }
-  small { color: var(--color-muted); }
-}

@@ -1,0 +1,90 @@
+.panel {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.1rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  h3 { margin: 0.35rem 0 0; color: var(--color-blue); font-size: 1.5rem; font-weight: 850; }
+}
+
+.outcome {
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-pill);
+  background: #f3f5f7;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.plan_ready { background: var(--color-mojito); }
+.infeasible, .unsupported { background: #ffe3d8; color: #9a2a05; }
+.best_effort, .degraded, .awaiting_answer { background: #fff3d6; color: #7a4f00; }
+
+.provenance { display: flex; flex-wrap: wrap; gap: 0.35rem; align-content: start; }
+
+.violations {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-input);
+  background: #fff5ef;
+  list-style: none;
+  font-size: 0.875rem;
+
+  li + li { margin-top: 0.3rem; }
+}
+
+.blocking { color: #a12a0a; }
+
+.components {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+
+  div { display: grid; grid-template-columns: minmax(120px, 0.6fr) 1fr; gap: 0.75rem; }
+  dt { color: var(--color-muted); font-size: 0.875rem; }
+  dd { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0; font-weight: 700; }
+}
+
+.ledger {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  caption { padding-bottom: 0.4rem; color: var(--color-muted); font-size: 0.78rem; text-align: left; }
+  th { font-weight: 700; text-align: left; }
+  th small { display: block; color: var(--color-muted); font-size: 0.72rem; font-weight: 400; }
+  td, th { padding: 0.45rem 0; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+  td:nth-child(2) { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+  tfoot th, tfoot td { border-bottom: 0; }
+  tfoot tr:first-child th, tfoot tr:first-child td { font-size: 1.1rem; color: var(--color-blue); }
+}
+
+.num { font-variant-numeric: tabular-nums; font-weight: 800; text-align: right; white-space: nowrap; }
+.left td, .left th { color: #2f6b16; }
+.over td, .over th { color: #a12a0a; }
+
+.explain {
+  margin: 0;
+  padding: 0.9rem 1.1rem;
+  border-left: 4px solid var(--color-mojito);
+  border-radius: 0 var(--radius-input) var(--radius-input) 0;
+  background: var(--color-page);
+
+  blockquote { margin: 0 0 0.4rem; line-height: 1.5; }
+  figcaption { color: var(--color-muted); font-size: 0.75rem; }
+}
+
+.meta { margin: 0; color: var(--color-muted); font-size: 0.78rem; }
+
+@media (max-width: 540px) {
+  .components div { grid-template-columns: 1fr; gap: 0.1rem; }
+}

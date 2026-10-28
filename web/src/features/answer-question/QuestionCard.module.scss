@@ -1,0 +1,39 @@
+.card {
+  padding: 1.1rem 1.25rem;
+  border: 2px solid var(--color-blue);
+  border-radius: var(--radius-input);
+  background: var(--color-blue-soft);
+}
+
+.kicker { color: var(--color-blue); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.text { margin: 0.4rem 0 0.9rem; font-size: 1.05rem; font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.skip { color: var(--color-muted); }
+
+.own {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-pill);
+    font: inherit;
+  }
+
+  button {
+    padding: 0.6rem 1rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-blue);
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+}

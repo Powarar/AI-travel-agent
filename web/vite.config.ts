@@ -26,6 +26,8 @@ export default defineConfig({
       '/api': {
         target: process.env.API_PROXY_TARGET ?? 'http://localhost:8010',
         changeOrigin: true,
+        // backend монтирует маршруты на /v1 без префикса /api
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },

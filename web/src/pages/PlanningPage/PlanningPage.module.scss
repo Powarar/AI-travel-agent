@@ -1,0 +1,116 @@
+.page { min-height: 100vh; }
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.4fr);
+  align-items: start;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  padding-block: 2rem 4rem;
+}
+
+.chat {
+  position: sticky;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-height: calc(100vh - 2rem);
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.chatHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+
+  h2 { margin: 0; color: var(--color-blue); font-size: 1.35rem; font-weight: 850; }
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-blue);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.mode {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  background: #fff8e8;
+  color: #8a5a00;
+  font-size: 0.78rem;
+}
+
+.feed { flex: 1; min-height: 120px; overflow-y: auto; }
+
+.error {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  background: #ffe3d8;
+  color: #9a2a05;
+  font-size: 0.875rem;
+}
+
+.composer { display: grid; gap: 0.6rem; }
+.changes { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.inputRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: end;
+
+  textarea {
+    flex: 1;
+    min-width: 0;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-input);
+    font: inherit;
+    resize: none;
+
+    &:focus-visible { outline: 3px solid var(--color-blue); outline-offset: 1px; }
+  }
+
+  button {
+    width: 3rem;
+    height: 3rem;
+    flex: none;
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-blue);
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 800;
+    cursor: pointer;
+
+    &:disabled { opacity: 0.45; cursor: not-allowed; }
+  }
+}
+
+.results { display: grid; gap: 1.5rem; min-width: 0; }
+
+.placeholder {
+  padding: 3rem 1.5rem;
+  border: 2px dashed var(--color-border-strong);
+  border-radius: var(--radius-card);
+  color: var(--color-muted);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .chat { position: static; max-height: none; }
+  .feed { max-height: 320px; }
+}

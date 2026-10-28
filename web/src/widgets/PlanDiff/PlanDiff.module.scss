@@ -1,0 +1,23 @@
+.diff {
+  padding: clamp(1.1rem, 2.5vw, 1.75rem);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-card);
+  background: #fff;
+
+  h3 { margin-bottom: 0.75rem; color: var(--color-blue); font-size: 1.15rem; font-weight: 850; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th, td { padding: 0.4rem 0.5rem 0.4rem 0; border-bottom: 1px solid var(--color-border); text-align: left; vertical-align: top; }
+  thead th { color: var(--color-muted); font-size: 0.75rem; font-weight: 700; }
+  tfoot th, tfoot td { border-bottom: 0; font-weight: 800; }
+  small { color: var(--color-muted); font-weight: 600; }
+}
+
+.changed td:first-of-type { color: var(--color-muted); text-decoration: line-through; }
+.changed td:last-of-type { font-weight: 700; }
+.kept td { color: #2f6b16; }
+.note { margin: 0.6rem 0 0; color: var(--color-muted); font-size: 0.75rem; }
+
+@media (max-width: 540px) {
+  .diff table { font-size: 0.8rem; }
+}

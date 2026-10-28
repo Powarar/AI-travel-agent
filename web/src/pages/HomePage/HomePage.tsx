@@ -4,13 +4,13 @@ import { PlannerSection } from '../../widgets/PlannerSection/PlannerSection'
 import { SiteFooter } from '../../widgets/SiteFooter/SiteFooter'
 import { SiteHeader } from '../../widgets/SiteHeader/SiteHeader'
 
-export function HomePage() {
+export function HomePage({ onStart }: { onStart: (prompt: string) => void }) {
   return (
     <div id="top">
       <SiteHeader />
       <main>
         <HeroSection />
-        <PlannerSection />
+        <PlannerSection onStart={onStart} />
         <HowItWorksSection />
       </main>
       <SiteFooter />

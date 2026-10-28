@@ -3,7 +3,7 @@ import { Container } from '../../shared/ui/Container/Container'
 
 import styles from './PlannerSection.module.scss'
 
-export function PlannerSection() {
+export function PlannerSection({ onStart }: { onStart: (prompt: string) => void }) {
   return (
     <section id="planner" className={styles.section} aria-labelledby="planner-title">
       <Container className={styles.layout}>
@@ -13,7 +13,7 @@ export function PlannerSection() {
           <p>Не нужен подробный маршрут. Опишите поездку своими словами — даже если пока знаете только настроение.</p>
           <div className={styles.accent} aria-hidden="true">О!</div>
         </div>
-        <TripRequestForm />
+        <TripRequestForm onSubmit={onStart} />
       </Container>
     </section>
   )

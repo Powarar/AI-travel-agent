@@ -1,0 +1,23 @@
+.panel {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+  padding: clamp(1.1rem, 2.5vw, 1.75rem);
+  border-radius: var(--radius-card);
+  background: var(--color-mojito);
+
+  h3 { margin: 0; color: var(--color-blue); font-size: 1.25rem; font-weight: 850; }
+}
+
+.banner {
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-pill);
+  background: #183047;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.hint, .done { margin: 0; }
+.done b { overflow-wrap: anywhere; }

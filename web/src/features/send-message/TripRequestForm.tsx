@@ -8,19 +8,19 @@ import { TextareaField } from '../../shared/ui/TextareaField/TextareaField'
 import styles from './TripRequestForm.module.scss'
 
 const suggestions = [
+  'Хочу к тёплому морю в ноябре вдвоём с ребёнком, 200к, без долгих перелётов',
   'На выходные к морю из Москвы, до 45 000 ₽',
   'Неделя в горах для двоих в ноябре',
   'Хочу тёплое место без визы и с хорошим отелем',
 ]
 
-export function TripRequestForm() {
+export function TripRequestForm({ onSubmit }: { onSubmit: (prompt: string) => void }) {
   const [prompt, setPrompt] = useState('')
-  const [submittedPrompt, setSubmittedPrompt] = useState('')
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const value = prompt.trim()
-    if (value) setSubmittedPrompt(value)
+    if (value) onSubmit(value)
   }
 
   return (
@@ -46,17 +46,10 @@ export function TripRequestForm() {
         </div>
         <div className={styles.action}>
           <Button type="submit" disabled={!prompt.trim()}>
-            Подготовить запрос <span aria-hidden="true">→</span>
+            Подобрать поездку <span aria-hidden="true">→</span>
           </Button>
         </div>
       </form>
-      {submittedPrompt && (
-        <div className={styles.preview} role="status" aria-live="polite">
-          <strong>Запрос подготовлен</strong>
-          <p>{submittedPrompt}</p>
-          <small>Подбор вариантов появится после подключения API планирования.</small>
-        </div>
-      )}
     </Card>
   )
 }
