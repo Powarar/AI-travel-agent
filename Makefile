@@ -1,12 +1,12 @@
-# Все сервисные команды идут через docker compose; локальный python/node не нужен.
-DC := docker compose --profile tools
+DC := docker compose
+PYTHON := $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 PSQL := $(DC) exec postgres psql -U ostrovok -d ostrovok
 
 .DEFAULT_GOAL := help
 
 .PHONY: help
 help:
-	@echo "make up        — postgres+backend+agent+web (hot reload)"
+	@echo "make up        — postgres+backend+agent и базовая миграция"
 	@echo "make web       — только фронтенд (hot reload), http://localhost:5173"
 	@echo "make down      — остановить стек (данные в volume pgdata остаются)"
 	@echo "make build     — пересобрать образы"
@@ -15,15 +15,17 @@ help:
 	@echo "make logs      — логи всех сервисов"
 	@echo "make seed      — одноразовый запуск scripts/seed_database.py"
 	@echo "make migrate   — alembic upgrade head внутри backend"
+	@echo "make eval      — офлайн-прогон золотого сценария"
 	@echo "make psql      — консоль postgres"
-	@echo "make test      — pytest в backend и agent"
-	@echo "make lint      — ruff + mypy в backend и agent"
+	@echo "make test      — весь набор pytest"
+	@echo "make lint      — mypy и запрет LLM-импортов в валидаторе"
 	@echo "make bot       — поднять бота (нужен TELEGRAM_BOT_TOKEN в .env)"
 	@echo "make clean     — остановить и удалить контейнеры, образы и volume pgdata"
 
 .PHONY: up
 up:
-	$(DC) up -d
+	$(DC) up -d --build postgres backend agent
+	$(MAKE) migrate
 
 .PHONY: web
 web:
@@ -51,11 +53,11 @@ logs:
 
 .PHONY: seed
 seed:
-	$(DC) run --rm seed
+	$(PYTHON) scripts/seed_database.py
 
 .PHONY: migrate
 migrate:
-	$(DC) exec backend alembic upgrade head
+	$(DC) exec backend python -c "from alembic import command; from alembic.config import Config; c=Config('/app/alembic.ini'); c.set_main_option('script_location', '/app/app/db/migrations'); command.upgrade(c, 'head')"
 
 .PHONY: psql
 psql:
@@ -63,15 +65,16 @@ psql:
 
 .PHONY: test
 test:
-	$(DC) exec backend pytest
-	$(DC) exec agent pytest
+	$(PYTHON) -m pytest tests
+
+.PHONY: eval
+eval:
+	$(PYTHON) scripts/run_pipeline.py --answer origin=Москва --answer "dates.start=с 14 по 21"
 
 .PHONY: lint
 lint:
-	$(DC) exec backend ruff check .
-	$(DC) exec backend mypy app
-	$(DC) exec agent ruff check .
-	$(DC) exec agent mypy app
+	$(PYTHON) -m mypy services/backend/app services/agent/app shared/contracts
+	@if rg -n 'import (openai|instructor|litellm|anthropic)' services/agent/app/validation; then exit 1; fi
 
 .PHONY: bot
 bot:

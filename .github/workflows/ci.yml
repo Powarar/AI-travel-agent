@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install project and test dependencies
+        run: |
+          python - <<'PY'
+          import subprocess
+          import sys
+          import tomllib
+          from pathlib import Path
+
+          dependencies = set()
+          for path in (Path("services/backend/pyproject.toml"), Path("services/agent/pyproject.toml")):
+              package = tomllib.loads(path.read_text())
+              dependencies.update(package["project"]["dependencies"])
+              dependencies.update(package["project"]["optional-dependencies"]["dev"])
+          subprocess.check_call([sys.executable, "-m", "pip", "install", *sorted(dependencies)])
+          PY
+      - name: Check Compose configuration
+        run: docker compose config --quiet
+      - name: Run tests
+        run: make test
+      - name: Check types and validation imports
+        run: make lint
