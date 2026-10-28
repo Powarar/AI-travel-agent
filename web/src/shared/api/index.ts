@@ -1,9 +1,9 @@
 import { HttpTripApi, type TripApi } from './client'
 import { FixtureTripApi } from './fixtureApi'
 
-// VITE_API_MODE=http — живой backend через прокси /api; по умолчанию записанные ответы,
-// потому что executor backend пока заглушка и сквозной план есть только в записи.
-export const api: TripApi = import.meta.env.VITE_API_MODE === 'http' ? new HttpTripApi() : new FixtureTripApi()
+// По умолчанию — живой backend через прокси /api (ход исполняет агент).
+// VITE_API_MODE=fixture — записанный прогон каталога: демо без backend и без сети.
+export const api: TripApi = import.meta.env.VITE_API_MODE === 'fixture' ? new FixtureTripApi() : new HttpTripApi()
 
 export { ApiError } from './client'
 export type { TripApi } from './client'

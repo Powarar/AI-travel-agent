@@ -99,3 +99,50 @@ async def test_interrupt_survives_api_restart_and_idempotency() -> None:
         invalid = await client.get("/v1/trips/not-a-uuid/state")
         assert invalid.status_code == 422
         assert invalid.json()["detail"] == "Некорректные параметры запроса"
+
+
+@pytest.mark.asyncio
+async def test_agent_executor_plans_across_api_restart() -> None:
+    from services.agent.app.llm.slots import MockSlots
+    from services.agent.app.tools.seed_sources import seed_sources
+    from services.backend.app.api.agent_executor import AgentRunExecutor
+
+    store = TripStore()
+    try:
+        connection = await asyncpg.connect(store.dsn)
+    except (OSError, asyncpg.PostgresError):
+        if os.environ.get("REQUIRE_TEST_DB") == "1":
+            raise
+        pytest.skip("Postgres is not available")
+    else:
+        await connection.close()
+
+    def agent_app() -> FastAPI:
+        app = create_app()
+        app.dependency_overrides[get_store] = lambda: TripStore()
+        executor = AgentRunExecutor(seed_sources(), slots=MockSlots())
+        app.dependency_overrides[get_executor] = lambda: executor
+        return app
+
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=agent_app()), base_url="http://test") as client:
+        trip_id = (await client.post("/v1/trips")).json()["trip_id"]
+        streamed = await client.post(f"/v1/trips/{trip_id}/messages", json={
+            "text": "хочу к тёплому морю в ноябре вдвоём с ребёнком, 200к, без долгих перелётов",
+        })
+        assert "event: question" in streamed.text
+        run_id = json.loads(next(line[6:] for line in streamed.text.splitlines() if line.startswith("data: ")))["run_id"]
+
+    # Новый процесс API: ход агента восстанавливается из runs.agent_run, а не из памяти.
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=agent_app()), base_url="http://test") as client:
+        origin = await client.post(f"/v1/runs/{run_id}/answers", json={"field": "origin", "value": "Москва"})
+        assert origin.status_code == 200 and origin.json()["awaiting"] == ["dates.start"]
+        unreadable = await client.post(f"/v1/runs/{run_id}/answers",
+                                       json={"field": "dates.start", "value": "когда-нибудь"})
+        assert unreadable.status_code == 409
+        done = await client.post(f"/v1/runs/{run_id}/answers", json={"field": "dates.start", "value": "с 14 по 21"})
+        assert done.status_code == 200 and done.json()["status"] == "completed"
+        events = [e["event"] for e in done.json()["events"]]
+        assert events[0] == "run_started" and "plan_updated" in events and "answer_text" in events
+        state = (await client.get(f"/v1/trips/{trip_id}/state")).json()
+        assert state["outcome"] == "plan_ready" and state["version"] == 3
+        assert state["chosen"]["component_refs"]["destination"]

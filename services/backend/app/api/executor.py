@@ -20,12 +20,20 @@ class RunInput:
     text: str | None = None
     field: str | None = None
     value: str | None = None
+    #: сериализованный прерванный ход исполнителя (`runs.agent_run`), только для `answer`
+    resume: str | None = None
 
 
 @dataclass(frozen=True)
 class RunResult:
     state: TripState
     events: tuple[SSEEvent, ...]
+    #: что положить в `runs.agent_run`, чтобы ответ пережил рестарт процесса
+    resume: str | None = None
+
+
+class InvalidAnswer(ValueError):
+    """Ответ не читается узлом (например, «завтра» вместо вилки дат) — не 500, а отказ."""
 
 
 class RunExecutor(Protocol):

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 from uuid import UUID, uuid4
@@ -11,7 +12,7 @@ import asyncpg  # type: ignore[import-untyped]
 from shared.contracts.enums import RunStatus
 from shared.contracts.state import TripState
 
-from .executor import RunExecutor, RunInput
+from .executor import InvalidAnswer, RunExecutor, RunInput, RunResult
 from .schemas import CheckoutCompleted, RunTrace, SSEEvent
 
 
@@ -39,6 +40,14 @@ def _trace(row: asyncpg.Record) -> RunTrace:
         run_id=row["run_id"], trip_id=row["trip_id"], status=row["status"],
         awaiting=list(row["awaiting"]), events=[SSEEvent.model_validate(e) for e in events],
     )
+
+
+async def _execute(executor: RunExecutor, state: TripState, turn: RunInput) -> RunResult:
+    """Ход агента синхронный и с живым LLM длится секунды: в поток, чтобы не стоял event loop."""
+    try:
+        return await asyncio.to_thread(executor.execute, state, turn)
+    except InvalidAnswer as exc:
+        raise Conflict(str(exc)) from exc
 
 
 class TripStore:
@@ -98,15 +107,16 @@ class TripStore:
                 if state.run_status == RunStatus.INTERRUPTED:
                     raise Conflict("Сначала ответьте на текущий вопрос")
                 run_id = uuid4()
-                result = executor.execute(state, RunInput(run_id, trip_id, "message", text=message))
+                result = await _execute(executor, state, RunInput(run_id, trip_id, "message", text=message))
                 self._check_result(state, result.state)
                 events = [SSEEvent(event="run_started", data={"run_id": str(run_id), "trip_id": str(trip_id)}), *result.events]
                 await self._save_state(conn, result.state)
                 await conn.execute(
-                    "INSERT INTO runs(run_id,trip_id,status,awaiting,events,message) "
-                    "VALUES($1,$2,$3,$4,$5::jsonb,$6)",
+                    "INSERT INTO runs(run_id,trip_id,status,awaiting,events,message,agent_run) "
+                    "VALUES($1,$2,$3,$4,$5::jsonb,$6,$7)",
                     run_id, trip_id, result.state.run_status.value, result.state.awaiting_fields,
                     json.dumps([e.model_dump(mode="json") for e in events], ensure_ascii=False), message,
+                    result.resume,
                 )
                 return RunTrace(run_id=run_id, trip_id=trip_id, status=result.state.run_status,
                                 awaiting=result.state.awaiting_fields, events=events)
@@ -133,16 +143,19 @@ class TripStore:
                 if trip is None:
                     raise NotFound
                 state = _state(trip["state"])
-                result = executor.execute(state, RunInput(run_id, run["trip_id"], "answer", field=field, value=value))
+                result = await _execute(executor, state, RunInput(
+                    run_id, run["trip_id"], "answer", field=field, value=value, resume=run["agent_run"],
+                ))
                 self._check_result(state, result.state)
                 prior_events = _trace(run).events
                 events = [*prior_events, *result.events]
                 await self._save_state(conn, result.state)
                 await conn.execute("INSERT INTO run_answers VALUES($1,$2,$3)", run_id, field, value)
                 await conn.execute(
-                    "UPDATE runs SET status=$2, awaiting=$3, events=$4::jsonb WHERE run_id=$1",
+                    "UPDATE runs SET status=$2, awaiting=$3, events=$4::jsonb, agent_run=$5 WHERE run_id=$1",
                     run_id, result.state.run_status.value, result.state.awaiting_fields,
                     json.dumps([e.model_dump(mode="json") for e in events], ensure_ascii=False),
+                    result.resume,
                 )
                 return RunTrace(run_id=run_id, trip_id=run["trip_id"], status=result.state.run_status,
                                 awaiting=result.state.awaiting_fields, events=events)

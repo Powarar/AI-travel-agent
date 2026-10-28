@@ -11,6 +11,8 @@ export function FinalistCards({ state, streamed }: { state: TripState | null; st
   if (!items.length) return null
   const chosen = state?.chosen.component_refs.destination
   const ledger = state ? groupLedger(state.chosen.items) : null
+  // корзина не перезаписывается молча: при infeasible в ней остаётся прошлый выбор
+  const current = state?.outcome === 'plan_ready'
 
   return (
     <section aria-labelledby="finalists-title">
@@ -25,7 +27,7 @@ export function FinalistCards({ state, streamed }: { state: TripState | null; st
                   <h4>{c.ref.name ?? c.candidate_id}</h4>
                   <span className={styles.country}>{c.ref.country}</span>
                 </div>
-                {isChosen && <span className={styles.pick}>в плане</span>}
+                {isChosen && <span className={`${styles.pick} ${current ? '' : styles.stale}`.trim()}>{current ? 'в плане' : 'прошлый план'}</span>}
               </header>
               <p className={styles.why}>{c.ref.why}</p>
               <dl className={styles.facts}>

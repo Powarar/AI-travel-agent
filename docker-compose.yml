@@ -42,11 +42,24 @@ services:
       AGENT_URL: http://agent:8001
       HTTP_PORT: "8000"
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # ход исполняет агент в процессе backend (api/agent_executor.py); fixture — заглушка
+      BACKEND_EXECUTOR: ${BACKEND_EXECUTOR:-agent}
+      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_MODEL_PARSE: ${LLM_MODEL_PARSE:-}
+      LLM_MODEL_QUESTIONS: ${LLM_MODEL_QUESTIONS:-}
+      LLM_MODEL_FINALISTS: ${LLM_MODEL_FINALISTS:-}
+      LLM_MODEL_EXPLAIN: ${LLM_MODEL_EXPLAIN:-}
+      RERANK_MODEL: ${RERANK_MODEL:-}
     ports:
       - "127.0.0.1:${BACKEND_PORT:-8010}:8000"
     volumes:
       - ./services/backend/app:/app/app
       - ./shared:/app/shared:ro
+      - ./services/__init__.py:/app/services/__init__.py:ro
+      - ./services/agent:/app/services/agent:ro
+      - ./data:/app/data:ro
     depends_on:
       postgres:
         condition: service_healthy
