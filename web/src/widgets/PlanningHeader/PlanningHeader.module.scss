@@ -1,0 +1,50 @@
+@use '../../shared/styles/keyframes';
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 3vw, 2rem);
+}
+
+.actions { display: flex; align-items: center; gap: 0.6rem; }
+
+.mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 75%);
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+
+  i { width: 8px; height: 8px; border-radius: 50%; background: #ffb648; }
+}
+
+.live i { background: var(--color-ok); animation: pulse-ring 1.6s ease-out infinite; }
+
+.newTrip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-blue);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 180ms var(--ease-spring);
+
+  &:hover { transform: translateY(-1px); }
+  &:focus-visible { outline: 3px solid var(--color-mojito-strong); outline-offset: 2px; }
+}
+
+@media (max-width: 640px) {
+  .mode { display: none; }
+  .newTrip span { display: none; }
+}

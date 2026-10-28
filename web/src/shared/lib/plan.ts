@@ -53,3 +53,52 @@ export function monthName(climateMonth: string | undefined): string {
   const m = Number(climateMonth?.slice(5, 7))
   return m ? MONTHS[m - 1] : ''
 }
+
+const MONTHS_GEN = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
+
+export function dateRange(start?: string | null, end?: string | null): string | null {
+  if (!start || !end) return null
+  const [, m1, d1] = start.split('-').map(Number)
+  const [, m2, d2] = end.split('-').map(Number)
+  return m1 === m2 ? `${d1}–${d2} ${MONTHS_GEN[m1 - 1]}` : `${d1} ${MONTHS_GEN[m1 - 1]} – ${d2} ${MONTHS_GEN[m2 - 1]}`
+}
+
+export function plural(n: number, one: string, few: string, many: string): string {
+  const mod10 = n % 10
+  const mod100 = n % 100
+  if (mod10 === 1 && mod100 !== 11) return one
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few
+  return many
+}
+
+export interface TripSummary {
+  destination: string | null
+  country: string | null
+  dates: string | null
+  nights: number | null
+  guests: number | null
+  pets: boolean
+  dayTemp: string | null
+  flightHours: string | null
+  origin: string | null
+}
+
+/** Шапка поездки — только из TripState: запроса, выбранной корзины и её кандидатов. */
+export function summarize(state: TripState): TripSummary {
+  const dest = componentCandidate(state, 'destination')
+  const flight = componentCandidate(state, 'transport_in')
+  const r = state.request
+  const adults = r.party?.adults.value ?? null
+  const children = r.party?.children.value?.length ?? 0
+  return {
+    destination: dest?.ref.name ?? (state.request as { direction?: { explicit?: { value?: string } } }).direction?.explicit?.value ?? null,
+    country: dest?.ref.country ?? null,
+    dates: dateRange(r.dates.start.value, r.dates.end.value),
+    nights: r.nights?.value ?? null,
+    guests: adults === null ? null : adults + children,
+    pets: Boolean(r.party?.pets.value),
+    dayTemp: dest?.ref.day_temp_c || null,
+    flightHours: flight?.ref.duration_h || dest?.ref.flight_h || null,
+    origin: r.origin?.value ?? null,
+  }
+}

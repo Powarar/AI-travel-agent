@@ -1,5 +1,6 @@
 @use './variables';
 @use './reset';
+@use './motion';
 
 body {
   background: var(--color-page);

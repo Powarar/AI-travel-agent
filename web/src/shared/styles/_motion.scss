@@ -1,0 +1,22 @@
+// Общие анимации. Каждая выключается при prefers-reduced-motion (см. конец файла).
+
+@use './keyframes';
+
+.motion-fade-up {
+  animation: fade-up 520ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+.motion-pop {
+  animation: pop-in 480ms var(--ease-spring) both;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

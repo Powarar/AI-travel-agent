@@ -50,8 +50,11 @@ export interface TripState {
   run_status: RunStatus
   awaiting_fields: string[]
   request: {
-    budget: { amount: FieldValue<Money> }
+    budget: { amount: FieldValue<Money>; scope?: FieldValue<string> }
     dates: { start: FieldValue<string>; end: FieldValue<string> }
+    nights?: FieldValue<number>
+    origin?: FieldValue<string>
+    party?: { adults: FieldValue<number>; children: FieldValue<number[]>; pets: FieldValue<boolean> }
     [key: string]: unknown
   }
   candidates: {

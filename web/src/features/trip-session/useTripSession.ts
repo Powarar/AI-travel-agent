@@ -6,7 +6,10 @@ import type { CheckoutResult, SSEEvent, SSEPayloads, TripState } from '../../sha
 type Question = SSEPayloads['question']
 type PlanUpdate = SSEPayloads['plan_updated']
 
-export type FeedItem = { id: number; event: SSEEvent; user?: undefined } | { id: number; user: string; event?: undefined }
+/** Элемент ленты: событие агента или реплика пользователя; `turn` — номер хода для группировки. */
+export type FeedItem =
+  | { id: number; turn: number; event: SSEEvent; user?: undefined }
+  | { id: number; turn: number; user: string; event?: undefined }
 
 interface Persisted {
   tripId: string
@@ -50,13 +53,16 @@ export function useTripSession() {
   const [feed, setFeed] = useState<FeedItem[]>([])
   const [question, setQuestion] = useState<Question | null>(null)
   const [planUpdate, setPlanUpdate] = useState<PlanUpdate | null>(null)
-  const [streamCandidates, setStreamCandidates] = useState<SSEPayloads['candidates'][]>([])
+  const [phase, setPhase] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [ordering, setOrdering] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [order, setOrder] = useState<CheckoutResult | null>(null)
   const [resumed, setResumed] = useState(false)
+  const [suggestions, setSuggestions] = useState<string[]>([])
   const run = useRef<{ runId: string | null; seen: number }>({ runId: null, seen: 0 })
   const counter = useRef(0)
+  const turn = useRef(0)
 
   const persist = useCallback((trip: string, prev: TripState | null) => {
     writePersisted({ tripId: trip, runId: run.current.runId, seen: run.current.seen, previous: prev })
@@ -64,16 +70,17 @@ export function useTripSession() {
 
   const apply = useCallback((event: SSEEvent) => {
     const id = (counter.current += 1)
-    setFeed((items) => [...items, { id, event }])
+    const at = turn.current
+    setFeed((items) => [...items, { id, turn: at, event }])
     switch (event.event) {
       case 'run_started':
         run.current = { runId: event.data.run_id, seen: 0 }
         break
+      case 'phase_changed':
+        setPhase(event.data.to)
+        break
       case 'question':
         setQuestion(event.data)
-        break
-      case 'candidates':
-        setStreamCandidates((items) => [...items.filter((c) => c.kind !== event.data.kind), event.data])
         break
       case 'plan_updated':
         setPlanUpdate(event.data)
@@ -88,7 +95,9 @@ export function useTripSession() {
   const refresh = useCallback(async (trip: string, prev: TripState | null) => {
     const next = await api.getState(trip)
     setState(next)
+    setPhase(next.stage)
     if (next.run_status !== 'interrupted') setQuestion(null)
+    setSuggestions(api.suggestions())
     persist(trip, prev)
     return next
   }, [persist])
@@ -103,13 +112,16 @@ export function useTripSession() {
         if (cancelled) return
         setTripId(saved.tripId)
         setState(current)
+        setPhase(current.stage)
         setPrevious(saved.previous)
+        setSuggestions(api.suggestions())
         run.current = { runId: saved.runId, seen: saved.seen }
         if (saved.runId) {
           const trace = await api.getRun(saved.runId)
           if (cancelled) return
           counter.current = trace.events.length
-          setFeed(trace.events.map((event, i) => ({ id: i + 1, event })))
+          turn.current = 1
+          setFeed(trace.events.map((event, i) => ({ id: i + 1, turn: 1, event })))
           run.current.seen = trace.events.length
           const update = [...trace.events].reverse().find((e) => e.event === 'plan_updated')
           if (update?.event === 'plan_updated') setPlanUpdate(update.data)
@@ -142,9 +154,10 @@ export function useTripSession() {
       const prev = state?.chosen.component_refs && Object.keys(state.chosen.component_refs).length ? state : previous
       setPrevious(prev)
       setPlanUpdate(null)
-      setStreamCandidates([])
+      turn.current += 1
       const id = (counter.current += 1)
-      setFeed((items) => [...items, { id, user: text }])
+      const at = turn.current
+      setFeed((items) => [...items, { id, turn: at, user: text }])
       await api.sendMessage(trip, text, apply)
       await refresh(trip, prev)
     } catch (e) {
@@ -154,17 +167,26 @@ export function useTripSession() {
     }
   }, [apply, previous, refresh, state, tripId])
 
-  const answer = useCallback(async (field: string, value: string) => {
+  const answer = useCallback(async (field: string, value: string, label?: string) => {
     const runId = run.current.runId
     if (!tripId || !runId) return
     setBusy(true)
     setError(null)
     setQuestion(null)
     setResumed(false)
+    const id = (counter.current += 1)
+    const at = turn.current
+    setFeed((items) => [...items, { id, turn: at, user: label ?? (value || 'Пропустить') }])
     try {
       const trace = await api.answer(runId, field, value)
-      // Ответ возвращает весь трейс хода: проигрываем только новые события.
-      for (const event of trace.events.slice(run.current.seen)) apply(event)
+      // Ответ возвращает весь трейс хода: проигрываем только новые события — по одному,
+      // чтобы продолжение хода читалось так же, как поток SSE после сообщения.
+      const fresh = trace.events.slice(run.current.seen)
+      const step = Math.min(160, 2400 / Math.max(fresh.length, 1))
+      for (const event of fresh) {
+        apply(event)
+        await new Promise((resolve) => setTimeout(resolve, step))
+      }
       await refresh(tripId, previous)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Не удалось отправить ответ')
@@ -176,7 +198,8 @@ export function useTripSession() {
 
   const checkout = useCallback(async () => {
     if (!tripId || !state) return
-    setBusy(true)
+    // Оформление — не ход агента: свой флаг, чтобы чат не показывал «агент думает».
+    setOrdering(true)
     setError(null)
     try {
       // Ключ от версии плана: двойной клик не создаёт второй заказ.
@@ -184,28 +207,30 @@ export function useTripSession() {
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Не удалось оформить')
     } finally {
-      setBusy(false)
+      setOrdering(false)
     }
   }, [state, tripId])
 
   const reset = useCallback(() => {
     writePersisted(null)
     run.current = { runId: null, seen: 0 }
+    turn.current = 0
     setTripId(null)
     setState(null)
     setPrevious(null)
     setFeed([])
     setQuestion(null)
     setPlanUpdate(null)
-    setStreamCandidates([])
+    setPhase(null)
     setOrder(null)
     setError(null)
     setResumed(false)
+    setSuggestions([])
   }, [])
 
   return {
-    mode: api.mode, tripId, state, previous, feed, question, planUpdate, streamCandidates,
-    busy, error, order, resumed, send, answer, checkout, reset,
+    mode: api.mode, tripId, state, previous, feed, question, planUpdate, phase, suggestions,
+    busy, ordering, error, order, resumed, send, answer, checkout, reset,
   }
 }
 

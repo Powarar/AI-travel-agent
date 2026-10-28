@@ -9,6 +9,6 @@
 - Токены цветов, радиусов и теней находятся в `src/shared/styles/_variables.scss`.
 - Переиспользуемые элементы в `src/shared/ui`: `BrandLockup`, `Button`, `Card`, `Container`, `PromptChip`, `TextareaField`. Их стили изолированы CSS Modules.
 
-`src/app/App.tsx` подключает `HomePage`. Страница собирается из секций в `src/widgets`, а состояние формы запроса находится в `src/features/send-message`. Стили каждой секции лежат рядом с её компонентом; в `globals.scss` остались только базовые правила.
+`src/app/App.tsx` переключает `HomePage` и `PlanningPage`. Экран подбора — две колонки: `widgets/ChatPanel` (диалог, журнал действий агента, вопрос чипами, `features/send-message/Composer`) и `widgets/TripBoard` (`PhaseStepper`, `TripSummary` с `BudgetMeter`, `TripAlerts`, `PlanDiff`, `FinalistCards`, `TripTimeline`, `PriceBreakdown`, `features/checkout`). Состояние сессии — `features/trip-session/useTripSession`. Анимации: общие классы в `shared/styles/_motion.scss`; CSS Modules локализуют имена keyframes, поэтому модуль с анимацией подключает `shared/styles/keyframes` сам. Все анимации выключаются при `prefers-reduced-motion`. Иконки — `shared/ui/Icon` (линейные 24×24, без пакетов). Данные: по умолчанию мок `shared/api/mock` — ходы, записанные прогоном настоящего агента; `VITE_API_MODE=http` — живой backend.
 
 Шрифт фирменного логотипа сохранён в SVG. Для текста интерфейса используется системный округлый гротеск: фирменные файлы шрифта и правила его лицензирования не предоставлены.

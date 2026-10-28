@@ -3,7 +3,9 @@ import { readSSE } from './sse'
 
 // Единая граница экрана с бэкендом. Источник истины — TripState и события; текст — подпись.
 export interface TripApi {
-  readonly mode: 'http' | 'fixture'
+  readonly mode: 'http' | 'mock'
+  /** Правки, которые стоит предложить чипами после плана. */
+  suggestions(): string[]
   createTrip(): Promise<string>
   sendMessage(tripId: string, text: string, onEvent: (event: SSEEvent) => void): Promise<void>
   answer(runId: string, field: string, value: string): Promise<RunTrace>
@@ -30,6 +32,10 @@ export class HttpTripApi implements TripApi {
   readonly mode = 'http'
 
   constructor(private readonly base = '/api/v1') {}
+
+  suggestions() {
+    return ['Давай лучше в Сочи, перелёт покороче', 'У нас собака', 'Нас будет трое']
+  }
 
   async createTrip() {
     const body = await json<{ trip_id: string }>(await fetch(`${this.base}/trips`, { method: 'POST' }))

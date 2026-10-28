@@ -1,0 +1,8 @@
+@use '../../../shared/styles/keyframes';
+
+.skeleton {
+  display: block;
+  background: linear-gradient(90deg, #edf1ee 0%, #f8faf7 40%, #edf1ee 80%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}

@@ -1,0 +1,38 @@
+@use '../../shared/styles/keyframes';
+
+.meter { display: grid; gap: 0.4rem; }
+
+.labels {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  opacity: 0.92;
+
+  b { color: var(--color-mojito); }
+}
+
+.bar {
+  height: 10px;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 18%);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--color-mojito), #e3ffcf);
+    transform-origin: left;
+    animation: grow-x 1100ms var(--ease-out) both 200ms;
+    transition: width 700ms var(--ease-out);
+  }
+}
+
+.meter small { opacity: 0.75; font-size: 0.72rem; }
+
+.over {
+  .labels b { color: #ffb4a0; }
+  .bar span { background: linear-gradient(90deg, #ff8a65, #ffcfbf); }
+}
