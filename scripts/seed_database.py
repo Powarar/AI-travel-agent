@@ -25,12 +25,13 @@ CREATE TABLE IF NOT EXISTS sources (
 CREATE TABLE IF NOT EXISTS destinations (
   code text PRIMARY KEY, geoname_id bigint, name text, country_code text, country text,
   admin1 text, lat double precision, lon double precision, population integer,
-  timezone text, theme text, tier integer, data_status text, source_id text
+  timezone text, theme text, tier integer, data_status text, source_id text,
+  fetched_at timestamptz, synthetic boolean
 );
 CREATE TABLE IF NOT EXISTS airports (
   iata text PRIMARY KEY, ident text, icao text, name text, municipality text,
   country text, lat double precision, lon double precision, type text, timezone text,
-  data_status text, source_id text
+  data_status text, source_id text, fetched_at timestamptz, synthetic boolean
 );
 CREATE TABLE IF NOT EXISTS gateways (
   dest_code text PRIMARY KEY REFERENCES destinations(code), iata text,
@@ -40,29 +41,34 @@ CREATE TABLE IF NOT EXISTS hotels (
   hotel_id text PRIMARY KEY, dest_code text REFERENCES destinations(code), name text,
   stars integer, lat double precision, lon double precision, address text,
   amenities text[], pet_friendly boolean, min_nights integer, check_in_deadline text,
-  base_price_rub numeric, data_status text, source_id text
+  base_price_rub numeric, data_status text, source_id text,
+  fetched_at timestamptz, synthetic boolean
 );
 CREATE TABLE IF NOT EXISTS stay_rates (
   hotel_id text REFERENCES hotels(hotel_id), date date, price_per_night numeric,
   availability boolean, min_nights integer, currency text, data_status text,
-  source_id text, PRIMARY KEY (hotel_id, date)
+  source_id text, fetched_at timestamptz, synthetic boolean,
+  PRIMARY KEY (hotel_id, date)
 );
 CREATE INDEX IF NOT EXISTS idx_stay_rates_date ON stay_rates (date);
 CREATE TABLE IF NOT EXISTS transport_legs (
   leg_id text PRIMARY KEY, date date, route text, dep_iata text, arr_iata text,
   dest_code text, dep_at timestamp, dep_tz text, arr_at timestamp, arr_tz text,
   direct boolean, duration_min integer, base_price_rub numeric, currency text,
-  overnight boolean, data_status text, source_id text
+  overnight boolean, data_status text, source_id text,
+  fetched_at timestamptz, synthetic boolean
 );
 CREATE INDEX IF NOT EXISTS idx_transport_legs_date ON transport_legs (date);
 CREATE TABLE IF NOT EXISTS transfers (
   transfer_id text PRIMARY KEY, dest_code text, hotel_id text, airport_iata text,
   distance_m integer, duration_s integer, price_rub numeric, pet_ok boolean,
-  capacity integer, currency text, data_status text, source_id text
+  capacity integer, currency text, data_status text, source_id text,
+  fetched_at timestamptz, synthetic boolean
 );
 CREATE TABLE IF NOT EXISTS climate (
   dest_code text REFERENCES destinations(code), month integer, t_max numeric,
   t_min numeric, precip_mm_month numeric, data_status text, source_id text,
+  fetched_at timestamptz, synthetic boolean,
   PRIMARY KEY (dest_code, month)
 );
 """
@@ -105,30 +111,31 @@ TABLES: dict[str, tuple[str, list[str]]] = {
     "destinations": ("destinations.json",
                      ["code", "geoname_id", "name", "country_code", "country", "admin1",
                       "lat", "lon", "population", "timezone", "theme", "tier",
-                      "data_status", "source_id"]),
+                      "data_status", "source_id", "fetched_at", "synthetic"]),
     "airports": ("airports.json",
                  ["iata", "ident", "icao", "name", "municipality", "country", "lat",
-                  "lon", "type", "timezone", "data_status", "source_id"]),
+                  "lon", "type", "timezone", "data_status", "source_id",
+                  "fetched_at", "synthetic"]),
     "gateways": (None, ["dest_code", "iata", "dist_km", "airport_name", "tz"]),
     "hotels": ("hotels.json",
                ["hotel_id", "dest_code", "name", "stars", "lat", "lon", "address",
                 "amenities", "pet_friendly", "min_nights", "check_in_deadline",
-                "base_price_rub", "data_status", "source_id"]),
+                "base_price_rub", "data_status", "source_id", "fetched_at", "synthetic"]),
     "stay_rates": ("stay_rates.json",
                    ["hotel_id", "date", "price_per_night", "availability", "min_nights",
-                    "currency", "data_status", "source_id"]),
+                    "currency", "data_status", "source_id", "fetched_at", "synthetic"]),
     "transport_legs": ("transport_legs.json",
                        ["leg_id", "date", "route", "dep_iata", "arr_iata", "dest_code",
                         "dep_at", "dep_tz", "arr_at", "arr_tz", "direct", "duration_min",
                         "base_price_rub", "currency", "overnight", "data_status",
-                        "source_id"]),
+                        "source_id", "fetched_at", "synthetic"]),
     "transfers": ("transfers.json",
                   ["transfer_id", "dest_code", "hotel_id", "airport_iata", "distance_m",
                    "duration_s", "price_rub", "pet_ok", "capacity", "currency",
-                   "data_status", "source_id"]),
+                   "data_status", "source_id", "fetched_at", "synthetic"]),
     "climate": ("climate.json",
                 ["dest_code", "month", "t_max", "t_min", "precip_mm_month",
-                 "data_status", "source_id"]),
+                 "data_status", "source_id", "fetched_at", "synthetic"]),
 }
 
 

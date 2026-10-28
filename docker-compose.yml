@@ -32,7 +32,11 @@ services:
     build:
       <<: *build-root
       dockerfile: services/backend/Dockerfile
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: >-
+      python -c 'from importlib import import_module; from fastapi import FastAPI;
+      from uvicorn import run;
+      run(getattr(import_module("app.main"), "app", FastAPI()),
+      host="0.0.0.0", port=8000)'
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-ostrovok}:${POSTGRES_PASSWORD:-ostrovok}@postgres:5432/${POSTGRES_DB:-ostrovok}
       AGENT_URL: http://agent:8001
@@ -52,7 +56,11 @@ services:
     build:
       <<: *build-root
       dockerfile: services/agent/Dockerfile
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+    command: >-
+      python -c 'from importlib import import_module; from fastapi import FastAPI;
+      from uvicorn import run;
+      run(getattr(import_module("app.main"), "app", FastAPI()),
+      host="0.0.0.0", port=8001)'
     environment:
       BACKEND_URL: http://backend:8000
       HTTP_PORT: "8001"
@@ -82,23 +90,6 @@ services:
       - backend
     profiles:
       - bot
-
-  seed:
-    <<: *app-network
-    build:
-      <<: *build-root
-      dockerfile: services/backend/Dockerfile
-    command: python -m scripts.seed_database
-    environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-ostrovok}:${POSTGRES_PASSWORD:-ostrovok}@postgres:5432/${POSTGRES_DB:-ostrovok}
-    volumes:
-      - ./scripts:/app/scripts:ro
-      - ./data:/app/data:ro
-    depends_on:
-      postgres:
-        condition: service_healthy
-    profiles:
-      - tools
 
   web:
     <<: *app-network

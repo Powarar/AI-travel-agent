@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: ostrovok
+          POSTGRES_PASSWORD: ostrovok
+          POSTGRES_DB: ostrovok
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd "pg_isready -U ostrovok -d ostrovok"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+asyncpg://ostrovok:ostrovok@localhost:5434/ostrovok
+      REQUIRE_TEST_DB: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install project and test dependencies
+        run: |
+          python - <<'PY'
+          import subprocess
+          import sys
+          import tomllib
+          from pathlib import Path
+
+          dependencies = set()
+          for path in (Path("services/backend/pyproject.toml"), Path("services/agent/pyproject.toml")):
+              package = tomllib.loads(path.read_text())
+              dependencies.update(package["project"]["dependencies"])
+              dependencies.update(package["project"]["optional-dependencies"]["dev"])
+          subprocess.check_call([sys.executable, "-m", "pip", "install", *sorted(dependencies)])
+          PY
+      - name: Check Compose configuration
+        run: docker compose config --quiet
+      - name: Apply database migrations
+        run: |
+          python - <<'PY'
+          from alembic import command
+          from alembic.config import Config
+          config = Config()
+          config.set_main_option("script_location", "services/backend/app/db/migrations")
+          command.upgrade(config, "head")
+          PY
+      - name: Run tests
+        run: make test
+      - name: Check types and validation imports
+        run: make lint

@@ -23,13 +23,26 @@ _SOURCES: dict[str, dict[str, str]] = {}
 
 
 def source(source_id: str, name: str, url: str, kind: str) -> None:
-    _SOURCES[source_id] = {
+    row = {
         "source_id": source_id,
         "name": name,
         "url": url,
         "kind": kind,
         "fetched_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
+    try:
+        previous = next(
+            (entry for entry in json.loads((SEEDS_DIR / "sources.json").read_text())
+             if entry["source_id"] == source_id),
+            None,
+        )
+    except FileNotFoundError:
+        previous = None
+    if previous is not None and all(
+        previous.get(key) == row[key] for key in ("source_id", "name", "url", "kind")
+    ):
+        row["fetched_at"] = previous["fetched_at"]
+    _SOURCES[source_id] = row
 
 
 def registered_sources() -> list[dict[str, str]]:
@@ -112,6 +125,14 @@ def write_seed(name: str, rows: Any, compact: bool = False) -> Path:
     path = SEEDS_DIR / name
     if isinstance(rows, dict) and compact:
         raise ValueError("compact только для списков")
+    if name != "sources.json" and isinstance(rows, list):
+        for row in rows:
+            if isinstance(row, dict) and row.get("source_id"):
+                source_meta = _SOURCES.get(row["source_id"])
+                if source_meta is None:
+                    raise ValueError(f"неизвестный source_id: {row['source_id']}")
+                row["fetched_at"] = source_meta["fetched_at"]
+                row["synthetic"] = row.get("data_status") == "synthetic"
     if compact:
         body = ",\n".join(json.dumps(r, ensure_ascii=False) for r in rows)
         text = "[\n" + body + "\n]\n" if body else "[]\n"

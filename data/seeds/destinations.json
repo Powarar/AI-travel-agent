@@ -13,7 +13,9 @@
   "theme": "beach",
   "tier": 1,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "anapa",
@@ -29,7 +31,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "gelendzhik",
@@ -45,7 +49,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "yalta",
@@ -61,7 +67,9 @@
   "theme": "beach",
   "tier": 1,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "sevastopol",
@@ -77,7 +85,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "alushta",
@@ -93,7 +103,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "sudak",
@@ -109,7 +121,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "feodosiya",
@@ -125,7 +139,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "yevpatoriya",
@@ -141,7 +157,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "kislovodsk",
@@ -157,7 +175,9 @@
   "theme": "resort",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "pyatigorsk",
@@ -173,7 +193,9 @@
   "theme": "resort",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "minvody",
@@ -189,7 +211,9 @@
   "theme": "resort",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "belokurikha",
@@ -205,7 +229,9 @@
   "theme": "nature",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "moscow",
@@ -221,7 +247,9 @@
   "theme": "city",
   "tier": 1,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "saint-petersburg",
@@ -237,7 +265,9 @@
   "theme": "city",
   "tier": 1,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "kaliningrad",
@@ -253,7 +283,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "kazan",
@@ -269,7 +301,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "nizhny-novgorod",
@@ -285,7 +319,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "ekaterinburg",
@@ -301,7 +337,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "vladivostok",
@@ -317,7 +355,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "yuzhno-sakhalinsk",
@@ -333,7 +373,9 @@
   "theme": "nature",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "kurilsk",
@@ -349,7 +391,9 @@
   "theme": "nature",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "yuzhno-kurilsk",
@@ -365,7 +409,9 @@
   "theme": "nature",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "petropavlovsk",
@@ -381,7 +427,9 @@
   "theme": "nature",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "ulan-ude",
@@ -397,7 +445,9 @@
   "theme": "nature",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "irkutsk",
@@ -413,7 +463,9 @@
   "theme": "nature",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "gorno-altaysk",
@@ -429,7 +481,9 @@
   "theme": "nature",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "makhachkala",
@@ -445,7 +499,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "sukhumi",
@@ -461,7 +517,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "gagra",
@@ -477,7 +535,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "tbilisi",
@@ -493,7 +553,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "batumi",
@@ -509,7 +571,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "yerevan",
@@ -525,7 +589,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "baku",
@@ -541,7 +607,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "almaty",
@@ -557,7 +625,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "bishkek",
@@ -573,7 +643,9 @@
   "theme": "nature",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "cholpon-ata",
@@ -589,7 +661,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "samarkand",
@@ -605,7 +679,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "bukhara",
@@ -621,7 +697,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "tashkent",
@@ -637,7 +715,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "minsk",
@@ -653,7 +733,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "belgrade",
@@ -669,7 +751,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "antalya",
@@ -685,7 +769,9 @@
   "theme": "beach",
   "tier": 1,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "alanya",
@@ -701,7 +787,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "kemer",
@@ -717,7 +805,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "bodrum",
@@ -733,7 +823,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "marmaris",
@@ -749,7 +841,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "istanbul",
@@ -765,7 +859,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "hurghada",
@@ -781,7 +877,9 @@
   "theme": "beach",
   "tier": 1,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "sharm",
@@ -797,7 +895,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "dubai",
@@ -813,7 +913,9 @@
   "theme": "beach",
   "tier": 1,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "abu-dhabi",
@@ -829,7 +931,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "phuket",
@@ -845,7 +949,9 @@
   "theme": "beach",
   "tier": 1,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "pattaya",
@@ -861,7 +967,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "bangkok",
@@ -877,7 +985,9 @@
   "theme": "city",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "da-nang",
@@ -893,7 +1003,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "nha-trang",
@@ -909,7 +1021,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "sanya",
@@ -925,7 +1039,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "male",
@@ -941,7 +1057,9 @@
   "theme": "beach",
   "tier": 1,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "larnaca",
@@ -957,7 +1075,9 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  },
  {
   "code": "paphos",
@@ -973,6 +1093,8 @@
   "theme": "beach",
   "tier": 2,
   "data_status": "real",
-  "source_id": "geonames_bulk"
+  "source_id": "geonames_bulk",
+  "fetched_at": "2026-10-25T14:08:02Z",
+  "synthetic": false
  }
 ]

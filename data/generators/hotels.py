@@ -21,6 +21,7 @@ from data.generators.common import pick, randint, sample, unit, jitter
 # Окно демо: даты показа ±14 дней вокруг середины ноября.
 WINDOW_START = dt.date(2026, 11, 1)
 WINDOW_END = dt.date(2026, 12, 7)
+EXTRA_FLAGSHIP = "anapa"  # девятое tier-1 + Анапа = 10 направлений по 40 отелей
 
 MIRRORS = [
     "https://overpass-api.de/api/interpreter",
@@ -212,7 +213,7 @@ def run() -> None:
     real_count = 0
     overpass_used = 0
     for i, d in enumerate(dests):
-        n = 40 if d["tier"] == 1 else 18
+        n = 40 if d["tier"] == 1 or d["code"] == EXTRA_FLAGSHIP else 18
         els = _try_overpass(d, n) if use_overpass else None
         if els:
             overpass_used += 1
