@@ -651,7 +651,11 @@ class OpenAICompatibleSlots:
             "`budget`, `remaining`, `breakdown` — это сырые числа для сверки, в тексте их писать "
             "не надо: «125200.00 RUB» читается как выписка из базы.\n"
             "Не добавляй новых фактов: ни про акции, ни про рейтинги, ни про погоду — их в "
-            "данных нет."
+            "данных нет.\n"
+            "Если в `facts` есть `relevant_hotel_unavailable` или `cheaper_than_relevant` — "
+            "это уступка мягкому предпочтению, и её надо назвать отдельной фразой, дословно "
+            "той строкой, что лежит в `facts`: подбор отказался от самого подходящего отеля, "
+            "и пользователь обязан это слышать."
         )
         user = explanation.model_dump_json()
         model, _ = self._structured(ExplainSchema, system=system, user=user, slot="explain")

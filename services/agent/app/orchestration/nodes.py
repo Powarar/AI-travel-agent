@@ -724,6 +724,28 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
 
         hotel_order = sorted(timely, key=_hotel_order(state))
 
+        def why_dropped(hotel: HotelOffer) -> str:
+            """Почему отель не дошёл до выбора — причина уступки, посчитанная кодом.
+
+            Модель не должна придумывать, почему выбранный отель не самый подходящий: строка
+            берётся из того же фильтра, который его отсек, и чисел в ней нет.
+            """
+
+            if has_pet and not hotel.specs.pet_friendly:
+                return "отель не принимает питомцев"
+            if hotel.specs.capacity is not None and hotel.specs.capacity < guests:
+                return "в номере меньше мест, чем гостей"
+            if len(hotel.stays) != nights:
+                return "в источнике нет ставок на все ночи"
+            if not all(stay.rate_present and stay.availability
+                        and stay.min_nights <= nights for stay in hotel.stays):
+                return "на эти даты нет свободных номеров"
+            if linked and hotel.specs.hotel_id not in linked:
+                return "к этому отелю нет трансфера"
+            if not reachable(hotel):
+                return "прилёт не успевает на заселение"
+            return ""
+
         def build(hotel: HotelOffer) -> Plan:
             leg, transfer = leg_for(hotel), transfer_for(hotel)
             return Plan(
@@ -757,6 +779,9 @@ def compose(state: TripState, search: SearchResult, *, now: datetime) -> Composi
             #: мягкое предпочтение уступило hard-бюджету — это компромисс, и он обязан быть
             #: назван, а не промолчан (инвариант №2 в обратную сторону)
             facts["cheaper_than_relevant"] = displaced.name
+        missed = _displaced_by_a_filter(hotels, chosen=hotel, state=state, why=why_dropped)
+        if missed:
+            facts["relevant_hotel_unavailable"] = missed
         composed = Composition(
             plan=plan,
             lines=_price_lines(plan, includes),
@@ -1090,6 +1115,24 @@ def _stay_total(offer: HotelOffer) -> Decimal:
     return sum((stay.price.amount.amount for stay in offer.stays), Decimal(0))
 
 
+def relevance_scores(state: TripState) -> dict[str, float]:
+    """Нормализованные баллы слота №3 по `hotel_id`: то, что код уже заплатил за этот ход.
+
+    Пустой словарь — «слот не отвечал или его не вызывали»: офлайн-прогон и прогон с
+    выключенным реранком обязаны выглядеть ровно как до врезки слота №3.
+    """
+
+    scores: dict[str, float] = {}
+    for candidate in state.candidates.hotels:
+        raw = candidate.ref.get("relevance", "")
+        try:
+            scores[candidate.candidate_id] = float(raw)
+        except ValueError:
+            #: мусор в `ref` не должен уронить сборку плана: считаем, что слот №3 не ответил
+            continue
+    return scores
+
+
 def _hotel_order(state: TripState) -> Callable[[HotelOffer], tuple[float, Decimal]]:
     """Ключ выбора отеля: мягкое предпочтение (слот №3) важнее цены, цена — тай-брейк.
 
@@ -1104,15 +1147,38 @@ def _hotel_order(state: TripState) -> Callable[[HotelOffer], tuple[float, Decima
     недоступным реранком обязаны совпадать, иначе воспроизводимость прогона зависит от сети.
     """
 
-    scores: dict[str, float] = {}
-    for candidate in state.candidates.hotels:
-        raw = candidate.ref.get("relevance", "")
-        try:
-            scores[candidate.candidate_id] = float(raw)
-        except ValueError:
-            #: мусор в `ref` не должен уронить сборку плана: считаем, что слот №3 не ответил
-            continue
+    scores = relevance_scores(state)
     return lambda offer: (-scores.get(offer.specs.hotel_id, 0.0), _stay_total(offer))
+
+
+def _displaced_by_a_filter(hotels: Sequence[HotelOffer], *, chosen: HotelOffer,
+                           state: TripState, why: Callable[[HotelOffer], str]) -> str:
+    """Название самого подходящего отеля, если его отсек фильтр совместимости.
+
+    Живой прогон 2026-10-28: `/rerank` отдал 1.00 «Морскому берегу», у которого в сиде нет
+    ставок на две ночи из пяти, план молча взял отель с баллом 0.10, и ни в карточке, ни в
+    объяснении оплаченного балла не видно. Уступка бюджету уже называется
+    (`cheaper_than_relevant`); уступка данным источника названа быть обязана так же.
+
+    Пустая строка — «уступки нет»: слот №3 не отвечал (офлайн-прогон обязан остаться
+    прежним), chosen и есть самый подходящий, баллы в одной ступени (равенство, а не
+    проигрыш) или отель не дошёл до выбора по бюджету — это уже `cheaper_than_relevant`.
+    """
+
+    scores = relevance_scores(state)
+    if not scores or not hotels:
+        return ""
+    wanted = sorted(hotels, key=_hotel_order(state))[0]
+    if wanted.specs.hotel_id == chosen.specs.hotel_id:
+        return ""
+    gap = scores.get(wanted.specs.hotel_id, 0.0) - scores.get(chosen.specs.hotel_id, 0.0)
+    #: сравнение через половину ступени, а не `>= RELEVANCE_STEP`: баллы лежат в сетке 0.05,
+    #: и `0.35 - 0.30` в float даёт 0.04999999999999999 — порог по всей ступени то признавал
+    #: бы разницу, то нет, и вид уступки зависел бы от округления
+    if gap < RELEVANCE_STEP / 2:
+        return ""
+    reason = why(wanted)
+    return "" if not reason else f"{wanted.name} — {reason}"
 
 
 def _price_lines(plan: Plan, includes: list[str]) -> list[PriceLine]:

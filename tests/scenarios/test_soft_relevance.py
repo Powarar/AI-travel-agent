@@ -325,6 +325,75 @@ class TestComposeUsesRelevance:
         assert composition.plan is not None
 
 
+class TestRelevanceConcessionIsNamed:
+    """Оплаченный балл не имеет права пропадать молча: уступку называет код.
+
+    Живой прогон 2026-10-28: `/rerank` отдал 1.00 «Морскому берегу», у которого в сиде нет
+    ставок на две ночи из пяти. Фильтр совместимости отсёк его правильно — план собрался на
+    отеле с баллом 0.10, и ни `facts`, ни `violations`, ни текст не говорили, что самый
+    подходящий вариант существовал. Пользователь видел тишину вместо уступки.
+    """
+
+    def _composed(self, run, scores: dict[str, float], *, budget: str | None = None):
+        state = apply_relevance(run.state, scores)
+        if budget is not None:
+            state = nodes.apply_answer(state, "budget.amount", budget)
+        search = merge_results(list(run.scratch.results.values()))
+        return nodes.compose(state, search, now=NOW)
+
+    def test_the_hotel_a_compatibility_filter_rejected_is_named_with_its_reason(self) -> None:
+        """AYT-STD вмещает двоих, а едут трое: причина известна коду до всякой модели."""
+
+        engine, _slots, run = run_with({})
+        composition = self._composed(run, {"AYT-STD": 1.00, "AYT-FAM": 0.50,
+                                          "HKT-ONE": 0.10, "HER-ONE": 0.10})
+        assert composition.plan is not None
+        assert composition.plan.hotel.hotel_id == "AYT-FAM"
+        assert composition.facts["relevant_hotel_unavailable"] == (
+            "Old Town Studio — в номере меньше мест, чем гостей"
+        )
+
+    def test_a_budget_displacement_stays_a_budget_displacement(self) -> None:
+        """Отель, отвергнутый бюджетом, называется `cheaper_than_relevant`, а не двумя ключами.
+
+        Он прошёл все фильтры совместимости, поэтому `why_dropped` обязан вернуть пустую
+        строку: иначе в объяснении появились бы две уступки про один и тот же отказ.
+        """
+
+        engine, _slots, run = run_with({})
+        composition = self._composed(run, {"AYT-FAM": 0.05, "AYT-LUX": 1.00,
+                                          "HKT-ONE": 0.50, "HER-ONE": 0.50})
+        assert composition.facts["cheaper_than_relevant"] == "Gulf Palace"
+        assert "relevant_hotel_unavailable" not in composition.facts
+
+    def test_offline_run_gains_no_concession(self) -> None:
+        """Без слота №3 уступки нет: балла, которому она проигрывает, тоже нет."""
+
+        engine, _slots, run = run_with({})
+        state = run.state.model_copy(deep=True)
+        composition = nodes.compose(
+            state, merge_results(list(run.scratch.results.values())), now=NOW)
+        assert "relevant_hotel_unavailable" not in composition.facts
+
+    def test_the_text_speaks_the_concession(self) -> None:
+        """Мок и шаблон обязаны произнести то, что лежит в `facts`.
+
+        Живая модель получает `facts` целиком, а вот обе запасные дороги (мок T-05 и шаблон
+        после двойного провала guard'а) раньше собирали текст только из денег и дат.
+        """
+
+        explanation = Explanation.from_parts(
+            headline="Анталья", nights=7, guests=3, check_in=NOW.date(),
+            check_out=NOW.date(), ledger=BudgetLedger(lines=[], budget=_money(150000),
+                                                      scope="total"),
+            facts={"relevant_hotel_unavailable": "Old Town Studio — в номере меньше мест, чем гостей"})
+        text = MockSlots().explain(explanation)
+        assert "Old Town Studio" in text
+        assert "меньше мест" in text
+        template = Runtime(SOURCES, slots=MockSlots())._template(explanation)
+        assert "Old Town Studio" in template
+
+
 class TestRuntimeWiring:
     def test_slot_three_runs_once_and_fills_every_hotel(self) -> None:
         _engine, slots, run = run_with({"AYT-FAM": 0.9, "AYT-LUX": 0.5,

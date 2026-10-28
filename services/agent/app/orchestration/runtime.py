@@ -32,7 +32,13 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from services.agent.app.llm.slots import Explanation, LLMSlots, MockSlots, display
+from services.agent.app.llm.slots import (
+    Explanation,
+    LLMSlots,
+    MockSlots,
+    _concession_line,
+    display,
+)
 from services.agent.app.orchestration import nodes, policy
 from services.agent.app.orchestration.graph import entry_step, tools_for
 from services.agent.app.orchestration.nodes import Composition, SearchResult
@@ -663,8 +669,12 @@ class Runtime:
         return BudgetLedger(lines=list(run.state.chosen.items), budget=budget, scope=scope)
 
     def _template(self, explanation: Explanation) -> str:
-        return (f"{explanation.headline}: {explanation.nights} ночей, "
+        base = (f"{explanation.headline}: {explanation.nights} ночей, "
                 f"{display(explanation.total)} из {display(explanation.budget)}.")
+        #: уступку мягкому предпочтению шаблон обязан донести: guard бракует текст модели,
+        #: а оплаченный балл слота №3 при этом не отменяется
+        concession = _concession_line(explanation)
+        return f"{base} {concession}" if concession else base
 
     # ------------------------------------------------------------------- слоты
 

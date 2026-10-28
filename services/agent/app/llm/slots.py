@@ -437,6 +437,9 @@ class MockSlots:
             parts.append(f"{weather}{tail}" + (f", перелёт {flight} ч в одну сторону." if flight else "."))
         elif flight:
             parts.append(f"Перелёт {flight} ч в одну сторону.")
+        concession = _concession_line(explanation)
+        if concession:
+            parts.append(concession)
         parts.append(
             f"Итого {display(explanation.total)} из {display(explanation.budget)}, "
             f"остаток {display(explanation.remaining)}."
@@ -479,6 +482,23 @@ def _money_line(explanation: Explanation) -> str:
         if kind in explanation.breakdown
     ]
     return "Разбивка: " + ", ".join(pieces) + "."
+
+
+def _concession_line(explanation: Explanation) -> str:
+    """Фраза об уступке мягкому предпочтению: оплаченный балл слота №3 не должен молчать.
+
+    Живой прогон 2026-10-28: `/rerank` отдал 1.00 отелю, у которого в сиде нет ставок на две
+    ночи из пяти, план взял отель с 0.10, и ни в `facts`, ни в тексте уступки не видно. Код
+    считает причину (`compose`), текст её только произносит — чисел здесь нет.
+    """
+
+    unavailable = explanation.facts.get("relevant_hotel_unavailable", "")
+    if unavailable:
+        return f"Взяли не самый подходящий отель: {unavailable}."
+    cheaper = explanation.facts.get("cheaper_than_relevant", "")
+    if cheaper:
+        return f"Взяли не самый подходящий отель: {cheaper} не влез в бюджет."
+    return ""
 
 
 def _finalist_reason(candidate: Candidate) -> str:
