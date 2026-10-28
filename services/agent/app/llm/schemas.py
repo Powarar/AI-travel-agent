@@ -146,6 +146,11 @@ class ParsedMessage(BaseModel):
     #: почему фолбэк: "schema_failed" — вывод не прошёл схему, "provider_unavailable" — шлюз
     #: не ответил. Разные причины по-разному чинятся, и в метрике это надо видеть.
     fallback_reason: str = ""
+    #: мягкие поля добраны у детерминированного парсера (`top_up_soft_fields`): модель ответила,
+    #: но темы/предпочтения не вернула. Это НЕ фолбэк — hard-поля по-прежнему её, и в sweep'е
+    #: строка остаётся валидной метрикой; флаг нужен, чтобы «молча неоплаченный слот №3» был
+    #: виден числом, а не выводом из пустого `relevance_query`.
+    soft_top_up: bool = False
 
 
 _NUMBERS = re.compile(r"\d[\d \u00a0]*|\d")
@@ -306,6 +311,27 @@ THEME_WORDS = {
     Theme.CULTURE: ("музе", "культур", "истори", "экскурси"),
     Theme.FOOD: ("гастро", "еда", "ресторан", "кухн"),
 }
+
+#: Слово, внутри которого стем «гор» теряет смысл: «город» — это `CITY`, а не природа. Без
+#: исключения каждый городской запрос получал вторую тему, и ложная «природа горы тишина»
+#: уходила в оплаченный `/rerank` — снято 2026-10-28 на живом ответе слота №1 `raw="город"`.
+THEME_STOP_WORDS = {"гор": ("город",)}
+
+
+def themes_in(text: str) -> list[Theme]:
+    """Один матчер тем на оба парсера: таблица без него разъезжается на первом падеже."""
+
+    lowered = text.lower()
+    found: list[Theme] = []
+    for theme, words in THEME_WORDS.items():
+        for word in words:
+            haystack = lowered
+            for stop in THEME_STOP_WORDS.get(word, ()):
+                haystack = haystack.replace(stop, " ")
+            if word in haystack:
+                found.append(theme)
+                break
+    return found
 
 
 def month_positions(text: str) -> list[int]:
@@ -547,7 +573,7 @@ def _to_themes(raw: str) -> list[Theme]:
     """
 
     lowered = raw.lower()
-    themes = [theme for theme, words in THEME_WORDS.items() if any(word in lowered for word in words)]
+    themes = themes_in(raw)
     for name in (item.strip() for item in re.split(r"[,;\s]+", lowered) if item.strip()):
         for theme in Theme:
             if theme.value == name:
@@ -725,6 +751,47 @@ def apply_deltas(deltas: list[ParsedDelta], message: str, *, year: int,
             DirectionMode.OPEN, kind=ConstraintKind.HARD
         )
     return ParsedMessage(request=request, rejected=rejected)
+
+
+def soft_fields_missing(request: TripRequest) -> bool:
+    """Есть ли у запроса хоть что-то для слота №3.
+
+    Отдельная функция потому, что решение «добирать или нет» принимают два места (провайдер и
+    тесты), а цена расхождения — оплаченный `/rerank`, которого в прогоне не было.
+    """
+
+    return request.themes.is_unknown and not request.soft_preferences
+
+
+def top_up_soft_fields(parsed: ParsedMessage, reference: TripRequest) -> ParsedMessage:
+    """Мягкие поля берутся у детерминированного парсера, если модель их не вернула.
+
+    Живой слот №1 отвечает за hard-поля, и там право на ошибку ноль: выдуманная дата ломает план.
+    `themes` и `soft_preferences` — единственные поля без чисел, и они же — единственный вход
+    слота №3 (`nodes.relevance_query`). Снято живым прогоном 2026-10-28: из 9 повторов модель
+    отдала темы 2 раза, и в 7 прогонах `/rerank` не вызывался вовсе — не из-за шлюза, а из-за
+    пустого запроса. Молча неоплаченный слот хуже оплаченного неудачного: мерить нечем.
+
+    Правила, которые здесь ограничивают подмешивание:
+
+    * мягкое поле добирается только когда своё `unknown`/пустое — вывод модели не перекрывается;
+    * hard-поля не читаются и не пишутся вообще, иначе ошибка модели лечилась бы чужим
+      разбором;
+    * `used_fallback` остаётся `False`: разбор был, просто у него нет права придумывать темы,
+      которых в тексте нет — `MockSlots` берёт их теми же `THEME_WORDS` по буквальному вхождению.
+    """
+
+    if not soft_fields_missing(parsed.request):
+        return parsed
+    updates: dict[str, object] = {}
+    if parsed.request.themes.is_unknown and not reference.themes.is_unknown:
+        updates["themes"] = reference.themes
+    if not parsed.request.soft_preferences and reference.soft_preferences:
+        updates["soft_preferences"] = list(reference.soft_preferences)
+    if not updates:
+        return parsed
+    request = parsed.request.model_copy(update=updates)
+    return parsed.model_copy(update={"request": request, "soft_top_up": True})
 
 
 def _set_field(request: TripRequest, delta: ParsedDelta, value: object) -> None:

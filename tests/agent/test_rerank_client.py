@@ -19,12 +19,14 @@ import httpx
 import pytest
 
 from services.agent.app.llm.rerank import (
+    DEFAULT_TIMEOUT_S,
     MAX_DOCUMENTS,
     RerankError,
     Reranker,
     parse_rerank_response,
     prepare_documents,
 )
+from shared.contracts.state import RunBudget
 
 DOCS = ["бутик на первой линии", "сетевой у аэропорта", "камерный в старом городе"]
 
@@ -147,6 +149,30 @@ class TestFailureIsolation:
 
         reranker = Reranker(api_key="k", fallback_model=None, client=_client(handler))
         assert reranker.rank("отель", DOCS) is None
+
+
+class TestTimeoutBar:
+    """Дефолт таймаута — это не «на всякий случай», а два связанных числа."""
+
+    def test_covers_the_measured_catalog_call_and_stays_inside_the_turn(self) -> None:
+        """Снято живым прогоном 2026-10-28 на каталоге (`--sources seed`, 40 отелей на вызов):
+        основная модель отвечает 1.5–1.8 с, запасная — до 4.2 с. Прежние 2.5 с были сняты на трёх
+        документах и резали обе модели, то есть прогон платил за ход, в котором слот №3 не
+        проранжировал ничего. Верхняя граница: две попытки подряд обязаны влезать в `wall_clock`
+        хода, иначе медленный реранк съедает бюджет до `explain`.
+        """
+
+        assert DEFAULT_TIMEOUT_S >= 4.5
+        worst_case_ms = 2 * DEFAULT_TIMEOUT_S * 1000
+        assert worst_case_ms < RunBudget().wall_clock_limit_ms
+
+    def test_client_uses_the_default_without_an_explicit_number(self) -> None:
+        def handler(request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json={"results": []})
+
+        reranker = Reranker(api_key="sk-test", client=_client(handler))
+        assert reranker.timeout_s == DEFAULT_TIMEOUT_S
+        reranker.close()
 
 
 class TestFromConfig:

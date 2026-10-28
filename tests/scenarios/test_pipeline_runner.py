@@ -406,10 +406,27 @@ class TestPreflightAndCallPlan:
         assert code == 0
         slot3 = next(row for row in payload["slots"] if row["slot"] == "SL-3 relevance")
         assert slot3["calls"] == 1
+        #: рядом с `calls` лежит число прогонов: «вызовов 2» при `--repeat 9` — это дыра в
+        #: замере, а не маленькая латентность, и различать их надо по одному полю
+        assert slot3["runs"] == 1
         assert slot3["docs"] == [5] and slot3["reordered"] == [True]
         #: у чат-слотов измерять нечего — пустые списки, а не ноль, которого не было
         slot1 = next(row for row in payload["slots"] if row["slot"] == "SL-1 parse")
         assert slot1["docs"] == [] and slot1["reordered"] == []
+
+    def test_a_slot_that_fired_on_only_some_runs_is_called_out(self, capsys) -> None:
+        """Пропущенный ходов слот таблицей не видно — он выглядит как маленькое число.
+
+        Живой прогон 2026-10-28: `/rerank` вызван 2 раза из 9, и в столбце «вызовов» это
+        просто двойка. Пока это не сказано строкой, замер reading-я выглядит «модель работала
+        редко», а не «мы её не включали».
+        """
+
+        measured = rp.MeasuredSlots(rp.ChatMockRerankLive(cast(Reranker, StubReranker())))
+        measured.soft_relevance("море", {"AYT-1": "a", "AYT-2": "b"})
+        rp.print_slots(measured, 5)
+        out = capsys.readouterr().out
+        assert "SL-3 relevance: вызван 1 раз из 5 прогонов" in out
 
     def test_the_slots_table_prints_how_much_the_reranker_moved(self, capsys) -> None:
         """Таблица слотов — про качество порядка, а не только про время одного обращения."""

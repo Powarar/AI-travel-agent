@@ -47,6 +47,8 @@ from services.agent.app.llm.schemas import (
     ParseSchema,
     QuestionSchema,
     apply_deltas,
+    soft_fields_missing,
+    top_up_soft_fields,
 )
 from services.agent.app.llm.slots import Explanation, MockSlots
 from services.agent.app.orchestration.policy import QuestionSpec
@@ -504,7 +506,17 @@ class OpenAICompatibleSlots:
             return apply_deltas([], message, year=self.year, fallback=self._fallback.parse(message),
                                 fallback_reason=reason)
         deltas = [delta for delta in model.deltas if isinstance(delta, ParsedDelta)]
-        return apply_deltas(deltas, message, year=self.year)
+        #: Темы и мягкие предпочтения модель возвращает не всегда, а `relevance_query` без них
+        #: пуст — и тогда оплаченный `/rerank` молча не вызывается ни в этом ходе, ни в замере.
+        #: Добирать их у `MockSlots` можно именно потому, что в них нет чисел.
+        parsed = apply_deltas(deltas, message, year=self.year)
+        if soft_fields_missing(parsed.request):
+            parsed = top_up_soft_fields(parsed, self._fallback.parse(message))
+            if parsed.soft_top_up:
+                logger.info("llm soft_fields_top_up slot=parse themes=%d prefs=%d",
+                            len(parsed.request.themes.value or []),
+                            len(parsed.request.soft_preferences))
+        return parsed
 
     def parse(self, message: str) -> TripRequest:
         return self.parse_verbose(message).request

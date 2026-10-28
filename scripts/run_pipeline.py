@@ -557,7 +557,7 @@ def print_turn(report: TurnReport, message: str, index: int) -> None:
         print(f"  !! {report.failed}")
 
 
-def print_slots(measured: MeasuredSlots) -> None:
+def print_slots(measured: MeasuredSlots, runs: int = 0) -> None:
     print("\n=== слоты за весь прогон")
     print(f"  {'слот':<16} {'вызовов':>7} {'п50,мс':>9} {'п95,мс':>9}  заметки")
     for name, label, _ in SLOTS:
@@ -565,6 +565,11 @@ def print_slots(measured: MeasuredSlots) -> None:
         median = statistics.median(times) if times else 0.0
         print(f"  {label:<16} {len(times):>7} {median:>9.0f} {_percentile(times, 0.95):>9.0f}  "
               f"{'; '.join(measured.notes[name])}")
+        #: пропущенный слот таблицей не видно: столбец «вызовов» выглядит как маленькое число,
+        #: а по факту это «в половине прогонов мы ничего не замерили»
+        if runs and len(times) < runs:
+            print(f"    !! {label}: вызван {len(times)} раз из {runs} прогонов — в остальных "
+                  "до слота не дошло или его молча пропустили")
     print(f"  токенов насчитал провайдер: {measured.tokens_used}")
     ranked = measured.reordered["soft_relevance"]
     if any(ranked):
@@ -648,6 +653,10 @@ def json_payload(reports: Sequence[TurnReport], measured: MeasuredSlots, *,
         "runs": runs,
         "slots": [
             {"slot": label, "env": env_name, "calls": len(measured.ms[name]),
+             #: `runs` рядом с `calls` — чтобы «слот №3 сработал 2 раза из 9» читалось как число,
+             #: а не как вывод из длины списка: пропущенный ходов слот — это дыра в замере, и
+             #: ровно так в живом прогоне 2026-10-28 терялся оплаченный `/rerank`.
+             "runs": len(reports),
              "p50_ms": round(_percentile(measured.ms[name], 0.5)),
              "p95_ms": round(_percentile(measured.ms[name], 0.95)),
              #: размеры входа и «порядок изменился» — заполняет их только слот №3, у остальных
@@ -843,7 +852,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                                       answers=answers, slots=slots.inner),
                          ensure_ascii=False, indent=2))
     else:
-        print_slots(slots)
+        print_slots(slots, len(reports))
         summarize(reports)
     bad = [report for report in reports
            if report.failed is not None or report.invented_numbers

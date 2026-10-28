@@ -21,10 +21,10 @@ from pydantic import BaseModel, Field
 from services.agent.app.llm.schemas import (
     CHILD_WORD_RE,
     DEFAULT_CHILD_AGE,
-    THEME_WORDS,
     month_of,
     number_from_words,
     range_days,
+    themes_in,
 )
 from services.agent.app.orchestration.policy import QuestionSpec
 from shared.contracts.enums import (
@@ -48,7 +48,7 @@ _ADULTS_WORDS = {
     #: и голое «один» вернуло бы 1 взрослых там, где едет одиннадцать человек.
     "еду один": 1, "лечу один": 1, "полечу один": 1, "едем один": 1, "в одиночку": 1,
 }
-#: Таблица месяцев живёт в `schemas.month_of`, слова тем — в `schemas.THEME_WORDS`: со своими
+#: Таблица месяцев живёт в `schemas.month_of`, слова тем — в `schemas.themes_in`: со своими
 #: окончаниями здесь они разошлись бы с живой строкой ровно на «с 28 октября по 5 ноября» и на
 #: «отель у моря», а два разборщика обязаны давать одну дату и одну тему.
 #: Стоп-слова направления — два набора, и это не косметика. Префикс удобен: падеж дописывает
@@ -260,7 +260,7 @@ class MockSlots:
             request.direction.mode = FieldValue[DirectionMode].defaulted(
                 DirectionMode.OPEN, kind=ConstraintKind.HARD
             )
-        themes = [theme for theme, words in THEME_WORDS.items() if any(word in lowered for word in words)]
+        themes = themes_in(lowered)
         if themes:
             request.themes = FieldValue[list[Theme]].known(themes, kind=ConstraintKind.SOFT, source="user")
         request.soft_preferences = [

@@ -45,8 +45,12 @@ from services.agent.app.llm.schemas import (
     _to_themes,
     apply_deltas,
     range_days,
+    soft_fields_missing,
+    themes_in,
+    top_up_soft_fields,
 )
 from services.agent.app.llm.slots import Explanation, MockSlots
+from services.agent.app.orchestration import nodes
 from shared.contracts.enums import BudgetScope, ConstraintKind, DirectionMode, Theme
 from shared.contracts.money import Money
 from shared.contracts.request import TripRequest
@@ -410,15 +414,30 @@ class TestProvenanceGuard:
     def test_both_parsers_read_the_same_theme_from_the_same_case(self, phrase: str) -> None:
         """Мок и коэрсер над ответом модели обязаны сходиться на падежах, а не только на «море».
 
-        Таблица `THEME_WORDS` одна на оба пути (как `month_of` для дат). Со словарём мока из
-        «море/морю/пляж» родительный «у моря» терялся, `themes` оставались неизвестны, запрос
-        слота №3 выходил пустым — и на платном прогоне реранк не вызывался бы вообще.
+        Таблица `THEME_WORDS` и матчер `themes_in` — одни на оба пути (как `month_of` для дат).
+        Со словарём мока из «море/морю/пляж» родительный «у моря» терялся, `themes` оставались
+        неизвестны, запрос слота №3 выходил пустым — и на платном прогоне реранк не вызывался бы
+        вообще.
         """
 
         mock_themes = MockSlots().parse(f"{phrase} в ноябре").themes.value
         coerced = _to_themes(phrase)
         assert mock_themes == coerced, f"{phrase}: мок {mock_themes}, коэрсер {coerced}"
         assert mock_themes and set(mock_themes) <= set(THEME_WORDS)
+
+    def test_a_city_is_not_secretly_the_sides_of_a_mountain(self) -> None:
+        """«город» содержит стем «гор», и без исключения тема `NATURE` ехала в `/rerank` ложью.
+
+        Снято 2026-10-28 на живом ответе слота №1 `raw="город"`: коэрсер давал `[NATURE, CITY]`,
+        то есть в оплаченный вызов уходило «природа горы тишина» там, где человек просил
+        экскурсии в центре. Мок и коэрсер сходятся и здесь — один матчер на оба.
+        """
+
+        assert themes_in("еду в город на выходные") == [Theme.CITY]
+        assert _to_themes("город") == [Theme.CITY]
+        assert MockSlots().parse("еду в город на выходные").themes.value == [Theme.CITY]
+        #: сама природа при этом остаётся природой: «горы» и «горнолыжный» — не «город»
+        assert themes_in("поеду в горы") == [Theme.NATURE]
 
 
 class TestContractOverModelJudgement:
@@ -622,6 +641,36 @@ class TestProviderOffline:
         assert result.request.party.adults.value == 2
         assert result.rejected == [] and result.used_fallback is False
 
+    def test_a_parse_without_themes_still_feeds_the_paid_slot(self) -> None:
+        """Живой разбор без тем оставляет слот №3 неоплаченным — это замерялось живьём.
+
+        Снято прогоном 2026-10-28 (`--repeat 9`, `--sources seed`): модель вернула `themes`
+        в 2 ходах из 9, и в остальных `/rerank` не вызывался вовсе — не потому, что шлюз молчит,
+        а потому, что запрос слота собран из пустых полей. Мягкие поля добираются у
+        детерминированного парсера; hard-поля при этом остаются строго выводом модели.
+        """
+
+        provider = self._provider([
+            '{"deltas": [{"path": "direction.explicit", "raw": "сочи", "kind": "hard"},'
+            ' {"path": "party.adults", "raw": "вдвоём", "kind": "hard"}]}'
+        ])
+        result = provider.parse_verbose("хочу в сочи с 12 по 17 ноября вдвоём,"
+                                        " нужен атмосферный отель у моря")
+        assert result.used_fallback is False
+        assert result.soft_top_up is True
+        assert result.request.themes.value == [Theme.BEACH]
+        assert nodes.relevance_query(result.request) != ""
+
+    def test_top_up_never_overrides_what_the_model_returned(self) -> None:
+        """Модель назвала темы — её и слушаем, даже если детерминированный разбор видит другие."""
+
+        provider = self._provider([
+            '{"deltas": [{"path": "themes", "raw": "город", "kind": "soft"}]}'
+        ])
+        result = provider.parse_verbose("хочу к тёплому морю, но сначала город на выходные")
+        assert result.request.themes.value == [Theme.CITY]
+        assert result.soft_top_up is False
+
     def test_fabricated_number_from_model_is_dropped(self) -> None:
         provider = self._provider([
             '{"deltas": [{"path": "budget.amount", "raw": "152 000", "kind": "hard"}]}'
@@ -647,6 +696,22 @@ class TestProviderOffline:
         ])
         assert [item.candidate_id for item in picked] == ["h1"]
         assert picked[0].ref["why"] == "море"
+
+
+def test_soft_top_up_leaves_every_hard_field_alone() -> None:
+    """Добор мягких полей не имеет права дотянуться до hard: `сочи` из мока — не ответ модели."""
+
+    reference = MockSlots().parse("еду в сочи к морю вдвоём")
+    # детерминированный разбор знает и направление, и взрослых — брать будем только мягкое
+    assert not reference.direction.explicit.is_unknown and not reference.party.adults.is_unknown
+    parsed = apply_deltas([], "еду в сочи к морю", year=YEAR)
+    assert soft_fields_missing(parsed.request)
+    merged = top_up_soft_fields(parsed, reference)
+    assert merged.request.themes.value == [Theme.BEACH]
+    assert merged.request.direction.explicit.is_unknown
+    assert merged.request.party.adults.is_unknown
+    assert merged.used_fallback is False
+    assert not soft_fields_missing(merged.request)
 
 
 class _StubResponse:
