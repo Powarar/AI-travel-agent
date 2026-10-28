@@ -62,6 +62,13 @@ def climate(month: str, code: str = "sochi"):
     return weather_climate({"destinations": [code], "dates.month": month}).climate[0]
 
 
+def codes_of(country: str) -> set[str]:
+    """Направления сида этой страны: «названа страна» проверяется множеством из каталога,
+    а не списком кодов, который я переписал бы руками и устарел бы при первой пересборке."""
+
+    return {str(row["code"]) for row in catalog().destinations if row["country"] == country}
+
+
 class TestNamedDestinationIsThePlanDestination:
     def test_sochi_makes_a_plan_without_violations(self) -> None:
         report = trip("хочу в сочи с 12 по 17 ноября вдвоём, 150к")
@@ -78,6 +85,35 @@ class TestNamedDestinationIsThePlanDestination:
         #: Сочи в ноябре +15.5 °C, Дубай +31.6 — «подменить на потеплее» было бы соблазнительно
         report = trip("хочу в сочи с 12 по 17 ноября вдвоём, 150к")
         assert report.finalists == ["sochi"]
+
+    def test_a_named_country_makes_a_plan_inside_that_country(self) -> None:
+        """«хочу в турцию» обязан дать турецкий план, а не план чужой страны.
+
+        Стоп-слова разборщика резали слово префиксом: «тур» был в списке мусора и убивал
+        «турцию» целиком, `direction.explicit` оставался пустым — а пустое поле валидатору
+        сверять не с чем, и на месте названной страны пользователь получал бы Анталью, когда
+        хотел Египет. Здесь проверяется и финалист, и финал: всё множество релевантных
+        направлений обязано лежать внутри названной страны.
+        """
+
+        report = trip("хочу в турцию с 12 по 17 ноября вдвоём, 200к")
+        assert report.outcome == Outcome.PLAN_READY
+        assert report.violations == []
+        assert report.components["destination"] in codes_of("Турция")
+        assert set(report.finalists) <= codes_of("Турция")
+
+    def test_a_named_country_without_a_feasible_plan_is_refused(self) -> None:
+        """Египет в сиде есть, рейсов на эти даты — нет: отказ, а не подмена Турцией.
+
+        Финалисты остаются египетскими: «не нашли» должно означать «не нашли» ровно той
+        страны, которую назвали, иначе отказ неотличим от тихой замены hard-поля.
+        """
+
+        report = trip("хочу в египет с 12 по 17 ноября вдвоём, 150к")
+        assert report.outcome == Outcome.INFEASIBLE
+        assert "destination" not in report.components
+        assert report.order_id is None
+        assert set(report.finalists) == codes_of("Египет")
 
 
 class TestRefusalNamesNumbers:

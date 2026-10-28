@@ -194,6 +194,54 @@ class TestInterrupt:
         request = mock_parse("лечу в санкт-петербург")
         assert request.direction.explicit.value == "санкт-петербург"
 
+    @pytest.mark.parametrize(
+        "phrase,named",
+        [
+            ("хочу в турцию в ноябре", "турцию"),
+            ("нужен тур в египет", "египет"),
+            ("еду в мармарис", "мармарис"),
+            ("лечу в горно-алтайск", "горно-алтайск"),
+            ("мечтаю на мальдивы", "мальдивы"),
+            ("хочу в доминикану", "доминикану"),
+            ("едем в домодедово", "домодедово"),
+        ],
+    )
+    def test_long_names_survive_the_short_stop_words(self, phrase: str, named: str):
+        """стоп-слово не имеет права съесть название: «тур» ≠ «Турция», «мар» ≠ «Мармарис».
+
+        Префикс ловит любую форму падежа вместе с началом настоящего названия, а потерянное
+        слово — это не «мы не поняли», а пустое `direction.explicit`: валидатору сверять
+        нечего, и названная страна уходит искать открытое направление вместо себя.
+        """
+
+        request = mock_parse(phrase)
+        assert request.direction.explicit.value == named
+        assert request.direction.explicit.source == "user"
+        assert request.direction.mode.value == DirectionMode.EXPLICIT
+
+    @pytest.mark.parametrize(
+        "phrase",
+        [
+            "поеду в марте",
+            "еду в горы",
+            "поеду домой",
+            "хочу в турагентство",
+            "хочу в тур на двоих",
+            "еду на троих",
+            "хочу в номер с балконом",
+        ],
+    )
+    def test_theme_month_home_and_headcount_are_still_not_a_destination(self, phrase: str):
+        """Целые формы вместо префиксов, и числительные — про состав, а не про город.
+
+        «на двоих» отвечает на «сколько едет»: раньше после «тура» регулярка брала следующее
+        «на …» и выдавала направление 'двоих' — отказ звучал как «названо — двоих».
+        """
+
+        request = mock_parse(phrase)
+        assert request.direction.explicit.is_unknown, phrase
+        assert request.direction.mode.status.value == "defaulted", phrase
+
     def test_golden_message_names_no_place(self):
         request = mock_parse(MESSAGE)
         assert request.direction.explicit.is_unknown
