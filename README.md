@@ -77,6 +77,21 @@ make seed                   # синтетический каталог + под
 make test                   # unit + property + сквозной сценарий
 ```
 
+### Провайдер, модели и секреты
+
+Провайдер LLM — шлюз [AITUNNEL](https://aitunnel.ru) (`LLM_PROVIDER=aitunnel`). Модели по слотам:
+`LLM_MODEL=deepseek-v4.1-flash-1017`, `LLM_MODEL_QUESTIONS=deepseek-v4.1-flash`,
+`LLM_MODEL_FINALISTS=deepseek-v4-flash`, `LLM_MODEL_EXPLAIN=qwen3.7-plus`,
+`RERANK_MODEL=qwen3-reranker-8b`. Без ключа работает `LLM_PROVIDER=mock`: офлайн и бесплатно.
+
+Реальные значения переданы организаторам в `secrets.env.age` (age, ключ организаторов);
+список переменных — `.env.example`. Открытый `.env` в git не попадает. Расшифровка у жюри:
+
+```bash
+age -d -i <закрытый_ключ> -o .env secrets.env.age
+make up
+```
+
 ### Прогон контура целиком
 
 Одна команда собирает весь путь — сообщение → вопросы → направления → поиск → сборка →
