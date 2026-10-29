@@ -38,7 +38,6 @@ export function AgentTurn({ events, thinking }: { events: SSEEvent[]; thinking: 
         {messages.map((m, i) => (
           <p key={i} className={`${styles.bubble} ${styles.agentBubble} ${m.kind === 'answer' ? styles.clamped : ''} motion-fade-up`}>
             {m.text}
-            {m.kind === 'answer' && <span className={styles.more}>Подробности — справа →</span>}
           </p>
         ))}
         {thinking && (

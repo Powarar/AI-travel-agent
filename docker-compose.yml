@@ -44,7 +44,8 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       # ход исполняет агент в процессе backend (api/agent_executor.py); fixture — заглушка
       BACKEND_EXECUTOR: ${BACKEND_EXECUTOR:-agent}
-      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+      LLM_PROVIDER: ${LLM_PROVIDER:-aitunnel}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.aitunnel.ru/v1}
       LLM_API_KEY: ${LLM_API_KEY:-}
       LLM_MODEL: ${LLM_MODEL:-}
       LLM_MODEL_PARSE: ${LLM_MODEL_PARSE:-}
@@ -79,7 +80,7 @@ services:
     environment:
       BACKEND_URL: http://backend:8000
       HTTP_PORT: "8001"
-      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+      LLM_PROVIDER: ${LLM_PROVIDER:-aitunnel}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     ports:
       - "127.0.0.1:${AGENT_PORT:-8011}:8001"

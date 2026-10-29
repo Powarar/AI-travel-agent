@@ -48,6 +48,18 @@ ANSWERS = {"origin": "Москва"}
 NO_FLIGHT_DESTINATIONS = ("геленджик", "минводы", "пятигорск", "феодосия", "севастополь")
 
 
+def test_flight_total_scales_with_passengers() -> None:
+    args = {"destinations": ["sochi"], "origin": "Москва", "dates.start": "2026-11-14",
+            "dates.end": "2026-11-21"}
+    two = transport_search({**args, "party.adults": "2"}).transport
+    three = transport_search({**args, "party.adults": "3"}).transport
+    assert two and len(two) == len(three)
+    for before, after in zip(two, three):
+        assert before.arrival.leg_id == after.arrival.leg_id
+        assert after.arrival.price.amount.amount * 2 == before.arrival.price.amount.amount * 3
+        assert after.departure.price.amount.amount * 2 == before.departure.price.amount.amount * 3
+
+
 def runtime() -> Runtime:
     return Runtime(rp.build_sources("seed"), slots=MockSlots())
 
@@ -206,7 +218,7 @@ class TestCatalogGapsStayGaps:
 
 class TestPartyConstraints:
     def test_pet_travel_gets_a_pet_friendly_hotel_and_its_own_transfer(self) -> None:
-        report = trip("еду с собакой в сочи на 2 ночи с 14 по 16 ноября, 80к")
+        report = trip("еду с собакой в сочи на 2 ночи с 14 по 16 ноября, 160к")
         assert report.outcome == Outcome.PLAN_READY
         hotel = report.components["hotel"]
         row = next(item for item in catalog().hotels if str(item["hotel_id"]) == hotel)
@@ -255,20 +267,20 @@ class TestBudgetAcrossDestinations:
     """
 
     def test_short_flight_finalist_becomes_the_plan(self) -> None:
-        report = trip("хочу к тёплому морю в ноябре вдвоём с ребёнком, 200к, "
+        report = trip("хочу к тёплому морю в ноябре вдвоём с ребёнком, 300к, "
                       "без долгих перелётов")
         assert report.outcome == Outcome.PLAN_READY
         assert report.components["destination"] == "larnaca"
         assert report.violations == []
-        assert report.total == "96 700 ₽"
+        assert report.total == "223 900 ₽"
 
     def test_short_flight_constraint_finds_an_affordable_alternative(self) -> None:
-        report = trip("хочу к тёплому морю в ноябре вдвоём с ребёнком, 150к, "
+        report = trip("хочу к тёплому морю в ноябре вдвоём с ребёнком, 250к, "
                      "без долгих перелётов")
         assert report.outcome == Outcome.PLAN_READY
         assert report.components["destination"] == "larnaca"
-        assert report.total == "96 700 ₽"
-        assert report.remaining == "53 300 ₽"
+        assert report.total == "223 900 ₽"
+        assert report.remaining == "26 100 ₽"
         assert report.violations == []
         assert report.invented_numbers == []
 

@@ -582,13 +582,14 @@ def transport_search(args: Mapping[str, object]) -> SearchResult:
         if overnight_ok is False:
             inbound = [leg for leg in inbound if leg["overnight"] is not True]
         for leg in inbound:
-            offers.append(_pair(leg, end))
+            passengers = max(1, _count(args, "party.adults") + len(_items(args, "party.children")))
+            offers.append(_pair(leg, end, passengers=passengers))
     offers.sort(key=lambda offer: (offer.price_total, offer.arrival.leg_id))
     meta["рейсов в выдаче"] = str(len(offers))
     return SearchResult(transport=offers, meta=meta)
 
 
-def _pair(leg: Mapping[str, Any], end: date | None) -> TransportOffer:
+def _pair(leg: Mapping[str, Any], end: date | None, *, passengers: int = 1) -> TransportOffer:
     """Прямой сегмент из сида и обратный — его зеркало на дату конца вилки."""
 
     backup = _destination_tz(str(leg["dest_code"]))
@@ -599,6 +600,7 @@ def _pair(leg: Mapping[str, Any], end: date | None) -> TransportOffer:
     source_id = str(leg["source_id"])
     status = _status(leg)
     leg_id = str(leg["leg_id"])
+    group_price = Decimal(str(leg["base_price_rub"])) * passengers
 
     arrival = TransportLeg(
         leg_id=leg_id,
@@ -608,7 +610,7 @@ def _pair(leg: Mapping[str, Any], end: date | None) -> TransportOffer:
         duration_h=_hours(minutes),
         direct=bool(leg["direct"]),
         overnight=bool(leg["overnight"]),
-        price=_price(f"transport:{leg_id}", PriceKind.TRANSPORT, leg["base_price_rub"],
+        price=_price(f"transport:{leg_id}", PriceKind.TRANSPORT, group_price,
                      currency, CostScope.TOTAL, source_id, status),
     )
     #: обратного сегмента в сиде нет — зеркало: тот же борт, те же минуты, вылет в то же
@@ -626,7 +628,7 @@ def _pair(leg: Mapping[str, Any], end: date | None) -> TransportOffer:
         direct=bool(leg["direct"]),
         #: ночным обратный рейс считает его же расписание: вылет и прилёт в разные сутки
         overnight=back_dep.date() != back_arr.date(),
-        price=_price(f"transport:{back_id}", PriceKind.TRANSPORT, leg["base_price_rub"],
+        price=_price(f"transport:{back_id}", PriceKind.TRANSPORT, group_price,
                      currency, CostScope.TOTAL, source_id, status),
     )
     return TransportOffer(

@@ -6,7 +6,7 @@ PSQL := $(DC) exec postgres psql -U ostrovok -d ostrovok
 
 .PHONY: help
 help:
-	@echo "make up        — postgres+backend+agent и базовая миграция"
+	@echo "make up        — postgres+backend+agent+frontend и базовая миграция"
 	@echo "make web       — только фронтенд (hot reload), http://localhost:5173"
 	@echo "make down      — остановить стек (данные в volume pgdata остаются)"
 	@echo "make build     — пересобрать образы"
@@ -25,7 +25,7 @@ help:
 
 .PHONY: up
 up:
-	$(DC) up -d --build postgres backend agent
+	$(DC) up -d --build postgres backend agent web
 	$(MAKE) migrate
 
 .PHONY: web

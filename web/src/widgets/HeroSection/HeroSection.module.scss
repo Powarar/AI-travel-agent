@@ -43,7 +43,15 @@
   line-height: 1.5;
 }
 
-.link {
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.link,
+.telegramLink {
   display: inline-flex;
   align-items: center;
   gap: 0.7rem;
@@ -57,6 +65,14 @@
 
   &:hover { background: var(--color-blue-hover); }
   &:focus-visible { outline: 3px solid var(--color-blue); outline-offset: 4px; }
+}
+
+.telegramLink {
+  border: 2px solid var(--color-blue);
+  background: transparent;
+  color: var(--color-blue);
+
+  &:hover { background: rgba(14, 65, 210, 0.1); }
 }
 
 .art {

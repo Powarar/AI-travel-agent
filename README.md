@@ -11,6 +11,12 @@
 трансферов (1 239, OSRM); синтетические — все цены: 1 318 отелей, 45 284 ставки ночей и
 3 788 плеч перелётов (95% строк каталога).
 
+## Демо
+
+Попробовать сервис можно в браузере: [krutieperci.62-109-29-105.sslip.io](https://krutieperci.62-109-29-105.sslip.io/).
+Telegram Mini App доступен через [бота @ostrovok_kuda_bot](https://t.me/ostrovok_kuda_bot).
+Видео с экрана: [запись прогона на Google Drive](https://drive.google.com/file/d/1Y67ER5F7CN9vlV9RHzUTL5-G9IMh3exK/view?usp=sharing).
+
 ## Документация
 
 Две папки по адресату: что читает модель, что читают люди.

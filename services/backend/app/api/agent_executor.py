@@ -169,13 +169,12 @@ class AgentRunExecutor:
 
 
 def agent_executor_from_env() -> AgentRunExecutor:
-    """Каталог `data/seeds` + слоты из окружения (`LLM_PROVIDER=mock` — бесплатно и офлайн)."""
+    """Собирает локальный оркестратор поверх каталога проекта и его слотов."""
 
     from services.agent.app.llm.provider_openai_compatible import slots_from_config
     from services.agent.app.tools.seed_sources import seed_sources
 
     sources: dict[str, Callable[[Mapping[str, object]], Any]] = dict(seed_sources())
     slots = slots_from_config()
-    logger.info("agent executor ready provider=%s slots=%s", os.environ.get("LLM_PROVIDER", "mock"),
-                type(slots).__name__)
+    logger.info("agent executor ready catalog=local slots=%s", type(slots).__name__)
     return AgentRunExecutor(sources, slots=slots)

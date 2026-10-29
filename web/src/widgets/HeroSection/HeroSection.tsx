@@ -10,7 +10,12 @@ export function HeroSection() {
           <span className={styles.eyebrow}>Путешествие начинается с одного сообщения</span>
           <h1 id="hero-title">О! Куда <span>поедем?</span></h1>
           <p className={styles.lead}>Расскажите, какого отдыха хочется. Поможем превратить идею в удобный план поездки.</p>
-          <a className={styles.link} href="#planner">Начать планировать <span aria-hidden="true">↗</span></a>
+          <div className={styles.actions}>
+            <a className={styles.link} href="#planner">Начать планировать <span aria-hidden="true">↗</span></a>
+            <a className={styles.telegramLink} href="https://t.me/ostrovok_kuda_bot" target="_blank" rel="noreferrer">
+              Открыть в Telegram <span aria-hidden="true">↗</span>
+            </a>
+          </div>
         </div>
         <div className={styles.art} aria-hidden="true">
           <div className={`${styles.ring} ${styles.outerRing}`} />
