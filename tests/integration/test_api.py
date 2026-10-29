@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import os
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import asyncpg
 import httpx
@@ -146,3 +146,51 @@ async def test_agent_executor_plans_across_api_restart() -> None:
         state = (await client.get(f"/v1/trips/{trip_id}/state")).json()
         assert state["outcome"] == "plan_ready" and state["version"] == 3
         assert state["chosen"]["component_refs"]["destination"]
+
+
+@pytest.mark.asyncio
+async def test_orders_are_saved_per_owner(monkeypatch: pytest.MonkeyPatch) -> None:
+    import hashlib
+    import hmac
+    import time
+    from urllib.parse import urlencode
+
+    token = "123456:test-token"
+    user_id = int(time.time() * 1000)
+    fields = {"auth_date": str(int(time.time())), "user": json.dumps({"id": user_id, "first_name": "Аня"})}
+    secret = hmac.new(b"WebAppData", token.encode(), hashlib.sha256).digest()
+    check = "\n".join(f"{k}={fields[k]}" for k in sorted(fields))
+    signed = urlencode({**fields, "hash": hmac.new(secret, check.encode(), hashlib.sha256).hexdigest()})
+
+    store = TripStore()
+    try:
+        connection = await asyncpg.connect(store.dsn)
+    except (OSError, asyncpg.PostgresError):
+        if os.environ.get("REQUIRE_TEST_DB") == "1":
+            raise
+        pytest.skip("Postgres is not available")
+    else:
+        await connection.close()
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", token)
+
+    telegram = {"Authorization": f"tma {signed}"}
+    browser = {"X-Client-Id": str(uuid4())}
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=_app()), base_url="http://test") as client:
+        trip_id = (await client.post("/v1/trips")).json()["trip_id"]
+        placed = await client.post(f"/v1/trips/{trip_id}/checkout",
+                                   headers={"Idempotency-Key": "k1", **telegram})
+        assert placed.status_code == 200
+        replay = await client.post(f"/v1/trips/{trip_id}/checkout",
+                                   headers={"Idempotency-Key": "k1", **telegram})
+        assert replay.json()["order_id"] == placed.json()["order_id"]
+
+        mine = await client.get("/v1/orders", headers=telegram)
+        assert mine.status_code == 200
+        assert [o["order_id"] for o in mine.json()] == [placed.json()["order_id"]]
+        assert mine.json()[0]["trip_id"] == trip_id
+        assert mine.json()[0]["snapshot"]["lines"] == []
+
+        assert (await client.get("/v1/orders", headers=browser)).json() == []
+        assert (await client.get("/v1/orders")).status_code == 401
+        forged = {"Authorization": telegram["Authorization"].replace("hash=", "hash=0")}
+        assert (await client.get("/v1/orders", headers=forged)).status_code == 401

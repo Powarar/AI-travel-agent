@@ -1,0 +1,33 @@
+@use '../../shared/styles/keyframes';
+
+.app {
+  position: relative;
+  min-height: 100vh;
+  min-height: var(--tg-viewport-stable-height, 100dvh);
+  background: linear-gradient(180deg, #eaf6df 0%, var(--color-page) 280px);
+  overflow-x: clip;
+}
+
+.blob {
+  position: absolute;
+  top: -120px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: var(--color-mojito);
+  filter: blur(60px);
+  opacity: 0.5;
+  pointer-events: none;
+  animation: float 14s ease-in-out infinite;
+}
+
+.screen {
+  position: relative;
+  z-index: 1;
+  // место под нижнее меню и «домашнюю» полоску iPhone
+  padding: 1rem 1rem calc(5.5rem + env(safe-area-inset-bottom));
+  animation: fade-up 280ms var(--ease-out);
+
+  &[hidden] { display: none; }
+}

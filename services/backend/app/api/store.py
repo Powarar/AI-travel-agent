@@ -13,7 +13,8 @@ from shared.contracts.enums import RunStatus
 from shared.contracts.state import TripState
 
 from .executor import InvalidAnswer, RunExecutor, RunInput, RunResult
-from .schemas import CheckoutCompleted, RunTrace, SSEEvent
+from .orders import build_snapshot
+from .schemas import CheckoutCompleted, OrderOut, OrderSnapshot, RunTrace, SSEEvent
 
 
 class NotFound(Exception):
@@ -162,17 +163,20 @@ class TripStore:
         finally:
             await conn.close()
 
-    async def checkout(self, trip_id: UUID, key: str) -> CheckoutCompleted:
+    async def checkout(self, trip_id: UUID, key: str, owner: str | None = None) -> CheckoutCompleted:
         conn = await self._connect()
         try:
             async with conn.transaction():
-                exists = await conn.fetchval("SELECT 1 FROM trips WHERE trip_id=$1", trip_id)
-                if exists is None:
+                row = await conn.fetchrow("SELECT state FROM trips WHERE trip_id=$1", trip_id)
+                if row is None:
                     raise NotFound
+                state = _state(row["state"])
                 order_id = str(uuid4())
+                # Снимок плана на момент оформления: заказ не меняется вслед за поздними правками trip.
                 inserted = await conn.fetchval(
-                    "INSERT INTO checkout_orders VALUES($1,$2,$3) "
-                    "ON CONFLICT DO NOTHING RETURNING order_id", trip_id, key, order_id,
+                    "INSERT INTO checkout_orders(trip_id,idempotency_key,order_id,owner,state_version,snapshot) "
+                    "VALUES($1,$2,$3,$4,$5,$6::jsonb) ON CONFLICT DO NOTHING RETURNING order_id",
+                    trip_id, key, order_id, owner, state.version, build_snapshot(state).model_dump_json(),
                 )
                 if inserted is None:
                     order_id = await conn.fetchval(
@@ -182,6 +186,20 @@ class TripStore:
                 return CheckoutCompleted(order_id=order_id, idempotent_replay=inserted is None)
         finally:
             await conn.close()
+
+    async def list_orders(self, owner: str) -> list[OrderOut]:
+        conn = await self._connect()
+        try:
+            rows = await conn.fetch(
+                "SELECT order_id, trip_id, created_at, snapshot FROM checkout_orders "
+                "WHERE owner=$1 ORDER BY created_at DESC", owner,
+            )
+        finally:
+            await conn.close()
+        return [OrderOut(
+            order_id=r["order_id"], trip_id=r["trip_id"], created_at=r["created_at"],
+            snapshot=OrderSnapshot.model_validate_json(_json(r["snapshot"])) if r["snapshot"] else None,
+        ) for r in rows]
 
     @staticmethod
     def _check_result(before: TripState, after: TripState) -> None:

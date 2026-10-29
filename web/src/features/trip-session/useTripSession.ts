@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { refreshOrders } from '../../entities/order/orders'
 import { api } from '../../shared/api'
 import type { CheckoutResult, SSEEvent, SSEPayloads, TripState } from '../../shared/types/contracts'
 
@@ -204,6 +205,7 @@ export function useTripSession() {
     try {
       // Ключ от версии плана: двойной клик не создаёт второй заказ.
       setOrder(await api.checkout(tripId, `${tripId}:v${state.version}`))
+      void refreshOrders()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Не удалось оформить')
     } finally {

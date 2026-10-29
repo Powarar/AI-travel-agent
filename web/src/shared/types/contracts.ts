@@ -103,3 +103,24 @@ export interface CheckoutResult {
   idempotent_replay: boolean
   simulated: true
 }
+
+export interface OrderSnapshot {
+  destination: string | null
+  country: string | null
+  date_start: string | null
+  date_end: string | null
+  nights: number | null
+  guests: number | null
+  pets: boolean
+  origin: string | null
+  total: Money | null
+  lines: { kind: string; count: number; total: Money }[]
+}
+
+export interface OrderOut {
+  order_id: string
+  trip_id: string
+  created_at: string
+  simulated: true
+  snapshot: OrderSnapshot | null
+}

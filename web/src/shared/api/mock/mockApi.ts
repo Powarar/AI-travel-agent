@@ -1,4 +1,5 @@
-import type { CheckoutResult, RunTrace, SSEEvent, TripState } from '../../types/contracts'
+import { buildSnapshot } from '../../lib/order'
+import type { CheckoutResult, OrderOut, RunTrace, SSEEvent, TripState } from '../../types/contracts'
 import type { TripApi } from '../client'
 import recorded from './scenarios.json'
 
@@ -38,6 +39,16 @@ interface Store {
 
 const SCENARIOS = (recorded as unknown as { scenarios: Scenario[] }).scenarios
 const KEY = 'okuda.mock-api'
+// Заказы — отдельно от сценария: новая поездка сбрасывает сценарий, но не историю заказов.
+const ORDERS_KEY = 'okuda.mock-orders'
+
+function loadOrders(): OrderOut[] {
+  try {
+    return JSON.parse(localStorage.getItem(ORDERS_KEY) ?? '[]') as OrderOut[]
+  } catch {
+    return []
+  }
+}
 
 const PICK: [RegExp, string][] = [
   [/гамбург|берлин|париж|нью-?йорк/i, 'hamburg'],
@@ -206,6 +217,19 @@ export class MockTripApi implements TripApi {
     const orderId = store.state?.chosen.component_refs.order ?? `ord-sim-${idempotencyKey.slice(0, 8)}`
     store.orders[idempotencyKey] = orderId
     save(store)
+    if (store.state) {
+      const order: OrderOut = { order_id: orderId, trip_id: store.state.trip_id, created_at: new Date().toISOString(),
+        simulated: true, snapshot: buildSnapshot(store.state) }
+      try {
+        localStorage.setItem(ORDERS_KEY, JSON.stringify([order, ...loadOrders()]))
+      } catch {
+        // без хранилища заказ оформлен, но в истории не останется
+      }
+    }
     return { order_id: orderId, idempotent_replay: false, simulated: true }
+  }
+
+  async listOrders() {
+    return loadOrders()
   }
 }

@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from datetime import date, datetime
 from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from shared.contracts.enums import RunStatus
+from shared.contracts.money import Money
 
 
 class MessageIn(BaseModel):
@@ -35,6 +37,33 @@ class CheckoutCompleted(BaseModel):
     order_id: str
     idempotent_replay: bool
     simulated: Literal[True] = True
+
+
+class OrderLine(BaseModel):
+    kind: str
+    count: int
+    total: Money
+
+
+class OrderSnapshot(BaseModel):
+    destination: str | None
+    country: str | None
+    date_start: date | None
+    date_end: date | None
+    nights: int | None
+    guests: int | None
+    pets: bool
+    origin: str | None
+    total: Money | None
+    lines: list[OrderLine]
+
+
+class OrderOut(BaseModel):
+    order_id: str
+    trip_id: UUID
+    created_at: datetime
+    simulated: Literal[True] = True
+    snapshot: OrderSnapshot | None
 
 
 class SSEEvent(BaseModel):

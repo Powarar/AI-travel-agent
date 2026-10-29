@@ -1,4 +1,5 @@
-import type { CheckoutResult, RunTrace, SSEEvent, TripState } from '../types/contracts'
+import { telegramInitData } from '../lib/telegram'
+import type { CheckoutResult, OrderOut, RunTrace, SSEEvent, TripState } from '../types/contracts'
 import { readSSE } from './sse'
 
 // Единая граница экрана с бэкендом. Источник истины — TripState и события; текст — подпись.
@@ -12,6 +13,8 @@ export interface TripApi {
   getState(tripId: string): Promise<TripState>
   getRun(runId: string): Promise<RunTrace>
   checkout(tripId: string, idempotencyKey: string): Promise<CheckoutResult>
+  /** Заказы текущего пользователя: Telegram — по initData, браузер — по своему client id. */
+  listOrders(): Promise<OrderOut[]>
 }
 
 export class ApiError extends Error {
@@ -26,6 +29,26 @@ async function json<T>(response: Response): Promise<T> {
     throw new ApiError(response.status, typeof body.detail === 'string' ? body.detail : `Ошибка ${response.status}`)
   }
   return response.json() as Promise<T>
+}
+
+const CLIENT_KEY = 'okuda.client-id'
+
+function clientId(): string {
+  try {
+    const known = localStorage.getItem(CLIENT_KEY)
+    if (known) return known
+    const fresh = crypto.randomUUID()
+    localStorage.setItem(CLIENT_KEY, fresh)
+    return fresh
+  } catch {
+    return crypto.randomUUID()
+  }
+}
+
+/** Кто оформляет: в Mini App — подписанный initData, на сайте — анонимный id этого браузера. */
+export function identityHeaders(): Record<string, string> {
+  const initData = telegramInitData()
+  return initData ? { Authorization: `tma ${initData}` } : { 'X-Client-Id': clientId() }
 }
 
 export class HttpTripApi implements TripApi {
@@ -71,7 +94,11 @@ export class HttpTripApi implements TripApi {
   async checkout(tripId: string, idempotencyKey: string) {
     return json<CheckoutResult>(await fetch(`${this.base}/trips/${tripId}/checkout`, {
       method: 'POST',
-      headers: { 'Idempotency-Key': idempotencyKey },
+      headers: { 'Idempotency-Key': idempotencyKey, ...identityHeaders() },
     }))
+  }
+
+  async listOrders() {
+    return json<OrderOut[]>(await fetch(`${this.base}/orders`, { headers: identityHeaders() }))
   }
 }

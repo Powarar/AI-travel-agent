@@ -14,7 +14,8 @@ from shared.contracts.state import TripState
 
 from ..dependencies import get_executor, get_store
 from ..executor import RunExecutor
-from ..schemas import AnswerIn, CheckoutCompleted, MessageIn, RunTrace, TripCreated
+from ..identity import get_owner, require_owner
+from ..schemas import AnswerIn, CheckoutCompleted, MessageIn, OrderOut, RunTrace, TripCreated
 from ..store import Conflict, NotFound, TripStore
 
 router = APIRouter()
@@ -85,10 +86,18 @@ async def post_answer(run_id: UUID, body: AnswerIn,
 
 @router.post("/trips/{trip_id}/checkout", response_model=CheckoutCompleted)
 async def checkout(trip_id: UUID, idempotency_key: str = Header(min_length=1),
+                   owner: str | None = Depends(get_owner),
                    store: TripStore = Depends(get_store)) -> CheckoutCompleted:
     try:
-        result = await store.checkout(trip_id, idempotency_key)
+        result = await store.checkout(trip_id, idempotency_key, owner)
     except NotFound as exc:
         raise _http_error(exc) from exc
     logger.info("Checkout requested: %s", trip_id)
     return result
+
+
+@router.get("/orders", response_model=list[OrderOut])
+async def list_orders(owner: str = Depends(require_owner),
+                      store: TripStore = Depends(get_store)) -> list[OrderOut]:
+    """Заказы вызывающего: Telegram-пользователя по подписанному initData или браузера по X-Client-Id."""
+    return await store.list_orders(owner)
