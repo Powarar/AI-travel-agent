@@ -1,0 +1,129 @@
+.hero {
+  overflow: hidden;
+  background: var(--color-mojito);
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  align-items: center;
+  gap: 2rem;
+  min-height: 470px;
+  padding-block: 4rem;
+}
+
+.content { position: relative; z-index: 1; }
+
+.eyebrow {
+  display: inline-block;
+  color: var(--color-blue);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.content h1 {
+  max-width: 720px;
+  margin: 1rem 0 1.3rem;
+  color: var(--color-blue);
+  font-size: clamp(3.75rem, 7.5vw, 7.5rem);
+  font-weight: 850;
+  line-height: 0.95;
+  letter-spacing: -0.08em;
+
+  span { display: block; }
+}
+
+.lead {
+  max-width: 550px;
+  margin-bottom: 2rem;
+  color: #183047;
+  font-size: clamp(1.1rem, 1.7vw, 1.35rem);
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.link,
+.telegramLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 3.35rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-blue);
+  color: #fff;
+  font-weight: 750;
+  text-decoration: none;
+
+  &:hover { background: var(--color-blue-hover); }
+  &:focus-visible { outline: 3px solid var(--color-blue); outline-offset: 4px; }
+}
+
+.telegramLink {
+  border: 2px solid var(--color-blue);
+  background: transparent;
+  color: var(--color-blue);
+
+  &:hover { background: rgba(14, 65, 210, 0.1); }
+}
+
+.art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 420px);
+  aspect-ratio: 1;
+  margin-inline: auto;
+}
+
+.ring {
+  position: absolute;
+  border: 30px solid var(--color-blue);
+  border-radius: 50%;
+}
+
+.outerRing { inset: 0; opacity: 0.16; }
+.innerRing { inset: 12%; border-width: 26px; }
+
+.exclamation {
+  position: relative;
+  top: -1rem;
+  color: var(--color-blue);
+  font-size: clamp(9rem, 17vw, 15rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.artNote {
+  position: absolute;
+  right: -2%;
+  bottom: 13%;
+  transform: rotate(-8deg);
+  padding: 0.8rem 1.2rem;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--color-blue);
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.2;
+  box-shadow: var(--shadow-card);
+}
+
+@media (max-width: 800px) {
+  .inner { grid-template-columns: 1fr; padding-block: 3.5rem 2rem; }
+  .art { width: 270px; }
+  .exclamation { font-size: 9rem; }
+}
+
+@media (max-width: 540px) {
+  .art { display: none; }
+  .content h1 { font-size: clamp(3.5rem, 13vw, 5rem); }
+}

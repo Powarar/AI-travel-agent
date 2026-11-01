@@ -1,0 +1,30 @@
+{
+  "id": "s04_hard_conflict",
+  "title": "Бюджет меньше минимальной стоимости поездки",
+  "covers": [
+    "hard_conflict",
+    "budget"
+  ],
+  "run": "scripts/run_pipeline.py --sources seed --json",
+  "message": "хочу в Сочи с 14 по 21 ноября из Москвы вдвоём, бюджет 10000",
+  "answers": {},
+  "expect": {
+    "outcome_in": [
+      "infeasible",
+      "awaiting_answer"
+    ],
+    "violation_codes": [
+      "BUDGET_EXCEEDED"
+    ],
+    "numbers_in_refusal": true,
+    "hard_respected": [
+      "budget.amount не ослаблен без user_approved"
+    ],
+    "sane_numbers": "reduce_lodging_to не бывает отрицательным: если не влезает даже без проживания, так и сказать",
+    "checkout": false
+  },
+  "observed_2026-10-28": {
+    "outcome": "infeasible",
+    "note": "числа есть, но reduce_lodging_to — -124500 RUB"
+  }
+}

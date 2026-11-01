@@ -1,0 +1,45 @@
+@use '../../shared/styles/keyframes';
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #eaf6df 0%, var(--color-page) 360px);
+  overflow-x: clip;
+}
+
+.blob {
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.55;
+  pointer-events: none;
+  animation: float 14s ease-in-out infinite;
+}
+
+.blobA { top: -120px; right: -80px; width: 420px; height: 420px; background: var(--color-mojito); }
+.blobB { top: 280px; left: -160px; width: 360px; height: 360px; background: #c9d8ff; animation-delay: -6s; }
+
+.page > header, .layout { position: relative; z-index: 1; }
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  padding: 0 clamp(1rem, 3vw, 2rem) 3rem;
+}
+
+.chat {
+  position: sticky;
+  top: 1rem;
+  height: calc(100vh - 6.5rem);
+  min-height: 480px;
+}
+
+.board { min-width: 0; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .chat { position: static; height: min(72vh, 620px); min-height: 420px; }
+}

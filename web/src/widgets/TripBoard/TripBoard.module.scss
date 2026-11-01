@@ -1,0 +1,83 @@
+@use '../../shared/styles/keyframes';
+
+.board { display: grid; gap: 1.25rem; min-width: 0; }
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: clamp(2.5rem, 7vw, 5rem) 1.5rem;
+  border: 2px dashed var(--color-border-strong);
+  border-radius: var(--radius-card);
+  background: rgb(255 255 255 / 55%);
+  text-align: center;
+
+  h2 { margin: 0.5rem 0 0; color: var(--color-blue); font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 900; letter-spacing: -0.04em; }
+  p { max-width: 420px; margin: 0; color: var(--color-muted); line-height: 1.55; }
+}
+
+.orb {
+  display: grid;
+  place-items: center;
+  width: 128px;
+  height: 128px;
+  border: 18px solid var(--color-blue);
+  border-radius: 50%;
+  background: var(--color-mojito);
+  animation: float 6s ease-in-out infinite;
+
+  span { color: var(--color-blue); font-size: 2.2rem; font-weight: 900; letter-spacing: -0.08em; }
+}
+
+.skeleton { display: grid; gap: 1rem; }
+.skeletonRow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+
+.waiting {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-card);
+  background: var(--color-blue-soft);
+  color: var(--color-blue-deep);
+  animation: fade-up 420ms var(--ease-out) both;
+
+  p { margin: 0; font-weight: 700; line-height: 1.45; }
+}
+
+.waitingOrb {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--color-blue);
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 900;
+  animation: pulse-ring 1.4s ease-out infinite;
+}
+
+@media (max-width: 1100px) {
+  .split { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 540px) {
+  .skeletonRow { grid-template-columns: 1fr; }
+}
+
+.stack {
+  display: grid;
+  gap: 1.25rem;
+  transition: opacity 300ms ease, filter 300ms ease;
+}
+
+.updating { opacity: 0.55; filter: saturate(0.6); pointer-events: none; }

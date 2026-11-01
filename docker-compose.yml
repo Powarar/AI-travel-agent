@@ -1,0 +1,129 @@
+name: krutieperci
+
+x-build-root: &build-root
+  context: .
+
+x-app-network: &app-network
+  networks:
+    - app
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ostrovok}
+      POSTGRES_USER: ${POSTGRES_USER:-ostrovok}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ostrovok}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5434}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ostrovok} -d ${POSTGRES_DB:-ostrovok}"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  backend:
+    <<: *app-network
+    build:
+      <<: *build-root
+      dockerfile: services/backend/Dockerfile
+    command: >-
+      python -c 'from importlib import import_module; from fastapi import FastAPI;
+      from uvicorn import run;
+      run(getattr(import_module("app.main"), "app", FastAPI()),
+      host="0.0.0.0", port=8000)'
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-ostrovok}:${POSTGRES_PASSWORD:-ostrovok}@postgres:5432/${POSTGRES_DB:-ostrovok}
+      AGENT_URL: http://agent:8001
+      HTTP_PORT: "8000"
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # ход исполняет агент в процессе backend (api/agent_executor.py); fixture — заглушка
+      BACKEND_EXECUTOR: ${BACKEND_EXECUTOR:-agent}
+      LLM_PROVIDER: ${LLM_PROVIDER:-aitunnel}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.aitunnel.ru/v1}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_MODEL_PARSE: ${LLM_MODEL_PARSE:-}
+      LLM_MODEL_QUESTIONS: ${LLM_MODEL_QUESTIONS:-}
+      LLM_MODEL_FINALISTS: ${LLM_MODEL_FINALISTS:-}
+      LLM_MODEL_EXPLAIN: ${LLM_MODEL_EXPLAIN:-}
+      RERANK_MODEL: ${RERANK_MODEL:-}
+      # подпись initData Mini App проверяется токеном бота; без него вход через Telegram отключён
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8010}:8000"
+    volumes:
+      - ./services/backend/app:/app/app
+      - ./shared:/app/shared:ro
+      - ./services/__init__.py:/app/services/__init__.py:ro
+      - ./services/agent:/app/services/agent:ro
+      - ./data:/app/data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  agent:
+    <<: *app-network
+    build:
+      <<: *build-root
+      dockerfile: services/agent/Dockerfile
+    command: >-
+      python -c 'from importlib import import_module; from fastapi import FastAPI;
+      from uvicorn import run;
+      run(getattr(import_module("app.main"), "app", FastAPI()),
+      host="0.0.0.0", port=8001)'
+    environment:
+      BACKEND_URL: http://backend:8000
+      HTTP_PORT: "8001"
+      LLM_PROVIDER: ${LLM_PROVIDER:-aitunnel}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "127.0.0.1:${AGENT_PORT:-8011}:8001"
+    volumes:
+      - ./services/agent/app:/app/app
+      - ./shared:/app/shared:ro
+    depends_on:
+      - backend
+
+  bot:
+    <<: *app-network
+    build:
+      <<: *build-root
+      dockerfile: services/bot/Dockerfile
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      BACKEND_URL: http://backend:8000
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ./services/bot/app:/app/app
+      - ./shared:/app/shared:ro
+    depends_on:
+      - backend
+    profiles:
+      - bot
+
+  web:
+    <<: *app-network
+    build:
+      <<: *build-root
+      dockerfile: web/Dockerfile
+    environment:
+      API_PROXY_TARGET: http://backend:8000
+    ports:
+      - "127.0.0.1:${WEB_PORT:-5173}:5173"
+    volumes:
+      - ./web:/app
+      - web_node_modules:/app/node_modules
+
+volumes:
+  pgdata:
+  web_node_modules:
+
+networks:
+  app:
+    driver: bridge

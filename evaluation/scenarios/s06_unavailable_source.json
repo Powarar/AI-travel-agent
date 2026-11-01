@@ -1,0 +1,32 @@
+{
+  "id": "s06_unavailable_source",
+  "title": "Источник климата недоступен",
+  "covers": [
+    "source_down",
+    "degraded"
+  ],
+  "run": "scripts/run_pipeline.py --sources seed --json",
+  "message": "хочу в Сочи с 14 по 21 ноября из Москвы вдвоём, бюджет 150000",
+  "answers": {},
+  "setup": {
+    "fail_tools": [
+      "weather_climate"
+    ]
+  },
+  "expect": {
+    "outcome_in": [
+      "degraded",
+      "plan_ready"
+    ],
+    "no_exception": true,
+    "stale_or_unknown_fields": [
+      "climate"
+    ],
+    "invented_numbers": 0,
+    "no_temperature_in_text": true
+  },
+  "observed_2026-10-28": {
+    "outcome": null,
+    "note": "не прогонялся: в run_pipeline нет флага отказа инструмента, нужен в run_eval"
+  }
+}

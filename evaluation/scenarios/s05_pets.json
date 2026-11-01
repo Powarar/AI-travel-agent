@@ -1,0 +1,32 @@
+{
+  "id": "s05_pets",
+  "title": "С собакой: отель pet_friendly и трансфер pet_ok",
+  "covers": [
+    "hard_filter",
+    "pets"
+  ],
+  "run": "scripts/run_pipeline.py --sources seed --json",
+  "message": "хочу в Сочи с 14 по 21 ноября из Москвы вдвоём с собакой, бюджет 150000",
+  "answers": {},
+  "expect": {
+    "outcome_in": [
+      "plan_ready"
+    ],
+    "blocking_violations": 0,
+    "direction": "sochi",
+    "components": {
+      "hotel.pet_friendly": true,
+      "transfer.pet_ok": true
+    }
+  },
+  "variants": [
+    {
+      "message": "Сочи с 14 по 21 ноября из Москвы вдвоём с собакой, бюджет 150000",
+      "note": "то же без «хочу в»"
+    }
+  ],
+  "observed_2026-10-28": {
+    "outcome": "plan_ready",
+    "note": "с «хочу в» — Сочи, 82 450 ₽; без — infeasible CANDIDATES_EMPTY по трансферу"
+  }
+}

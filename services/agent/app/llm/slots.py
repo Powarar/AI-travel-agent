@@ -1,0 +1,556 @@
+"""Шесть мест, где в контуре работает модель (`docs/LLM-BOUNDARY.md`).
+
+Здесь моки с фиксированными ответами: T-07 подменит реализацию провайдером, сигнатуры
+оставятся. Третий слот (мягкая релевантность) в этой таблице существует, но моделью быть
+не должен — его считает retrieval/ranking (T-10, П2), поэтому в `LLMSlots` его нет, а
+порядок кандидатов в T-05 приходит из источника вместе со `score`.
+
+Число из мока не может быть выдуманным: слоты берут значения из входа (`Candidate.ref`,
+строки `BudgetLedger`) и ничего не арифметикируют — инвариант №3.
+"""
+
+from __future__ import annotations
+
+import re
+from datetime import date
+from decimal import Decimal
+from typing import Protocol
+
+from pydantic import BaseModel, Field
+
+from services.agent.app.llm.schemas import (
+    CHILD_WORD_RE,
+    DEFAULT_CHILD_AGE,
+    month_of,
+    number_from_words,
+    range_days,
+    themes_in,
+)
+from services.agent.app.orchestration.policy import QuestionSpec
+from shared.contracts.enums import (
+    BudgetScope,
+    ConstraintKind,
+    DirectionMode,
+    Theme,
+)
+from shared.contracts.money import BudgetLedger, Money
+from shared.contracts.months import month_label
+from shared.contracts.request import FieldValue, TripRequest
+from shared.contracts.state import Candidate
+
+_ADULTS_WORDS = {
+    "вдвоём": 2, "для двоих": 2, "нас двое": 2, "мы двое": 2,
+    "втроём": 3, "для троих": 3, "на троих": 3, "нас трое": 3,
+    "вчетвером": 4, "вчетвёртом": 4, "для четверых": 4, "нас четверо": 4,
+    "впятером": 5, "нас пятеро": 5, "для пятерых": 5,
+    "вшестером": 6, "нас шестеро": 6, "всмером": 8, "нас восьмеро": 8,
+    #: «один» под строкой «одиннадцать», поэтому только с глаголом: мок ищет подстрокой,
+    #: и голое «один» вернуло бы 1 взрослых там, где едет одиннадцать человек.
+    "еду один": 1, "лечу один": 1, "полечу один": 1, "едем один": 1, "в одиночку": 1,
+}
+#: Таблица месяцев живёт в `schemas.month_of`, слова тем — в `schemas.themes_in`: со своими
+#: окончаниями здесь они разошлись бы с живой строкой ровно на «с 28 октября по 5 ноября» и на
+#: «отель у моря», а два разборщика обязаны давать одну дату и одну тему.
+#: Стоп-слова направления — два набора, и это не косметика. Префикс удобен: падеж дописывает
+#: окончание, и «в пути», «на неделю», «в аэропорт» отсеиваются одним началом. Но четыре
+#: префикса глушили названия мест, которых в каталоге полон отбор: «тур» → страна «Турция»,
+#: «мар» → город «Мармарис», «гор» → «Горно-Алтайск», «дом» → «Доминикана». Потерянное слово —
+#: не «мы не поняли»: `direction.explicit` остаётся пустым, режим открытым, и валидатору ловить
+#: уже нечего — подмену направление уходит искать само. Поэтому спорные формы сравнены целым
+#: словом (`_NOT_A_PLACE_WORD`), а «турагентство» и «мартовские» остались префиксами: резать
+#: надо их, а не «турцию» с «мармарисом».
+_NOT_A_PLACE_PREFIX = (
+    "янв", "фев", "апр", "мае", "июн", "июл", "авг", "сен", "окт", "ноя", "дек",
+    "зим", "весн", "лет", "осен", "отпуск", "командировк", "выходн", "праздник",
+    "морю", "море", "пляж", "природ", "теплу", "дач",
+    "аэропорт", "вокзал", "отел", "номер", "дорог",
+    #: способ передвижения и абстрактные «в/на …», которые регулярка иначе выдала бы за город:
+    #: «не больше 3 часов в пути», «еду на неделю», «хочу на поезде в казань»
+    "поезд", "поездк", "самол", "машин", "автобус", "паром", "корабл", "пут", "недел",
+    #: слова, которые надо резать префиксом, но они же — начало настоящих названий:
+    #: «турагентство» и «турист» не имеют права спасти «турцию», а «мартовские» — «мармарис»
+    "турагентств", "турпоезд", "турист", "мартов",
+    #: собирательные числительные отвечают на «сколько едет», а не «куда»: «еду в тур на двоих»
+    #: без этого отдавало направление 'двоих', и отказ звучал как «названо — двоих». Стем, а не
+    #: форма: падеж дописывает окончание (двоих/двоим/двое). Названий на эти буквы в каталоге
+    #: (`data/seeds/destinations.json`: 61 направление и 17 стран) нет ни одного.
+    "двои", "двое", "трои", "трое", "четвер", "четыр", "пятер", "шестер", "семер", "восьмер",
+)
+_NOT_A_PLACE_WORD = frozenset({
+    "март", "марте", "марта",                 #: «в марте» — месяц, «мармарис» — город
+    "горы", "гора", "горе", "горах", "гор",   #: «в горах», но не «горно-алтайск»
+    "тур", "туре", "тура", "туром",           #: «в туре», но не «турцию»
+    "дом", "дома", "дому", "доме", "домой",   #: «поеду домой», но не «доминикану»
+})
+
+
+def _is_not_a_place(word: str) -> bool:
+    """Стоп-слово или название: сначала префиксы, потом целые формы из набора выше."""
+
+    return word.startswith(_NOT_A_PLACE_PREFIX) or word in _NOT_A_PLACE_WORD
+
+
+#: Глагол поездки: сам по себе он направлением не является, но без него «в Сочи» в тексте
+#: «из Москвы в Сочи» — это просто предлог с городом, а не названное направление.
+#: Сюда же просьба без глагола («нужен тур в Египет», «надо в Казань»): без них слово
+#: терялось, `direction.explicit` оставался пустым, и валидатору было не с чем сверять —
+#: то есть названная страна молча подменялась чужой. Ловушка в другую сторону дешевле:
+#: лишнее «в/на …» даёт честный отказ, потерянное — чужой план.
+_TRAVEL_VERB_RE = re.compile(
+    r"\b(?:еду|едем|уедем|уезжаю|уезжаем|лечу|летим|улетим|полечу|поеду|поездка|поездки|"
+    r"хочу|хотим|мечтаю|мечтаем|собираемся|рвёмся|сорвёмся|срываемся|"
+    r"нужен|нужна|нужно|нужны|надо|хотелось|планирую|планируем|ищу|ищем|подбираю|подбираем)\b"
+)
+#: «в/на + слово» — кандидат на направление. Дальше решает словарь стоп-слов: «на выходные»,
+#: «в пути», «в октябре» направлениями быть не могут. Латиница обязательна: каталог пишет
+#: названия по-английски (`data/seeds/destinations.json` = «Gelendzhik»), и без `[a-z]`
+#: названное слово терялось, `direction.explicit` оставался пустым, и сборка уходила искать
+#: открытое направление — тихую подмену не поймает даже валидатор, потому что поля нет.
+_PLACE_RE = re.compile(r"\b(?:в|на)\s+([а-яёa-z][а-яёa-z0-9-]{2,})")
+#: «бюджет 90 тысяч», «бюджет 120 000 рублей», «бюджет 150к» — одна сумма в одном месте.
+#: Разряды с пробелом требуют хотя бы одной группы (`+`, а не `*`): с `*` шаблон брал из
+#: «150000» первые «150», и бюджет в 150 тысяч становился 150 рублями.
+_BUDGET_RE = re.compile(
+    r"(?:бюджет|уложимся в|потратим)\D{0,12}(\d{1,3}(?:[ \u00a0]\d{3})+|\d{1,7})"
+    r"\s*(к\b|тысяч|млн|руб\w*|₽)?"
+)
+#: Возраст детей могут перечислить: «дети 8 и 12 лет». Без перечисления regex находил только
+#: последнее число, и один ребёнок терялся — hard-поле `party.children` стало бы неполным.
+_CHILD_AGE_RE = re.compile(r"(\d{1,2}(?:\s*(?:,|и)\s*\d{1,2})*)\s*(?:лет|год\w*)")
+
+
+def _budget_from(lowered: str) -> Decimal | None:
+    """Сумма из фразы о бюджете. Разряды с пробелом и «к»/«тысяч»/«млн» — один механизм.
+
+    Раньше было два независимых шаблона («150к» где угодно и «бюджет 150000»): «бюджет
+    120 000 рублей» и «бюджет 90 тысяч» не ловились вообще, а «150к» в начале сообщения без
+    слова «бюджет» — только первым шаблоном.
+    """
+
+    match = _BUDGET_RE.search(lowered)
+    if match is not None:
+        amount = Decimal(re.sub(r"[^0-9]", "", match.group(1)))
+        unit = (match.group(2) or "") + lowered[match.end():match.end() + 8]
+        if "млн" in unit:
+            return amount * 1_000_000
+        if "тысяч" in unit or re.match(r"^[кk](\b|$)", unit):
+            return amount * 1000
+        return amount
+    if match := re.search(r"(\d{1,3})\s*[кk]\b", lowered):
+        return Decimal(match.group(1)) * 1000
+    if match := re.search(r"(\d{4,7})\s*(?:₽|руб)", lowered):
+        return Decimal(match.group(1))
+    return None
+DemoMonth = date(2026, 11, 1)
+
+
+def explicit_destination(text: str) -> str | None:
+    """Названное юзером направление — его слова, а не наш вывод.
+
+    Порт из `scripts/quiz_demo.py` (фикс `e101456`): без него «еду в сочи» давало
+    `mode=defaulted(OPEN)`, город терялся, и весь поиск шёл по открытому направлению —
+    `suggest_destinations` звался там, где реестр (`registry.py`, guard `_destination_known`)
+    как раз и смотрит на `direction.explicit`.
+
+    Поле хранит строку, поэтому здесь «сочи» не резолвится в код `sochi`: каталога
+    город→код в этом контуре нет, выдумывать совпадение опаснее, чем оставить слово как
+    названо.
+
+    Разбор в два шага (глагол поездки + первый не-стоп-слово «в/на …»), а не одна регулярка
+    «глагол, предлог, слово»: между ними встаёт способ передвижения («хочу на поезде в
+    казань»), а «из Нижнего Новгорода в Казань» вообще не содержит глагола.
+    """
+
+    lowered = text.lower()
+    #: В короткой реплике город часто стоит первым: «Гамбург с 14 по 21…». Предлога
+    #: здесь нет, но заглавная буква и следующий календарный/маршрутный маркер дают
+    #: достаточно узкий сигнал; не превращаем произвольное первое слово в направление.
+    bare = re.match(
+        r"^\s*([А-ЯЁA-Z][а-яёa-z-]{2,})(?=\s+(?:с\s+\d|в\s+\d|из\s+|на\s+\d|бюджет))",
+        text,
+    )
+    if bare is not None and not _is_not_a_place(bare.group(1).lower()):
+        return bare.group(1).lower()
+    if _TRAVEL_VERB_RE.search(lowered) is None and "из " not in lowered:
+        return None
+    for match in _PLACE_RE.finditer(lowered):
+        word = match.group(1)
+        if not _is_not_a_place(word):
+            return word
+    return None
+
+
+class Explanation(BaseModel):
+    """Вход слота №5: текст пишется по числам, которые посчитал код."""
+
+    headline: str
+    nights: int
+    guests: int
+    check_in: date
+    check_out: date
+    total: Money
+    budget: Money
+    remaining: Money
+    breakdown: dict[str, Money]
+    facts: dict[str, str] = Field(default_factory=dict)
+    #: Деньги в том виде, в каком их надо написать: «125 200 ₽». Модель копирует эту строку,
+    #: а не форматирует `total` сама. Живой прогон 2026-10-27 выдал «125200.00 RUB»: число
+    #: верное, guard его пропускает, и читается как выписка из БД — потому что в модели
+    #: `Money` сериализуется именно так, а другой подсказки во входе не было.
+    displays: dict[str, str] = Field(default_factory=dict)
+
+    @classmethod
+    def from_parts(cls, *, headline: str, nights: int, guests: int,
+                   check_in: date, check_out: date, ledger: BudgetLedger,
+                   facts: dict[str, str]) -> Explanation:
+        breakdown = {kind.value: money for kind, money in ledger.breakdown.items()}
+        displays = {
+            "total": display(ledger.total),
+            "budget": display(ledger.budget),
+            "remaining": display(ledger.remaining),
+            **{kind: display(money) for kind, money in breakdown.items()},
+        }
+        return cls(
+            headline=headline,
+            nights=nights,
+            guests=guests,
+            check_in=check_in,
+            check_out=check_out,
+            total=ledger.total,
+            budget=ledger.budget,
+            remaining=ledger.remaining,
+            breakdown=breakdown,
+            facts=facts,
+            displays=displays,
+        )
+
+
+class LLMSlots(Protocol):
+    """Сигнатура, которую T-07 подменит провайдером, не трогая оркестратор."""
+
+    def parse(self, message: str) -> TripRequest: ...
+
+    def formulate(self, spec: QuestionSpec) -> str: ...
+
+    def soft_relevance(self, query: str,
+                       documents: dict[str, str]) -> dict[str, float] | None: ...
+
+    def pick_finalists(self, candidates: list[Candidate]) -> list[Candidate]: ...
+
+    def explain(self, explanation: Explanation) -> str: ...
+
+    def diff(self, old_plan: dict[str, str], new_plan: dict[str, str]) -> str: ...
+
+
+class MockSlots:
+    """Фиксированные ответы; воспроизводимы и без сети (гейт T-05)."""
+
+    def parse(self, message: str) -> TripRequest:
+        """Слот №1: сообщение → дельта `TripRequest`.
+
+        Перенесён из `scripts/quiz_demo.py` и дополнен разбором вилки дат («с 14 по 21»),
+        чтобы hard-поле приходило со `source="user"`, а не выводом. Мок не приписывает
+        пользователю то, чего он не сказал: несказанное остаётся `unknown`, безопасная
+        подстановка — `defaulted`.
+        """
+
+        request = TripRequest()
+        lowered = message.lower()
+
+        destination = explicit_destination(message)
+        if destination is not None:
+            request.direction.mode = FieldValue[DirectionMode].known(
+                DirectionMode.EXPLICIT, kind=ConstraintKind.HARD
+            )
+            request.direction.explicit = FieldValue[str].known(
+                destination, kind=ConstraintKind.HARD, source="user"
+            )
+        else:
+            request.direction.mode = FieldValue[DirectionMode].defaulted(
+                DirectionMode.OPEN, kind=ConstraintKind.HARD
+            )
+        #: «хочу в Турцию, но не в Анталью»: запрет не должен стать вторым explicit.
+        #: Исключение хранится отдельно и остаётся hard-фильтром для источника.
+        excluded = [match.group(1) for match in re.finditer(
+            r"(?:но\s+)?не\s+(?:в|на)\s+([а-яёa-z][а-яёa-z0-9-]{2,})", lowered
+        ) if not _is_not_a_place(match.group(1))]
+        if excluded:
+            request.direction.excluded = FieldValue[list[str]].known(
+                excluded, kind=ConstraintKind.HARD, source="user"
+            )
+        themes = themes_in(lowered)
+        if themes:
+            request.themes = FieldValue[list[Theme]].known(themes, kind=ConstraintKind.SOFT, source="user")
+        request.soft_preferences = [
+            phrase.strip()
+            for phrase in re.findall(r"(без долгих перелётов|не долго лететь|тёплому морю)", lowered)
+        ]
+
+        hits = [count for word, count in _ADULTS_WORDS.items() if word in lowered]
+        numeric_party = re.search(r"(?:нас\s+)?(\d{1,2})\s*(?:человек|взросл\w*)\b", lowered)
+        adults = int(numeric_party.group(1)) if numeric_party is not None else (hits[0] if hits else None)
+        if adults is None:
+            request.party.adults = FieldValue[int].defaulted(2, kind=ConstraintKind.HARD)
+        else:
+            request.party.adults = FieldValue[int].known(adults, kind=ConstraintKind.HARD, source="user")
+        #: «дети 4 и 6 лет» — `дет[её]` эту форму не ловило, и перечисленные дети терялись
+        child = CHILD_WORD_RE.search(lowered)
+        if child is not None:
+            # возраст ищем по «3 года / 7 лет»: старый шаблон терял число из-за пробела после
+            # «ребёнком» и молча подставлял 7 — то есть выдумывал hard-поле со `source="user"`.
+            ages = [int(age) for series in _CHILD_AGE_RE.findall(lowered)
+                    for age in re.findall(r"\d{1,2}", series)]
+            if ages:
+                request.party.children = FieldValue[list[int]].known(
+                    ages, kind=ConstraintKind.HARD, source="user"
+                )
+            else:
+                #: «с ребёнком» без возраста: сам факт назван, возраст — нет. Плейсхолдер 7
+                #: остаётся (иначе count_guests посчитает семью без детей), но `defaulted`
+                #: вместо `known(source="user")`: приписать человеку несказанное — ровно то,
+                #: против чего guard T-07 и создан.
+                request.party.children = FieldValue[list[int]].defaulted(
+                    [DEFAULT_CHILD_AGE], kind=ConstraintKind.HARD
+                )
+        #: «с собакой», «собака летит с нами», «с животным», «кошка» — и отрицание «без питомца»
+        if re.search(r"\b(?:собак\w*|кошк\w*|кот|кота|котёнка|котенка|питомец|питомца|"
+                     r"животн\w*)\b", lowered) and not re.search(r"без (?:питомц|животн|собак|кошк)", lowered):
+            request.party.pets = FieldValue[bool].known(True, kind=ConstraintKind.HARD, source="user")
+
+        origin = re.search(r"из ([а-яё]+)", lowered)
+        if origin is not None:
+            city = origin.group(1).capitalize()
+            request.origin = FieldValue[str].known(city, kind=ConstraintKind.HARD, source="user")
+
+        budget = _budget_from(lowered)
+        if budget is not None:
+            request.budget.amount = FieldValue[Money].known(
+                Money(amount=budget, currency="RUB"), kind=ConstraintKind.HARD, source="user"
+            )
+        #: scope — hard-поле: от него зависит, умножать ли бюджет на число людей.
+        if re.search(r"на (?:человек|каждого|персону)|каждому", lowered):
+            request.budget.scope = FieldValue[BudgetScope].known(
+                BudgetScope.PER_PERSON, kind=ConstraintKind.HARD, source="user"
+            )
+        elif re.search(r"на (?:всех|двоих|троих)|общий", lowered):
+            request.budget.scope = FieldValue[BudgetScope].known(
+                BudgetScope.TOTAL, kind=ConstraintKind.HARD, source="user"
+            )
+        if match := re.search(r"не больше (\d{1,2}(?:[.,]\d)?)\s*(?:ч\b|час)", lowered):
+            # `(?:час|ч)\b` из старой версии не матчит ни «часов», ни «ч в дороге»: первый
+            # вариант съедал «час» и падал на `\b`, второй требовал границы после «ч».
+            request.transport.max_hours_direct = FieldValue[float].known(
+                float(match.group(1).replace(",", ".")), kind=ConstraintKind.HARD, source="user"
+            )
+        if "прям" in lowered and ("рейс" in lowered or "перел" in lowered):
+            request.transport.prefer_direct = FieldValue[bool].known(
+                True, kind=ConstraintKind.SOFT, source="user"
+            )
+
+        #: разборщик один на все три пути (мок T-05, живой коэрсер, ответ на вопрос):
+        #: `range_days` видит и «с 28 октября по 5 ноября», и `дд.мм`, и ISO. Вилку читаем
+        #: до слова месяца: ISO-даты человек называет без «ноября», и требовать его значит
+        #: потерять даты, которые живой путь находит.
+        month = month_of(lowered)
+        span = range_days(lowered, year=DemoMonth.year, month=month)
+        if span is not None:
+            start, end = span
+            request.dates.start = FieldValue[date].known(start, kind=ConstraintKind.HARD, source="user")
+            request.dates.end = FieldValue[date].known(end, kind=ConstraintKind.HARD, source="user")
+            request.nights = FieldValue[int].inferred(
+                (end - start).days, kind=ConstraintKind.HARD, source="dates", confidence=1.0
+            )
+            request.dates.flexibility_days = FieldValue[int].defaulted(0, kind=ConstraintKind.SOFT)
+        elif month is not None:
+            # «в ноябре» — это не дата: вывели мы, значит поле требует подтверждения
+            request.dates.start = FieldValue[date].inferred(
+                DemoMonth.replace(month=month, day=1),
+                kind=ConstraintKind.HARD, source="context", confidence=0.5
+            )
+            request.dates.flexibility_days = FieldValue[int].defaulted(0, kind=ConstraintKind.SOFT)
+
+        if match := re.search(r"(\d{1,2})\s*(?:ноч|ночей)", lowered):
+            request.nights = FieldValue[int].known(int(match.group(1)), kind=ConstraintKind.HARD, source="user")
+        elif match := re.search(r"([а-яё]+)\s*(?:ноч(?:и|ей)?|ночь)", lowered):
+            #: «пять ночей» числами не ловится, а nights — hard-поле: без этой ветки мок
+            #: терял названную длительность. Словарь числительных тот же, что у живого
+            #: парсера (`schemas._NUMBER_WORDS`), иначе два разборщика разошлись бы на одном входе.
+            spelled = number_from_words(match.group(1))
+            if spelled is not None:
+                request.nights = FieldValue[int].known(spelled, kind=ConstraintKind.HARD, source="user")
+
+        return request
+
+    def formulate(self, spec: QuestionSpec) -> str:
+        """Слот №2: код решил, какой путь поля добить — модель даёт формулировку."""
+
+        #: `why` из политики — конец фразы без точки; без разделителя получалось «…нечего
+        #: искать в перелётах Варианты: Москва», то есть два несвязанных предложения в строке
+        lead = spec.why.rstrip(". ")
+        if spec.evidence:
+            details = ", ".join(f"{key.replace('_', ' ')} {value}" for key, value in spec.evidence.items())
+            return (
+                f"{lead}. Сейчас так: {details}. "
+                f"Как поступить — {', '.join(f'«{option}»' for option in spec.options)}?"
+            )
+        if spec.options:
+            return f"{lead}. Варианты: {', '.join(spec.options)}."
+        return spec.why
+
+    def soft_relevance(self, query: str,
+                       documents: dict[str, str]) -> dict[str, float] | None:
+        """Слот №3 офлайн: `None` — порядок остаётся тем, как его отдал источник.
+
+        Мок не умеет скорить текст, и выдумывать баллы «по названию» — это подмешать в
+        воспроизводимый прогон число, которого никто не считал. Честный офлайн-ответ: `None`,
+        и `compose` выбирает отель по цене, как до врезки слота №3
+        (CONTRACTS.md, «Мягкая релевантность (слот №3)»).
+        """
+
+        return None
+
+    def pick_finalists(self, candidates: list[Candidate]) -> list[Candidate]:
+        """Слот №4: из отфильтрованного кодом набора — три с причиной.
+
+        Порядок задан источником (`score`), мок ничего не пересчитывает и не добавляет
+        чисел: причина цитирует `ref` того же кандидата.
+        """
+
+        ordered = sorted(candidates, key=lambda item: -(item.score if item.score is not None else 0.0))
+        finalists: list[Candidate] = []
+        for candidate in ordered[:3]:
+            reason = _finalist_reason(candidate)
+            finalists.append(candidate.model_copy(update={"ref": {**candidate.ref, "why": reason}}))
+        return finalists
+
+    def explain(self, explanation: Explanation) -> str:
+        """Слот №5: текст по структурированным данным; числа — только из входа.
+
+        Мок не называет даже те числа, которые посчитал код, но не положил в вход
+        (например, состав гостей): текст собирается из `Explanation`, а `Explanation`
+        собирается из `TripState` и `BudgetLedger` — иначе антигаллюцинационный guard
+        нечего было бы проверять.
+        """
+
+        parts = [
+            #: заголовок — отдельная фраза, а не обрывок: без границы склеивалось в «Таиланд,
+            #: Pattaya Заезд 14.11, выезд 21.11»
+            f"{explanation.headline}.",
+            f"Заезд {explanation.check_in:%d.%m}, выезд {explanation.check_out:%d.%m} — "
+            f"{explanation.nights} ночей.",
+        ]
+        sea = explanation.facts.get("sea_temp_c")
+        air = explanation.facts.get("day_temp_c")
+        flight = explanation.facts.get("flight_h")
+        weather = (f"Море +{sea} °C" if sea else
+                   #: морской воды в сиде климата нет ни у одного направления: карточка
+                   #: называет воздух и промолчит про море (CONTRACTS.md, «Климат: месяц
+                   #: поездки и отсутствующее число») — молчание не ошибка прогона, а
+                   #: статус `unknown`
+                   f"Воздух +{air} °C" if air else "")
+        if weather:
+            #: месяц по-русски: `climate_month` — ключ источника `2026-11`, и в строке для
+            #: человека он читается как техническая заглушка
+            named_month = month_label(explanation.facts.get("climate_month"))
+            tail = f" в {named_month}" if named_month else ""
+            parts.append(f"{weather}{tail}" + (f", перелёт {flight} ч в одну сторону." if flight else "."))
+        elif flight:
+            parts.append(f"Перелёт {flight} ч в одну сторону.")
+        concession = _concession_line(explanation)
+        if concession:
+            parts.append(concession)
+        parts.append(
+            f"Итого {display(explanation.total)} из {display(explanation.budget)}, "
+            f"остаток {display(explanation.remaining)}."
+        )
+        parts.append(_money_line(explanation))
+        return " ".join(parts)
+
+    def diff(self, old_plan: dict[str, str], new_plan: dict[str, str]) -> str:
+        """Слот №6: что изменилось при пересборке (T-08 подключит на своих входах)."""
+
+        changed = [
+            f"{component}: {old_plan[component]} → {new_plan[component]}"
+            for component in new_plan
+            if component in old_plan and old_plan[component] != new_plan[component]
+        ]
+        kept = [component for component in new_plan if old_plan.get(component) == new_plan[component]]
+        if not changed:
+            return f"Ничего не подменяли: {', '.join(kept)}."
+        return f"Изменилось: {'; '.join(changed)}. Осталось прежним: {', '.join(kept)}."
+
+
+def display(money: Money) -> str:
+    """«148 900 ₽» — один формат суммы на весь текст: `Money.as_ru`.
+
+    Прежняя версия приписывала знак рубля любой валюте ledger'а: USD-прогон показал бы
+    «1200 ₽» вместо «1 200 USD». Формат теперь живёт рядом с `Money` и знает, у какой валюты
+    есть свой знак, а какая остаётся ISO-кодом.
+    """
+
+    return money.as_ru()
+
+
+def _money_line(explanation: Explanation) -> str:
+    order = ("transport", "lodging", "transfer", "activity", "fee")
+    named = {"transport": "перелёт", "lodging": "проживание", "transfer": "трансфер",
+             "activity": "активности", "fee": "сборы"}
+    pieces = [
+        f"{named[kind]} {display(explanation.breakdown[kind])}"
+        for kind in order
+        if kind in explanation.breakdown
+    ]
+    return "Разбивка: " + ", ".join(pieces) + "."
+
+
+def _concession_line(explanation: Explanation) -> str:
+    """Фраза об уступке мягкому предпочтению: оплаченный балл слота №3 не должен молчать.
+
+    Живой прогон 2026-10-28: `/rerank` отдал 1.00 отелю, у которого в сиде нет ставок на две
+    ночи из пяти, план взял отель с 0.10, и ни в `facts`, ни в тексте уступки не видно. Код
+    считает причину (`compose`), текст её только произносит — чисел здесь нет.
+    """
+
+    unavailable = explanation.facts.get("relevant_hotel_unavailable", "")
+    if unavailable:
+        return f"Взяли не самый подходящий отель: {unavailable}."
+    cheaper = explanation.facts.get("cheaper_than_relevant", "")
+    if cheaper:
+        return f"Взяли не самый подходящий отель: {cheaper} не влез в бюджет."
+    return ""
+
+
+def _finalist_reason(candidate: Candidate) -> str:
+    """Причина слота №4 из чисел того же кандидата; выдуманной похвалы мок не пишет.
+
+    Прежняя строка «тёплое море и короткий перелёт» была правдой только для фикстур золотого
+    пути: на `data/seeds` морской температуры нет ни у одного направления (`sea_temp_c` пусто),
+    а «короткий перелёт» у Паттайи — 9 с лишним часов. Guard такие слова не ловит:
+    `_without_invented_numbers` вычитает цифры, а утверждения оставляет как есть. Причина
+    собирается по presence-check, и отсутствие числа означает молчание про этот признак.
+
+    Числа погода даёт только после `weather_climate`, поэтому слот №4 в рантайме идёт за
+    климатом, а не сразу за подбором (`runtime._collect`): выбранная до погоды тройка
+    оставалась бы с причиной «перелёт …» там, где температура и есть ответ на «к тёплому
+    морю». Воздух подписан «воздух», а не «море»: в сиде климата воды нет.
+    """
+
+    name = candidate.ref.get("name", candidate.candidate_id)
+    parts: list[str] = []
+    sea = candidate.ref.get("sea_temp_c", "")
+    air = candidate.ref.get("day_temp_c", "")
+    month = month_label(candidate.ref.get("climate_month", ""))
+    if sea:
+        parts.append(f"море +{sea} °C" + (f" в {month}" if month else ""))
+    elif air:
+        parts.append(f"воздух +{air} °C" + (f" в {month}" if month else ""))
+    flight = candidate.ref.get("flight_h", "")
+    if flight:
+        #: оговорка обязательна: `flight_h` направления — прикидка источника подбора, а в
+        #: объяснении плана стоит длительность собранных сегментов. Без неё одна карточка
+        #: спорила бы сама с собой: «перелёт 12.2 ч» рядом с «перелёт 14.2 ч в одну сторону»
+        parts.append(f"перелёт {flight} ч по данным подбора")
+    if not parts:
+        #: чисел источника нет — причина обязана быть про фильтр, а не про погоду
+        parts.append("прошёл hard-фильтры подбора")
+    return f"{name} — {', '.join(parts)}"

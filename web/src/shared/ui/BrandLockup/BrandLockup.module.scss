@@ -1,0 +1,42 @@
+.lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--color-blue);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:focus-visible {
+    outline: 3px solid var(--color-blue);
+    outline-offset: 5px;
+  }
+}
+
+.product {
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  font-weight: 850;
+  letter-spacing: -0.055em;
+}
+
+.divider {
+  height: 1.8rem;
+  width: 1px;
+  background: var(--color-border-strong);
+}
+
+.parentLogo {
+  display: block;
+  width: 97px;
+  margin-top: 3px;
+  height: auto;
+}
+
+@media (max-width: 540px) {
+  .lockup {
+    gap: 0.65rem;
+  }
+
+  .parentLogo {
+    width: 82px;
+  }
+}

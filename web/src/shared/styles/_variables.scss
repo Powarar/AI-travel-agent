@@ -1,0 +1,36 @@
+:root {
+  // Цвета сверены с материалами Островка о ребрендинге 2024 года.
+  --color-mojito: #acef81;
+  --color-mojito-strong: #8fe05a;
+  --color-mojito-soft: #effbe5;
+  --color-blue: #0e41d2;
+  --color-blue-hover: #0937b2;
+  --color-blue-deep: #0a2c8f;
+  --color-blue-soft: #eef3ff;
+  --color-text: #183047;
+  --color-muted: #647384;
+  --color-surface: #fff;
+  --color-page: #f4f7f1;
+  --color-border: #e5eae6;
+  --color-border-strong: #cbd6d1;
+  --color-ok: #2f8a0f;
+  --color-ok-soft: #f1fbe9;
+  --color-warn: #b06f00;
+  --color-warn-soft: #fff6e2;
+  --color-bad: #c2360c;
+  --color-bad-soft: #fff0ea;
+
+  // Доли разбивки цены — одна палитра на полосу, легенду и чипы.
+  --seg-transport: #0e41d2;
+  --seg-lodging: #8fe05a;
+  --seg-transfer: #ffb648;
+  --seg-activities: #b18cff;
+
+  --radius-pill: 999px;
+  --radius-input: 18px;
+  --radius-card: 28px;
+  --shadow-card: 0 18px 50px rgb(20 48 71 / 7%);
+  --shadow-lift: 0 24px 60px rgb(14 65 210 / 16%);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}

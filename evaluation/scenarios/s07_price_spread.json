@@ -1,0 +1,41 @@
+{
+  "id": "s07_price_spread",
+  "title": "Одна и та же ставка из двух источников с разницей 17%",
+  "covers": [
+    "two_sources",
+    "provenance"
+  ],
+  "run": "scripts/run_pipeline.py --sources seed --json",
+  "message": "хочу в Сочи с 14 по 21 ноября из Москвы вдвоём, бюджет 150000",
+  "answers": {},
+  "setup": {
+    "duplicate_offer": {
+      "tool": "transport_search",
+      "match": {
+        "dest_code": "sochi"
+      },
+      "quotes": [
+        {
+          "source_id": "synthetic_seed",
+          "factor": "1.00"
+        },
+        {
+          "source_id": "eval_second_source",
+          "factor": "1.17"
+        }
+      ]
+    }
+  },
+  "expect": {
+    "outcome_in": [
+      "plan_ready"
+    ],
+    "price_source_named": true,
+    "no_silent_average": true,
+    "ledger_matches_total": true
+  },
+  "observed_2026-10-28": {
+    "outcome": null,
+    "note": "не прогонялся: нужен хук дублирования оффера в run_eval"
+  }
+}

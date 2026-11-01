@@ -1,0 +1,113 @@
+@use '../../shared/styles/keyframes';
+
+.hero {
+  position: relative;
+  display: grid;
+  gap: 1.2rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-radius: var(--radius-card);
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgb(172 239 129 / 35%) 0%, transparent 45%),
+    linear-gradient(135deg, var(--color-blue) 0%, var(--color-blue-deep) 100%);
+  color: #fff;
+  box-shadow: var(--shadow-lift);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.muted {
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgb(255 182 72 / 30%) 0%, transparent 45%),
+    linear-gradient(135deg, #34465a 0%, #1d2b3a 100%);
+}
+
+.ring, .ringSmall {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  border: 28px solid rgb(172 239 129 / 22%);
+  animation: float 9s ease-in-out infinite;
+}
+
+.ring { right: -90px; bottom: -120px; width: 320px; height: 320px; }
+.ringSmall { right: 160px; top: -70px; width: 140px; height: 140px; border-width: 14px; animation-delay: -3s; }
+
+.top { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+
+.outcome {
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-mojito);
+  color: var(--color-blue-deep);
+  font-size: 0.75rem;
+  font-weight: 850;
+}
+
+.infeasible, .unsupported { background: #ffd2c4; color: #8a2405; }
+.best_effort, .degraded, .awaiting_answer { background: #ffe7b8; color: #7a4f00; }
+
+
+.main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 1fr);
+  align-items: end;
+  gap: 1.5rem;
+}
+
+.country {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  opacity: 0.85;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.title {
+  margin: 0.2rem 0 0.75rem;
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.note { margin: -0.3rem 0 0.75rem; opacity: 0.85; font-size: 0.85rem; }
+
+.facts { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 14%);
+  font-size: 0.82rem;
+  font-weight: 700;
+  backdrop-filter: blur(6px);
+
+  svg { color: var(--color-mojito); }
+}
+
+.price {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem 1.1rem;
+  border-radius: 22px;
+  background: rgb(255 255 255 / 10%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 14%);
+}
+
+.priceLabel { opacity: 0.8; font-size: 0.8rem; font-weight: 700; }
+
+.total {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+@media (max-width: 760px) {
+  .main { grid-template-columns: 1fr; }
+}

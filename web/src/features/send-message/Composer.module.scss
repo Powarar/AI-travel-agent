@@ -1,0 +1,86 @@
+.composer {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.75rem 0.9rem 0.95rem;
+  border-top: 1px solid var(--color-border);
+  background: rgb(255 255 255 / 92%);
+}
+
+.suggestions {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.15rem;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: #fff;
+  color: var(--color-blue);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms var(--ease-out);
+
+  &:hover:not(:disabled) { border-color: var(--color-blue); background: var(--color-blue-soft); transform: translateY(-1px); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:focus-visible { outline: 3px solid var(--color-blue); outline-offset: 2px; }
+}
+
+.field {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding: 0.35rem 0.35rem 0.35rem 1rem;
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: 24px;
+  background: #fff;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+
+  &:focus-within { border-color: var(--color-blue); box-shadow: 0 0 0 4px rgb(14 65 210 / 10%); }
+
+  textarea {
+    flex: 1;
+    min-width: 0;
+    max-height: 7.5rem;
+    padding: 0.55rem 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    resize: none;
+    field-sizing: content;
+    outline: none;
+  }
+}
+
+.disabled { background: #f6f8f5; }
+
+.send {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-blue);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 180ms var(--ease-spring), background-color 160ms ease;
+
+  &:hover:not(:disabled) { transform: scale(1.08) rotate(-8deg); background: var(--color-blue-hover); }
+  &:disabled { background: var(--color-border-strong); cursor: not-allowed; }
+  &:focus-visible { outline: 3px solid var(--color-blue); outline-offset: 2px; }
+}

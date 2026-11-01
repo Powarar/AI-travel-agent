@@ -1,0 +1,356 @@
+{
+ "sochi": {
+  "iata": "AER",
+  "dist_km": 24.8,
+  "airport": "Sochi International Airport",
+  "tz": "Europe/Moscow"
+ },
+ "anapa": {
+  "iata": "GDZ",
+  "dist_km": 65.1,
+  "airport": "Gelendzhik Airport",
+  "tz": "Europe/Moscow"
+ },
+ "gelendzhik": {
+  "iata": "GDZ",
+  "dist_km": 4.3,
+  "airport": "Gelendzhik Airport",
+  "tz": "Europe/Moscow"
+ },
+ "yalta": {
+  "iata": "SIP",
+  "dist_km": 63.0,
+  "airport": "Simferopol International Airport",
+  "tz": "Europe/Simferopol"
+ },
+ "sevastopol": {
+  "iata": "SIP",
+  "dist_km": 61.0,
+  "airport": "Simferopol International Airport",
+  "tz": "Europe/Simferopol"
+ },
+ "alushta": {
+  "iata": "SIP",
+  "dist_km": 54.0,
+  "airport": "Simferopol International Airport",
+  "tz": "Europe/Simferopol"
+ },
+ "sudak": {
+  "iata": "SIP",
+  "dist_km": 81.8,
+  "airport": "Simferopol International Airport",
+  "tz": "Europe/Simferopol"
+ },
+ "feodosiya": {
+  "iata": "SIP",
+  "dist_km": 110.5,
+  "airport": "Simferopol International Airport",
+  "tz": "Europe/Simferopol"
+ },
+ "yevpatoriya": {
+  "iata": "SIP",
+  "dist_km": 50.5,
+  "airport": "Simferopol International Airport",
+  "tz": "Europe/Simferopol"
+ },
+ "kislovodsk": {
+  "iata": "MRV",
+  "dist_km": 45.1,
+  "airport": "Mineralnye Vody Airport",
+  "tz": "Europe/Moscow"
+ },
+ "pyatigorsk": {
+  "iata": "MRV",
+  "dist_km": 19.6,
+  "airport": "Mineralnye Vody Airport",
+  "tz": "Europe/Moscow"
+ },
+ "minvody": {
+  "iata": "MRV",
+  "dist_km": 4.6,
+  "airport": "Mineralnye Vody Airport",
+  "tz": "Europe/Moscow"
+ },
+ "belokurikha": {
+  "iata": "BAX",
+  "dist_km": 180.7,
+  "airport": "Barnaul Gherman Titov International Airport",
+  "tz": "Asia/Krasnoyarsk"
+ },
+ "moscow": {
+  "iata": "VKO",
+  "dist_km": 28.6,
+  "airport": "Vnukovo International Airport",
+  "tz": "Europe/Moscow"
+ },
+ "saint-petersburg": {
+  "iata": "LED",
+  "dist_km": 15.6,
+  "airport": "Pulkovo Airport",
+  "tz": "Europe/Moscow"
+ },
+ "kaliningrad": {
+  "iata": "KGD",
+  "dist_km": 21.3,
+  "airport": "Khrabrovo Airport",
+  "tz": "Europe/Kaliningrad"
+ },
+ "kazan": {
+  "iata": "KZN",
+  "dist_km": 22.5,
+  "airport": "Kazan International Airport",
+  "tz": "Europe/Moscow"
+ },
+ "nizhny-novgorod": {
+  "iata": "GOJ",
+  "dist_km": 17.5,
+  "airport": "Nizhny Novgorod / Strigino International Airport",
+  "tz": "Europe/Moscow"
+ },
+ "ekaterinburg": {
+  "iata": "SVX",
+  "dist_km": 17.1,
+  "airport": "Koltsovo Airport",
+  "tz": "Asia/Yekaterinburg"
+ },
+ "vladivostok": {
+  "iata": "VVO",
+  "dist_km": 39.2,
+  "airport": "Vladivostok International Airport",
+  "tz": "Asia/Vladivostok"
+ },
+ "yuzhno-sakhalinsk": {
+  "iata": "UUS",
+  "dist_km": 7.8,
+  "airport": "Yuzhno-Sakhalinsk International Airport",
+  "tz": "Asia/Srednekolymsk"
+ },
+ "petropavlovsk": {
+  "iata": "PKC",
+  "dist_km": 16.6,
+  "airport": "Yelizovo Airport",
+  "tz": "Asia/Anadyr"
+ },
+ "ulan-ude": {
+  "iata": "UUD",
+  "dist_km": 11.2,
+  "airport": "Baikal International Airport",
+  "tz": "Asia/Irkutsk"
+ },
+ "irkutsk": {
+  "iata": "IKT",
+  "dist_km": 7.8,
+  "airport": "Irkutsk International Airport",
+  "tz": "Asia/Irkutsk"
+ },
+ "gorno-altaysk": {
+  "iata": "NOZ",
+  "dist_km": 215.6,
+  "airport": "Spichenkovo Airport",
+  "tz": "Asia/Krasnoyarsk"
+ },
+ "makhachkala": {
+  "iata": "MCX",
+  "dist_km": 21.8,
+  "airport": "Makhachkala Uytash International Airport",
+  "tz": "Europe/Moscow"
+ },
+ "sukhumi": {
+  "iata": "SUI",
+  "dist_km": 20.0,
+  "airport": "Vladislav Ardzinba Sukhum International Airport",
+  "tz": "Asia/Tbilisi"
+ },
+ "gagra": {
+  "iata": "SUI",
+  "dist_km": 83.8,
+  "airport": "Vladislav Ardzinba Sukhum International Airport",
+  "tz": "Asia/Tbilisi"
+ },
+ "tbilisi": {
+  "iata": "TBS",
+  "dist_km": 10.3,
+  "airport": "Tbilisi International Airport",
+  "tz": "Asia/Tbilisi"
+ },
+ "batumi": {
+  "iata": "BUS",
+  "dist_km": 4.3,
+  "airport": "Alexander Kartveli Batumi International Airport",
+  "tz": "Asia/Tbilisi"
+ },
+ "yerevan": {
+  "iata": "EVN",
+  "dist_km": 10.3,
+  "airport": "Zvartnots International Airport",
+  "tz": "Asia/Yerevan"
+ },
+ "baku": {
+  "iata": "GYD",
+  "dist_km": 17.1,
+  "airport": "Heydar Aliyev International Airport",
+  "tz": "Asia/Baku"
+ },
+ "almaty": {
+  "iata": "ALA",
+  "dist_km": 15.5,
+  "airport": "Almaty International Airport",
+  "tz": "Asia/Qyzylorda"
+ },
+ "bishkek": {
+  "iata": "BSZ",
+  "dist_km": 23.2,
+  "airport": "Manas International Airport",
+  "tz": "Asia/Bishkek"
+ },
+ "cholpon-ata": {
+  "iata": "IKU",
+  "dist_km": 32.0,
+  "airport": "Issyk-Kul International Airport",
+  "tz": "\\N"
+ },
+ "samarkand": {
+  "iata": "SKD",
+  "dist_km": 5.5,
+  "airport": "Samarkand International Airport",
+  "tz": "Asia/Samarkand"
+ },
+ "bukhara": {
+  "iata": "BHK",
+  "dist_km": 4.4,
+  "airport": "Bukhara International Airport",
+  "tz": "Asia/Samarkand"
+ },
+ "tashkent": {
+  "iata": "TAS",
+  "dist_km": 5.5,
+  "airport": "Tashkent International Airport",
+  "tz": "Asia/Samarkand"
+ },
+ "minsk": {
+  "iata": "MSQ",
+  "dist_km": 31.1,
+  "airport": "Minsk National Airport",
+  "tz": "Europe/Minsk"
+ },
+ "belgrade": {
+  "iata": "BEG",
+  "dist_km": 12.4,
+  "airport": "Belgrade Nikola Tesla Airport",
+  "tz": "Europe/Belgrade"
+ },
+ "antalya": {
+  "iata": "AYT",
+  "dist_km": 9.4,
+  "airport": "Antalya International Airport",
+  "tz": "Europe/Istanbul"
+ },
+ "alanya": {
+  "iata": "GZP",
+  "dist_km": 38.1,
+  "airport": "Gazipaşa-Alanya Airport",
+  "tz": "Europe/Istanbul"
+ },
+ "kemer": {
+  "iata": "AYT",
+  "dist_km": 39.7,
+  "airport": "Antalya International Airport",
+  "tz": "Europe/Istanbul"
+ },
+ "bodrum": {
+  "iata": "BJV",
+  "dist_km": 31.4,
+  "airport": "Milas Bodrum International Airport",
+  "tz": "Europe/Istanbul"
+ },
+ "marmaris": {
+  "iata": "DLM",
+  "dist_km": 48.8,
+  "airport": "Dalaman International Airport",
+  "tz": "Europe/Istanbul"
+ },
+ "istanbul": {
+  "iata": "SAW",
+  "dist_km": 32.8,
+  "airport": "Istanbul Sabiha Gökçen International Airport",
+  "tz": "Europe/Istanbul"
+ },
+ "hurghada": {
+  "iata": "HRG",
+  "dist_km": 9.1,
+  "airport": "Hurghada International Airport",
+  "tz": "Africa/Cairo"
+ },
+ "sharm": {
+  "iata": "SSH",
+  "dist_km": 9.3,
+  "airport": "Sharm El Sheikh International Airport",
+  "tz": "Africa/Cairo"
+ },
+ "dubai": {
+  "iata": "DXB",
+  "dist_km": 20.2,
+  "airport": "Dubai International Airport",
+  "tz": "Asia/Dubai"
+ },
+ "abu-dhabi": {
+  "iata": "AUH",
+  "dist_km": 25.6,
+  "airport": "Zayed International Airport",
+  "tz": "Asia/Dubai"
+ },
+ "phuket": {
+  "iata": "HKT",
+  "dist_km": 26.3,
+  "airport": "Phuket International Airport",
+  "tz": "Asia/Bangkok"
+ },
+ "pattaya": {
+  "iata": "UTP",
+  "dist_km": 31.1,
+  "airport": "U-Tapao–Rayong–Pattaya International Airport",
+  "tz": "Asia/Bangkok"
+ },
+ "bangkok": {
+  "iata": "DMK",
+  "dist_km": 21.0,
+  "airport": "Don Mueang International Airport",
+  "tz": "Asia/Bangkok"
+ },
+ "da-nang": {
+  "iata": "DAD",
+  "dist_km": 3.5,
+  "airport": "Da Nang International Airport",
+  "tz": "Asia/Saigon"
+ },
+ "nha-trang": {
+  "iata": "CXR",
+  "dist_km": 27.6,
+  "airport": "Cam Ranh International Airport / Cam Ranh Air Base",
+  "tz": "Asia/Saigon"
+ },
+ "sanya": {
+  "iata": "SYX",
+  "dist_km": 11.6,
+  "airport": "Sanya Phoenix International Airport",
+  "tz": "Asia/Shanghai"
+ },
+ "male": {
+  "iata": "MLE",
+  "dist_km": 2.9,
+  "airport": "Velana International Airport",
+  "tz": "Indian/Maldives"
+ },
+ "larnaca": {
+  "iata": "LCA",
+  "dist_km": 5.2,
+  "airport": "Larnaca International Airport",
+  "tz": "Asia/Nicosia"
+ },
+ "paphos": {
+  "iata": "PFO",
+  "dist_km": 8.6,
+  "airport": "Paphos International Airport",
+  "tz": "Asia/Nicosia"
+ }
+}

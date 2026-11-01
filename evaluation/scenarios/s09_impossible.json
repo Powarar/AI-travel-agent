@@ -1,0 +1,25 @@
+{
+  "id": "s09_impossible",
+  "title": "Даты вне календаря ставок",
+  "covers": [
+    "impossible",
+    "dates_out_of_catalog"
+  ],
+  "run": "scripts/run_pipeline.py --sources seed --json",
+  "message": "хочу в Сочи в октябре из Москвы вдвоём, бюджет 150000",
+  "answers": {
+    "dates.start": "с 14 по 21"
+  },
+  "expect": {
+    "outcome_in": [
+      "infeasible"
+    ],
+    "numbers_in_refusal": true,
+    "no_substitution": "ноябрьские ставки не подставляются в октябрь",
+    "checkout": false
+  },
+  "observed_2026-10-28": {
+    "outcome": "infeasible",
+    "note": "рейсов в выдаче — 0, сегментов в сиде — 3788"
+  }
+}

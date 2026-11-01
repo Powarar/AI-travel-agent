@@ -1,0 +1,29 @@
+{
+  "id": "s08_vague_preferences",
+  "title": "Размытые предпочтения без направления и чисел",
+  "covers": [
+    "vague",
+    "clarification"
+  ],
+  "run": "scripts/run_pipeline.py --sources seed --json",
+  "message": "хочу куда-нибудь где хорошо, недорого",
+  "answers": {
+    "origin": "Москва",
+    "dates.start": "с 14 по 21"
+  },
+  "expect": {
+    "outcome_in": [
+      "plan_ready",
+      "awaiting_answer",
+      "best_effort"
+    ],
+    "max_questions": 2,
+    "fabricated_fields": 0,
+    "budget_status_not_known": "бюджет не выдуман: «недорого» не превращается в known-число",
+    "explanation_present": true
+  },
+  "observed_2026-10-28": {
+    "outcome": "best_effort",
+    "note": "Три обязательных неизвестных поля при лимите в два вопроса: безопасный терминальный исход без выдумывания бюджета."
+  }
+}

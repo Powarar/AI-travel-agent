@@ -1,0 +1,25 @@
+{
+  "id": "s02_named_destination",
+  "title": "Названное направление с датами и бюджетом",
+  "covers": [
+    "explicit_direction"
+  ],
+  "run": "scripts/run_pipeline.py --sources seed --json",
+  "message": "хочу в Сочи с 14 по 21 ноября из Москвы вдвоём, бюджет 150000",
+  "answers": {},
+  "expect": {
+    "outcome_in": [
+      "plan_ready"
+    ],
+    "max_questions": 0,
+    "blocking_violations": 0,
+    "invented_numbers": 0,
+    "direction": "sochi",
+    "checkout": true,
+    "ledger_matches_total": true
+  },
+  "observed_2026-10-28": {
+    "outcome": "plan_ready",
+    "note": "Сочи, 61 100 ₽ из 150 000 ₽"
+  }
+}

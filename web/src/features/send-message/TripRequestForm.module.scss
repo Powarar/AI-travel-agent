@@ -1,0 +1,11 @@
+.card { padding: clamp(1.5rem, 3vw, 2.5rem); }
+
+.suggestions {
+  margin-block: 1.5rem;
+
+  p { margin-bottom: 0.75rem; color: var(--color-muted); font-size: 0.875rem; }
+}
+
+.suggestionsList { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.action { display: flex; justify-content: flex-end; }
+

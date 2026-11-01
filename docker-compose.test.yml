@@ -1,0 +1,10 @@
+services:
+  backend:
+    environment:
+      LLM_PROVIDER: mock
+      TRAVEL_DATA_PROVIDER: seed
+      ALLOW_MOCKS: "1"
+  agent:
+    environment:
+      LLM_PROVIDER: mock
+      ALLOW_MOCKS: "1"
