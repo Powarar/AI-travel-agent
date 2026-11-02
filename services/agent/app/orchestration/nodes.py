@@ -1,6 +1,6 @@
 """Узлы контура: чистые функции `(state, вход) → state`.
 
-Правила, которые здесь важны (INFA.md, ARCHITECTURE.md §8):
+Правила, которые здесь важны (AGENTS.md, AGENTS.md):
 
 * каждый узел отдаёт **копию** через `next_version()` — предыдущие версии не мутируются;
 * внутри узлов нет I/O, сети, `input()` и `datetime.now()`: время и ответы источников
@@ -10,7 +10,7 @@
   blocking-нарушение с посчитанными числами, а не «почти подходящий» вариант (инвариант №2).
 
 Типизированные входы (`DestinationFact`, `HotelOffer`, …) — то, что отдаёт инструмент-заглушка;
-в T-10 их заменит retrieval поверх БД, сигнатура узла останется.
+в retrieval layer их заменит retrieval поверх БД, сигнатура узла останется.
 """
 
 from __future__ import annotations
@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 
 SECTIONS: tuple[str, ...] = ("direction", "dates", "party", "budget", "transport", "lodging", "identity")
 LEAVES: tuple[str, ...] = ("origin", "nights", "themes")
-#: Что код подставляет молча, когда пользователь этого не сказал (CONTRACTS.md, таблица
+#: Что код подставляет молча, когда пользователь этого не сказал (AGENTS.md, таблица
 #: «Политика hard / soft»): статус `defaulted` — подстановка видна в UI как предположение.
 #: В сумму бюджета по умолчанию попадает всё, что мы считаем: недооценить дешевле, чем
 #: переоценить.
@@ -159,7 +159,7 @@ class SearchResult(BaseModel):
     order_id: str = ""
     #: счётчики самого источника: сколько строк каталога он рассмотрел и сколько отсек по
     #: каждой причине. Пустая выдача без них — это «финалистов нет» без объяснения, а отказ
-    #: по контракту обязан быть с числами (CONTRACTS.md, «Названное направление», исход 3).
+    #: по контракту обязан быть с числами (AGENTS.md, «Названное направление», исход 3).
     meta: dict[str, str] = Field(default_factory=dict)
 
 
@@ -246,7 +246,7 @@ def apply_answer(state: TripState, path: str, raw: str) -> TripState:
             DirectionMode.OPEN if open_choice else DirectionMode.EXPLICIT, kind=ConstraintKind.HARD
         )
     elif path == "direction.explicit":
-        # CONTRACTS.md, «Названное направление»: ответ — либо новое название, либо «подбери
+        # AGENTS.md, «Названное направление»: ответ — либо новое название, либо «подбери
         # сам». Третьего нет, и прежний план с прежним нарушением здесь не остаётся: узел
         # снимает поле, а следующий прогон переспрашивает подборщик по новому значению.
         answer = raw.strip()
@@ -398,7 +398,7 @@ _THEME_RU: dict[str, str] = {
     "food": "еда рестораны кухня",
 }
 
-#: Шаг округления мягкой релевантности (CONTRACTS.md, «Мягкая релевантность (слот №3)»).
+#: Шаг округления мягкой релевантности (AGENTS.md, «Мягкая релевантность (слот №3)»).
 #: Ниже шага выбор менять нельзя: cross-encoder различает 0.83 и 0.85, а человек между этими
 #: отелями — нет, и порядок кандидатов начал бы переворачиваться на шуме модели.
 RELEVANCE_STEP = 0.05
@@ -413,7 +413,7 @@ RELEVANCE_NEUTRAL = 0.50
 
 
 def relevance_query(request: TripRequest) -> str:
-    """Запрос слота №3: `" ".join(soft values)` (ARCHITECTURE.md §5), темы — переводом."""
+    """Запрос слота №3: `" ".join(soft values)` (AGENTS.md), темы — переводом."""
 
     themes = " ".join(_THEME_RU.get(theme.value, theme.value)
                       for theme in (request.themes.value or []))
@@ -475,7 +475,7 @@ def apply_relevance(state: TripState, scores: Mapping[str, float]) -> TripState:
 
 
 def _relevance_buckets(scores: Mapping[str, float]) -> dict[str, str]:
-    """Скоры одного вызова реранкера → баллы `ref["relevance"]` (CONTRACTS.md, слот №3).
+    """Скоры одного вызова реранкера → баллы `ref["relevance"]` (AGENTS.md, слот №3).
 
     Нормализация по минимуму/максимуму вызова, а не по сырому числу: шкала у
     cross-encoder'ов своя. Измерено 2026-10-27 живым прогоном — `qwen3-reranker-8b` на
@@ -930,7 +930,7 @@ def commit_plan(state: TripState, composition: Composition) -> TripState:
 
 
 def record_violations(state: TripState, violations: list[Violation]) -> TripState:
-    """VALIDATE: нарушения — структура в состоянии, а не текст (T-03)."""
+    """VALIDATE: нарушения — структура в состоянии, а не текст (validation layer)."""
 
     next_state = state.next_version()
     conflicts = [violation for violation in state.violations
@@ -1042,7 +1042,7 @@ def derive_defaults(request: TripRequest) -> TripRequest:
                 (end - start).days, kind=ConstraintKind.HARD, source="dates", confidence=1.0
             )
     if derived.party.adults.is_unknown:
-        #: CONTRACTS.md: «unknown → 2 + DEFAULTED». Дефолт ставит код, а не парсер: у мок-слота
+        #: AGENTS.md: «unknown → 2 + DEFAULTED». Дефолт ставит код, а не парсер: у мок-слота
         #: он был, у живого — нет, и «к морю из Москвы, до 45 000 ₽» без «вдвоём» уходил в
         #: `infeasible` с «adults=None» (живой контур, 2026-10-28). `merge_request` не считает
         #: defaulted конфликтом, поэтому следующее «нас трое» перезапишет его молча и верно.
@@ -1421,7 +1421,7 @@ def _require_not_skipped(path: str, raw: str) -> None:
 def _apply_dates(request: TripRequest, raw: str) -> None:
     """Один вопрос про вилку дат закрывает `dates.start`, `dates.end` и `nights`.
 
-    Диапазон читает общий `range_days` — тот же разборщик, что у мока T-05 и у коэрсера
+    Диапазон читает общий `range_days` — тот же разборщик, что у мока offline fixture и у коэрсера
     живой цитаты. Раньше здесь был свой `month.replace(day=...)`, и он не умел ни пересечение
     месяца («с 28 по 5» → `end <= start` → ход падал на втором вопросе), ни `дд.мм`
     («28.10 - 05.11» читалось как дни 28 и 10 того же месяца).

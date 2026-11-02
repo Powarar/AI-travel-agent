@@ -3,7 +3,7 @@
 Ключ и модель — из окружения, в репозиторий они не попадают. Файл `.env` в корне (в
 `.gitignore`) читается сам, чтобы не требовать `pydantic-settings`, которого у нас тоже нет:
 
-    LLM_PROVIDER=aitunnel                     # mock → офлайн-моки T-05
+    LLM_PROVIDER=aitunnel                     # mock → офлайн-моки offline fixture
     LLM_BASE_URL=https://api.aitunnel.ru/v1
     LLM_API_KEY=sk-aitunnel-…
     LLM_MODEL=<имя модели>
@@ -11,7 +11,7 @@
     LLM_TEMPERATURE_EXPLAIN=0.2               # общая температура — 0, кроме SL-5
     LLM_REASONING_EFFORT=none                 # off — не слать параметр вовсе
 
-Почему мок остаётся правильным ответом по умолчанию: гейт T-05 требует, чтобы тесты
+Почему мок остаётся правильным ответом по умолчанию: гейт offline fixture требует, чтобы тесты
 проходили без сети, а `from_config()` при `LLM_PROVIDER=mock` возвращает `MockSlots`. Сигнатуры
 совпадают с протоколом `LLMSlots`, поэтому рантайм провайдера не различает.
 
@@ -251,7 +251,7 @@ class OpenAICompatibleSlots:
     слоты: ключ, base URL и таймаут у них общие, differ только тело запроса.
 
     Слот №3 — не чат: `soft_relevance` идёт в `/rerank` своим клиентом (`app/llm/rerank.py`) и
-    в `llm_calls` не входит (CONTRACTS.md, «Мягкая релевантность (слот №3)»), но его токены
+    в `llm_calls` не входит (AGENTS.md, «Мягкая релевантность (слот №3)»), но его токены
     считаются в `tokens_used` наравне с чатом.
     """
 
@@ -283,7 +283,7 @@ class OpenAICompatibleSlots:
         )
         self._fallback = MockSlots()
         self._reranker = reranker
-        #: причины, по которым живой ответ пришлось заменить моком; видно в метрике T-07
+        #: причины, по которым живой ответ пришлось заменить моком; видно в метрике provider integration
         self.failures: list[dict[str, Any]] = []
         #: модель → параметры, которые шлюз отверг именно у неё: повторять заведомо
         #: неподдерживаемый параметр на каждом вызове — лишние секунды на ходу
@@ -454,7 +454,7 @@ class OpenAICompatibleSlots:
         """Схема слота и причина отказа: "" | "schema_failed" | "provider_unavailable".
 
         Модель или причина — никогда оба сразу, поэтому вызывающему хватает `if model is None`,
-        а метрика T-07 по причине отличает «шлюз не ответил» от «вывод не прошёл схему».
+        а метрика provider integration по причине отличает «шлюз не ответил» от «вывод не прошёл схему».
         Тексты ошибок остаются в `self.failures`: в `parsed` они только замусорили бы строку.
         """
 
@@ -486,7 +486,7 @@ class OpenAICompatibleSlots:
     def parse_verbose(self, message: str) -> ParsedMessage:
         """Слот №1 с полной картиной: дельты, отбраковка, был ли фолбэк.
 
-        Метрики T-07 считаются отсюда — `parse` возвращает только `TripRequest`, и по нему
+        Метрики provider integration считаются отсюда — `parse` возвращает только `TripRequest`, и по нему
         не видно, сколько значений отбросил provenance-guard.
         """
 
@@ -564,14 +564,14 @@ class OpenAICompatibleSlots:
 
     @property
     def reranker(self) -> "Reranker | None":
-        """Клиент `/rerank` наружу: у него свои `failures` и свои токены, и метрике T-07 их
+        """Клиент `/rerank` наружу: у него свои `failures` и свои токены, и метрике provider integration их
         надо видеть, а не прятать за приватным полем."""
 
         return self._reranker
 
     def soft_relevance(self, query: str,
                        documents: dict[str, str]) -> dict[str, float] | None:
-        """Слот №3: cross-encoder, а не чат (CONTRACTS.md, «Мягкая релевантность (слот №3)»).
+        """Слот №3: cross-encoder, а не чат (AGENTS.md, «Мягкая релевантность (слот №3)»).
 
         Ключ возврата — `candidate_id`, не позиция: перепутать кандидата между двумя строками
         текста хуже, чем не досчитать балл. `None` значит «ранжировать нечем» (слот выключен,
@@ -707,7 +707,7 @@ def slots_from_config() -> Any:
 
     Возвращает `LLMSlots`, поэтому `Orchestrator(slots=slots_from_config())` не различает,
     кто разбирает сообщение. Именно здесь контур уходит с моков на модели, и именно здесь
-    этот переход нельзя сделать дефолтом: тесты T-05/T-08 обязаны проходить без сети.
+    этот переход нельзя сделать дефолтом: тесты offline fixture/replanning layer обязаны проходить без сети.
     """
 
     return OpenAICompatibleSlots.from_config()

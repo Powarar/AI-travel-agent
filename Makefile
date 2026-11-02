@@ -6,22 +6,29 @@ PSQL := $(DC) exec postgres psql -U ostrovok -d ostrovok
 
 .PHONY: help
 help:
-	@echo "make up        — postgres+backend+agent+frontend и базовая миграция"
-	@echo "make web       — только фронтенд (hot reload), http://localhost:5173"
-	@echo "make down      — остановить стек (данные в volume pgdata остаются)"
-	@echo "make build     — пересобрать образы"
-	@echo "make rebuild   — пересобрать без кэша"
-	@echo "make ps        — статус контейнеров"
-	@echo "make logs      — логи всех сервисов"
-	@echo "make seed      — одноразовый запуск scripts/seed_database.py"
-	@echo "make migrate   — alembic upgrade head внутри backend"
-	@echo "make eval      — офлайн evaluation 12 сценариев"
-	@echo "make warmup    — подготовить кэш ingestion-адаптера"
-	@echo "make psql      — консоль postgres"
-	@echo "make test      — весь набор pytest"
-	@echo "make lint      — mypy и запрет LLM-импортов в валидаторе"
-	@echo "make bot       — поднять бота (нужен TELEGRAM_BOT_TOKEN в .env)"
-	@echo "make clean     — остановить и удалить контейнеры, образы и volume pgdata"
+	@echo "make up        — start the local stack and apply migrations"
+	@echo "make setup     — create the Python development environment"
+	@echo "make web       — start the frontend with hot reload on http://localhost:5173"
+	@echo "make down      — stop the stack (the pgdata volume is retained)"
+	@echo "make build     — build service images"
+	@echo "make rebuild   — rebuild service images without cache"
+	@echo "make ps        — show container status"
+	@echo "make logs      — follow logs from all services"
+	@echo "make seed      — load the development catalogue"
+	@echo "make migrate   — run Alembic migrations in the backend"
+	@echo "make eval      — run offline evaluation scenarios"
+	@echo "make warmup    — prepare the ingestion adapter cache"
+	@echo "make psql      — open a PostgreSQL shell"
+	@echo "make test      — run the Python test suite"
+	@echo "make lint      — run type checks and validation guardrails"
+	@echo "make bot       — start the bot (requires TELEGRAM_BOT_TOKEN in .env)"
+	@echo "make clean     — remove containers, local images, and the pgdata volume"
+
+.PHONY: setup
+setup:
+	python3 -m venv .venv
+	.venv/bin/python -m pip install --upgrade pip
+	.venv/bin/python -m pip install -r requirements-dev.txt
 
 .PHONY: up
 up:

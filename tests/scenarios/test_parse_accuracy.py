@@ -1,4 +1,4 @@
-"""Метрика слота №1 на 52 русских фразах (приёмка T-07) + проверка provenance-guard'а.
+"""Метрика слота №1 на 52 русских фразах (приёмка provider integration) + проверка provenance-guard'а.
 
 Объём набора = объём приёмки (50+ реплик): на 12 фразах одна потерянная «впятером» давала
 минус 3,5%, и модель с 96% и модель со 100% нельзя было различить достоверно.
@@ -298,11 +298,11 @@ def run_cases(slots: Any) -> list[tuple[str, TripRequest, dict[str, Any], list[s
 
 
 class TestOfflineMetric:
-    """Офлайн-гейт: метрика считается на моках T-05, сети нет, тест обязателен."""
+    """Офлайн-гейт: метрика считается на моках offline fixture, сети нет, тест обязателен."""
 
     def test_hard_fields_on_mocks(self) -> None:
         result = score(run_cases(MockSlots()))
-        print(f"\nмоки T-05: hard-полей {result['fields']}, верно {result['correct']} "
+        print(f"\nмоки offline fixture: hard-полей {result['fields']}, верно {result['correct']} "
               f"({result['accuracy']:.0%}), выдуманных {result['fabricated']}")
         assert result["accuracy"] >= 0.9
         assert result["fabricated"] == 0
@@ -472,7 +472,7 @@ class TestContractOverModelJudgement:
     def test_cited_city_loses_its_preposition(self) -> None:
         """Живая цитата «в сочи» — это про предлог, а контракт хранит название города.
 
-        Детерминированный парсер T-05 даёт «сочи» без предлога, и живой путь обязан сходиться
+        Детерминированный парсер offline fixture даёт «сочи» без предлога, и живой путь обязан сходиться
         с моком на одном входе: иначе одна и та же фраза собирается в два разных запроса.
         """
 
@@ -519,7 +519,7 @@ class TestContractOverModelJudgement:
 
 
 class TestSharedDateReader:
-    """Один разборщик дат на три пути: мок T-05, цитата живой модели, ответ на вопрос.
+    """Один разборщик дат на три пути: мок offline fixture, цитата живой модели, ответ на вопрос.
 
     Разные копии давали три разных плана на одной фразе: «с 28 по 5» мок собирал в ноябре
     и получал пустую вилку, коэрсер брал `min`/`max` по дням (5 октября → 28 ноября), узел
@@ -742,7 +742,7 @@ class TestProviderFailureIsolation:
 
     На живом прогоне `httpx.ReadTimeout` вылетал из `_complete` → `_structured` →
     `parse_verbose` → `run_cases` и обрывал метрику на первом зависшем сообщении. Приёмка
-    T-07 требует после неудачи fallback-парсер с `FABRICATED_FIELD`, а не падение: неудача
+    provider integration требует после неудачи fallback-парсер с `FABRICATED_FIELD`, а не падение: неудача
     транспорта ведёт ровно туда же, куда неудача схемы, и отличается только причиной.
     """
 
@@ -821,7 +821,7 @@ class TestProviderFailureIsolation:
         assert {item["kind"] for item in provider.failures} == {"provider"}
         for message, _, expected, rejected in rows:
             assert rejected == [f"*: provider_unavailable → fallback_parser"], message
-        #: до live-прогона дело не дошло, поэтому hard-поля те же, что у моков T-05
+        #: до live-прогона дело не дошло, поэтому hard-поля те же, что у моков offline fixture
         result = score(rows)
         assert result == score(run_cases(MockSlots()))
 

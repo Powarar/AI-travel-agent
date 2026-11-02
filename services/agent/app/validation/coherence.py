@@ -70,7 +70,7 @@ def _all_price_lines(plan: Plan) -> list[PriceLine]:
 
 # ------------------------------------------------------------- название → код
 #
-# Словарь и транслитерация, а не модель (CONTRACTS.md, «Названное направление»):
+# Словарь и транслитерация, а не модель (AGENTS.md, «Названное направление»):
 # сворачивание «сочи» в `sochi` обязано быть воспроизводимым, и оно должно совпадать со
 # схемой, по которой названы коды сида (`data/seeds/destinations.json`). У модели здесь нет
 # права голоса: её ответ нельзя положить в основу blocking-нарушения.
@@ -224,7 +224,7 @@ def _matches(named: set[str], catalog: set[str]) -> bool:
 
 def check_direction(request: TripRequest, plan: Plan,
                     candidates: list[Candidate]) -> Violation | None:
-    """Названное пользователем направление обязано быть в плане (CONTRACTS.md).
+    """Названное пользователем направление обязано быть в плане (AGENTS.md).
 
     Разрешено ровно два состояния: код плана совпал с названным словом, или
     `HARD_CONSTRAINT_UNSATISFIED` с `field_path="direction.explicit"`. Отсутствие в

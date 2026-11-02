@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CACHE_DIR = ROOT / "data" / ".cache"
 SEEDS_DIR = ROOT / "data" / "seeds"
 
-USER_AGENT = "krutieperci-seed/1.0 (hackathon demo)"
+USER_AGENT = "ai-travel-agent-seed/1.0"
 BACKOFF_S = (1.0, 3.0, 9.0)
 
 # Единая точка истины по происхождению данных: real | synthetic.

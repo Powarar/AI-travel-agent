@@ -126,7 +126,7 @@ class TestOfflineWalk:
         assert payload["summary"]["reached_plan"] == 0
 
     def test_date_of_the_run_is_the_one_the_golden_numbers_were_counted_on(self) -> None:
-        # 125 200 ₽ из ассертов T-05 посчитаны для этой даты; на реальной дате цены фикстур
+        # 125 200 ₽ из ассертов offline fixture посчитаны для этой даты; на реальной дате цены фикстур
         # разошлись бы с тестом, и прогон перестал бы быть тем же самым сценарием
         assert (rp.FIXTURE_NOW.year, rp.FIXTURE_NOW.month) == (2026, 11)
 
@@ -167,7 +167,7 @@ class TestOfflineWalk:
 class TestCostVisibility:
     def test_mock_routing_prints_that_there_is_no_network(self, capsys) -> None:
         rp.print_routing(CountingSlots())
-        assert "моки T-05" in capsys.readouterr().out
+        assert "моки offline fixture" in capsys.readouterr().out
 
     def test_live_routing_lists_the_env_var_and_the_model_behind_it(self, capsys,
                                                                     monkeypatch) -> None:
@@ -179,7 +179,7 @@ class TestCostVisibility:
         assert "gemini-3-flash" in out            # слотный переопределённый маршрут
         assert "qwen3.5-flash" in out             # общая модель для остальных
         assert "слот выключен" in out             # без RERANK_MODEL слот №3 не трогает шлюз
-        assert "не вызывается" in out             # SL-6 появится с T-08
+        assert "не вызывается" in out             # SL-6 появится с replanning layer
 
 
 class StubReranker:
@@ -207,7 +207,7 @@ class StubReranker:
 
 
 class TestRerankOnlyHybrid:
-    """Гибрид SL-3: чат — моки T-05, живой только `/rerank`. Здесь проверяется офлайн-часть.
+    """Гибрид SL-3: чат — моки offline fixture, живой только `/rerank`. Здесь проверяется офлайн-часть.
 
     Главный риск флага — не «плохой реранк», а то, что прогон, названный бесплатным, заплатит за
     чат или за дефолтную модель реранка. Поэтому проверки именно об этом: без `RERANK_MODEL`
@@ -291,7 +291,7 @@ class TestRerankOnlyHybrid:
         assert code == 0
         assert payload["routing"] == {"chat": "mock", "rerank": "stub-reranker"}
         assert payload["models"]["SL-3 relevance"] == "stub-reranker"
-        assert payload["models"]["SL-1 parse"] == "mock (T-05)"
+        assert payload["models"]["SL-1 parse"] == "mock (offline fixture)"
         assert stub.closed is True  # dry-run обязан закрыть собранный клиент
 
     def test_a_live_chat_provider_is_refused_rather_than_paid_for(self, capsys) -> None:

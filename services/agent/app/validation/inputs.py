@@ -1,4 +1,4 @@
-"""Вход валидатора: собранный план. TripState не трогаем (T-01), repair не реализовываем."""
+"""Вход валидатора: собранный план. TripState не трогаем (domain-model layer), repair не реализовываем."""
 
 from __future__ import annotations
 

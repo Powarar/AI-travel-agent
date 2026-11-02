@@ -1,4 +1,4 @@
-name: krutieperci
+name: ai-travel-agent
 
 x-build-root: &build-root
   context: .

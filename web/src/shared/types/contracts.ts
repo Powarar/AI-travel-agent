@@ -1,4 +1,4 @@
-// Зеркало shared/contracts и SSE-контракта (services/agent/docs/CONTRACTS.md).
+// Зеркало shared/contracts и SSE-контракта (AGENTS.md).
 // Описаны только поля, которые читает экран; остальное проходит как есть.
 
 export type DataStatus = 'verified' | 'partially_verified' | 'stale' | 'unknown' | 'synthetic' | 'real'

@@ -1,4 +1,4 @@
-"""T-01 приёмка: модели TripRequest/TripState/Money/Violation."""
+"""domain-model layer приёмка: модели TripRequest/TripState/Money/Violation."""
 
 import re
 from datetime import date, datetime, timezone

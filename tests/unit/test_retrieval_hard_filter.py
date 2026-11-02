@@ -1,4 +1,4 @@
-"""T-10: SQL hard-фильтр на Postgres. Строки теста живут в транзакции и откатываются."""
+"""retrieval layer: SQL hard-фильтр на Postgres. Строки теста живут в транзакции и откатываются."""
 
 from __future__ import annotations
 

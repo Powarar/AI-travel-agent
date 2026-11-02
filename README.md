@@ -1,209 +1,101 @@
-# О! Куда — AI travel agent для О! Хакатон 2026 (трек «О!дин запрос»)
+# AI Travel Agent
 
-Агент, который превращает одно сообщение путешественника в согласованный план поездки
-и доводит до имитированной покупки: вдохновение → уточнение → подбор → сравнение →
-сборка → корзина → пересборка по дельте.
+[Русская версия](README.ru.md)
 
-**Статус:** прототип. Финальные сборки принимают **до 2026-10-29 10:00 UTC+3** — после этого
-кодовый фриз, дальше только зашита. Данных от организаторов нет. Что в каталоге реально, а
-что сгенерировано — помечено в каждой строке полем `data_status`: реальные аэропорты
-(543, OurAirports), климат (732, Open-Meteo), направления (61, GeoNames) и расстояния
-трансферов (1 239, OSRM); синтетические — все цены: 1 318 отелей, 45 284 ставки ночей и
-3 788 плеч перелётов (95% строк каталога).
+An AI-assisted trip-planning application that turns a conversational request into a
+traceable, constraint-aware travel plan. It keeps language understanding separate
+from deterministic planning: the model extracts intent and explains choices, while
+code owns prices, availability, validation, and the final decision.
 
-## Демо
+> **Project status:** active prototype. The catalogue is seeded for local development;
+> it is not a booking engine and must not be presented as one.
 
-Попробовать сервис можно в браузере: [krutieperci.62-109-29-105.sslip.io](https://krutieperci.62-109-29-105.sslip.io/).
-Telegram Mini App доступен через [бота @ostrovok_kuda_bot](https://t.me/ostrovok_kuda_bot).
-Видео с экрана: [запись прогона на Google Drive](https://drive.google.com/file/d/1Y67ER5F7CN9vlV9RHzUTL5-G9IMh3exK/view?usp=sharing).
+## What it demonstrates
 
-## Документация
+- A stateful planning flow: request → clarifying questions → search → plan → checkout mock.
+- Hard-constraint validation for dates, occupancy, pets, transfers, availability, and budget.
+- Incremental replanning: a change invalidates only the affected parts of a trip.
+- Clear provenance: offers carry source, freshness, and verification status.
+- An LLM boundary that keeps arithmetic and factual assertions out of the model.
+- A React/Vite client, FastAPI services, PostgreSQL/pgvector, and a Telegram bot adapter.
 
-Две папки по адресату: что читает модель, что читают люди.
-
-### `agent/` — машинный слой
-
-Кидается агенту в контекст целиком. Только правила, имена и лимиты — без альтернатив и дат.
-
-| Файл                                     | Зачем                                                                                                                 |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| [agent/INFA.md](agent/INFA.md)           | правила и пайплайн: три инварианта, граница модель/код, конвенции кода, кто что ведёт, определение готовности         |
-| [agent/CONTRACTS.md](agent/CONTRACTS.md) | словарь имён: поля `TripRequest` и `TripState`, `Money`, коды нарушений, реестр инструментов, SSE и HTTP, лимиты хода |
-| [agent/TASKS.md](agent/TASKS.md)         | доска T-01…T-13: волны, владелец, зависимости, текст для вставки, приёмка командами                                   |
-
-### `docs/` — человеческий слой
-
-Обоснование и расписание. Агенту целиком не давать — отвергнутые альтернативы он читает как
-открытые решения. Кроме одного случая: раздел, названный в блоке задачи.
-
-| Файл                                         | Зачем                                                                                                 |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | как устроено и почему: фазы, граф зависимостей, retrieval / composer / validator / repair, надёжность |
-| [docs/LLM-BOUNDARY.md](docs/LLM-BOUNDARY.md) | где модель (6 мест), где она излишество, сравнение бэкендов решений                                   |
-| [docs/adr.md](docs/adr.md)                   | 12 принятых решений: альтернативы, компромиссы, когда пересматриваем                                  |
-| [docs/PLAN.md](docs/PLAN.md)                 | порядок сборки по дням, гейты, что вырезано и почему                                                  |
-
-[README.md](README.md) — витрина: что это, как запустить, какие цифры замеряем.
-
-Признак слоя: в файле есть альтернативы, обоснования или даты — он в `docs/`; имена полей,
-коды нарушений, лимиты — в `agent/`.
-
-## Главный принцип
-
-Модель понимает язык и объясняет. Код решает, проверяет и считает.
+## Architecture
 
 ```
-LLM:  разбор сообщения → TripRequest · формулировка вопросов · мягкая релевантность
-      · выбор финалистов · текст объяснения · diff при пересборке          (6 мест)
-
-Код:  спрашивать или искать · какие сервисы звать · SQL-фильтры · скоринг
-      · стыковки · сумма бюджета · выбор repair-действия · сверка чисел   (всё остальное)
+web / Telegram bot
+        │
+        ▼
+   backend API ───────── PostgreSQL + pgvector
+        │
+        ▼
+  planning agent ─────── catalog and provider adapters
+        │
+        ▼
+ shared domain contracts
 ```
 
-## Замер, который и есть аргумент
+The repository is organized by deployable component:
 
-| Ход пользователя | tool-вызовы   | LLM-вызовы | wall-clock |
-| ---------------- | ------------- | ---------- | ---------- |
-| первичный запрос | 6 (замерено)  | 5 (замерено) | 5 мс на моках; на живых моделях — замер |
-| «давай на троих» | замерить      | 1          | замерить   |
-| «бюджет −30%»    | 0 (ступень 0) | 1          | замерить   |
+| Path | Responsibility |
+| --- | --- |
+| `web/` | React + TypeScript user interface |
+| `services/backend/` | Public API, persistence, search, ranking, and integrations |
+| `services/agent/` | Planning graph, validation, repair, prompts, and tool orchestration |
+| `services/bot/` | Telegram adapter |
+| `shared/contracts/` | Typed domain models shared by services |
+| `data/` | Reproducible seed data and generators |
+| `tests/` | Unit, integration, agent, and end-to-end scenario tests |
 
-Пустые ячейки заполняются eval- прогоном. До замера это гипотеза, и на защите так и
-говорить. Числа первой строки — тот же сценарий, что в `tests/scenarios/test_golden_path.py`:
-пять обращений к чат-модели (слот №3 — `/rerank`, он не ест лимит чат-вызовов), шесть обращений
-к источникам, два вопроса. Wall-clock 5 мс — это контур на моках без сети; на живых моделях
-ход упирается в латентность шлюза, и замеряется отдельным прогоном `scripts/run_pipeline.py`.
+## Quick start
 
-## Запуск
+### Prerequisites
+
+- Docker Desktop with Docker Compose
+- Python 3.11+ for local tests and data scripts
+- Node.js 22+ only when running the frontend outside Docker
 
 ```bash
-cp .env.example .env        # ключ модели
-make up                     # postgres + api
-make seed                   # синтетический каталог + подогрев кэша
-make test                   # unit + property + сквозной сценарий
-```
-
-### Провайдер, модели и секреты
-
-Провайдер LLM — шлюз [AITUNNEL](https://aitunnel.ru) (`LLM_PROVIDER=aitunnel`). Модели по слотам:
-`LLM_MODEL=deepseek-v4.1-flash-1017`, `LLM_MODEL_QUESTIONS=deepseek-v4.1-flash`,
-`LLM_MODEL_FINALISTS=deepseek-v4-flash`, `LLM_MODEL_EXPLAIN=qwen3.7-plus`,
-`RERANK_MODEL=qwen3-reranker-8b`. Без ключа работает `LLM_PROVIDER=mock`: офлайн и бесплатно.
-
-Реальные значения переданы организаторам в `secrets.env.age` (age, ключ организаторов);
-список переменных — `.env.example`. Открытый `.env` в git не попадает. Расшифровка у жюри:
-
-```bash
-age -d -i <закрытый_ключ> -o .env secrets.env.age
+cp .env.example .env
+make setup
 make up
+make seed
+make test
 ```
 
-### Прогон контура целиком
+The API is exposed on `http://localhost:8010`; the development UI is available on
+`http://localhost:5173` after `make web` (or as part of `make up`).
 
-Одна команда собирает весь путь — сообщение → вопросы → направления → поиск → сборка →
-валидация → объяснение → plan → mock-checkout — и печатает то, что уходит в метрики: вызовы и
-время по каждому LLM-слоту, токены, wall-clock, решение антигаллюцинационного guard'а, какие
-отели выставил слот №3.
+The default `LLM_PROVIDER=mock` is deterministic and needs no API key. To use an
+OpenAI-compatible provider, set `LLM_PROVIDER`, `LLM_API_KEY`, `LLM_BASE_URL`, and
+the relevant model variables in `.env`. Never commit `.env` or private keys.
+
+## Everyday commands
 
 ```bash
-env -u LLM_API_KEY .venv/bin/python scripts/run_pipeline.py \
-    --answer origin=Москва --answer "dates.start=с 14 по 21"
+make setup    # create the Python development environment
+make up       # start the local stack and run migrations
+make down     # stop the stack
+make seed     # load the development catalogue
+make test     # run the Python test suite
+make lint     # run type checks and architecture guardrails
+make eval     # run offline evaluation scenarios
+make web      # run the frontend in Docker with hot reload
 ```
 
-Без `--provider` это моки T-05: сеть не трогается, денег не тратится, числа совпадают с
-ассертами теста. Ответ, который узел не прочитал (`2026-11-12` вместо `с 12 по 17`), —
-провал прогона: код 1, в отчёте поле `failed` с числом уже потраченных LLM-вызовов, а не
-трекбек посреди хода. Живой прогон — `--provider aitunnel`; модели маршрутизируются по слотам
-(`LLM_MODEL`, `LLM_MODEL_PARSE`, `LLM_MODEL_QUESTIONS`, `LLM_MODEL_FINALISTS`,
-`LLM_MODEL_EXPLAIN`, и `RERANK_MODEL` для слота №3). Прежде чем платить, посмотрите маршруты:
+## Development principles
 
-```bash
-env -u LLM_API_KEY .venv/bin/python scripts/run_pipeline.py --provider aitunnel --dry-run
-```
+1. `TripState` is the source of truth; chat history only produces requirement changes.
+2. Hard constraints are never silently weakened. Return alternatives or ask for an
+   explicit trade-off instead.
+3. Use `Decimal`-based domain money types—never floats—for price calculations.
+4. Treat catalogue data and offers as separate concerns, and preserve provenance.
+5. Keep LLM calls behind the provider interface. Validation, totals, dates, and facts
+   stay deterministic.
 
-`env -u LLM_API_KEY` нужен, потому что переменная shell'а из-под старой сессии перекрывает
-`.env`. Источники данных — флаг `--sources`: `fixture` (по умолчанию, золотой путь T-05, числа
-совпадают с ассертами) или `seed` (каталог `data/seeds`, те же шесть сигнатур поверх реальных
-строк). Без собранного каталога `seed` не подменяется фикстурами: прогон встаёт до первого
-запроса с кодом 2 и строкой, где сказано, как собрать сид. Retrieval поверх Postgres
-подключается в T-10, и точка замены — `build_sources()` в том же скрипте.
+Implementation guidance for coding agents lives in [AGENTS.md](AGENTS.md).
 
-Приёмка одного слота №3 — флаг `--rerank-only`: чат-слоты остаются моками T-05, живой становится
-только `/rerank`. Так вход прогона не меняется от прогона к прогону (других дат, другого бюджета,
-других финалистов), и разницу в порядке отелей нельзя списать на модель чата. Без `RERANK_MODEL`
-слот считается выключенным и прогон остаётся бесплатным — дефолтная модель не подставляется молча.
+## Repository hygiene
 
-```bash
-env -u LLM_API_KEY .venv/bin/python scripts/run_pipeline.py --rerank-only --dry-run
-```
-
-dry-run напечатает `chat=mock (бесплатно), rerank=<модель>`; с `--json` там же лежит объект
-`routing` с этими двумя значениями. Живой чат с `--rerank-only` не сочетается: скрипт отказывает
-и возвращает 2, а не платит за пять слотов, ожидая один.
-
-В `--dry-run` к маршрутам добавляются две вещи, ради которых флаг и заводился: preflight
-конфигурации и план вызовов. Preflight проверяет ключ (печатается только «задан / не задан» и
-длина — значение ключа не выводится никогда), `LLM_BASE_URL` и модель каждого слота; пустая
-модель или пустой ключ останавливают запуск с кодом 2 до конструирования провайдера —
-`httpx.Client` с кривым `.env` падает на первом запросе, то есть посреди уже оплаченного хода.
-План считается бесплатным прогоном моков T-05 на том же сообщении и тех же `--answer`, а не
-оценкой «примерно по одному»:
-
-```
-  слот             на ход  всего  чем
-  SL-1 parse            1      3  чат — платно
-  SL-2 question         2      6  чат — платно
-  SL-3 relevance        1      3  /rerank — платно
-  ...
-  чат-вызовов на ход: 5 при лимите 6, обращений к источнику: 6, исход прогона: plan_ready
-```
-
-Цифр стоимости здесь нет намеренно: план отдаёт число обращений, а ₽ к ним прикладывается своей
-таблицей. Если на каком-то вопросе нет ответа во флагах, план на нём обрывается и говорит об этом
-отдельно — доращивать его выдуманным ответом значило бы недооценить слоты после вопроса.
-
-Флаг `--json` заменяет таблицы одним объектом на stdout — для фронта (T-06) и для замеров,
-которые складываются в файл:
-
-```bash
-env -u LLM_API_KEY .venv/bin/python scripts/run_pipeline.py --json \
-    --answer origin=Москва --answer "dates.start=с 14 по 21" | jq .summary
-```
-
-В объекте лежат: `runs[]` со счётчиками хода, списком ответов, нарушениями, вердиктом guard'а,
-деньгами (`money`), релевантностью отелей (`relevance`, `null` — слот №3 не отвечал) и полным
-`state` (это тот же `TripState`, что уходит фронту); `slots[]` с вызовами и перцентилями по
-каждому из шести слотов, а у слота №3 там же `docs` (сколько отелей было входе каждого вызова) и
-`reordered` (отличился ли порядок реранкера от порядка источника) — те два числа, ради которых
-слот и замеряется, и по строке заметки их не сравнить между прогонами; `models` — какая модель
-закреплена за слотом; `failures` и `rerank_failures` — отказы провайдера; `summary` — сводка по
-прогонам. В `--dry-run --json` добавляются `preflight` (что проверено и что помешает) и `plan`
-(те же числа, что в таблице плана). В режиме `--json` вопросы не задаются в терминал: ответ на
-каждый нужен заранее, через `--answer`, иначе прогон останавливается с сообщением в stderr.
-
-### Фронтенд
-
-Для разработки интерфейса достаточно Docker Desktop и одной команды из корня проекта:
-
-```bash
-make web
-```
-
-Страница откроется на <http://localhost:5173> (порт можно изменить через `WEB_PORT` в `.env`).
-Изменения в `web/src` подхватываются автоматически. `make web` запускает только Vite;
-для запросов к `/api` дополнительно поднимите backend командой `make up`.
-Фронтенд пока содержит стартовый экран, а не готовый пользовательский сценарий.
-Палитра, логотип и компоненты описаны в [web/BRANDING.md](web/BRANDING.md).
-
-Если удобнее запускать без Docker:
-
-```bash
-cd web
-npm ci
-npm run dev
-```
-
-Нужен Node.js 22. Локальный Vite проксирует `/api` на `http://localhost:8010`;
-при другом адресе backend задайте `API_PROXY_TARGET`.
-
-Ещё не реализовано — план по дням в `docs/PLAN.md`.
+Generated dependencies, Python caches, build output, local evaluation output, and
+developer secrets are intentionally ignored. Recreate them locally with `npm ci`,
+the Make targets above, or the relevant generator; do not commit them.

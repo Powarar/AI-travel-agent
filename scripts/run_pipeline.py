@@ -1,4 +1,4 @@
-"""Полный прогон контура одной командой (приёмка T-07): сообщение → вопросы → план → mock-checkout.
+"""Полный прогон контура одной командой (приёмка provider integration): сообщение → вопросы → план → mock-checkout.
 
 Зачем отдельный скрипт, если есть `tests/scenarios/`: тест меряет инварианты на моках, а живую
 модель из pytest видно только через `-s` и только одним взглядом. Здесь то же сообщение и те же
@@ -19,10 +19,10 @@
 Три границы, которые скрипт не переступает:
 
 * источники — фикстуры сценария из `tests/scenarios/test_golden_path.py` (по умолчанию) или
-  каталог `data/seeds` (`--sources seed`), но не БД: retrieval за П2 (T-10), и подменять его
+  каталог `data/seeds` (`--sources seed`), но не БД: retrieval за П2 (retrieval layer), и подменять его
   здесь значило бы мерить свой фильтр вместо чужого. Точка замены — `build_sources()`;
 * слот №6 (`diff`) не вызывается: у него пока нет места в контуре, он появляется вместе с
-  дельта-пересборкой в T-08. Пустая строка в таблице честнее фиктивного вызова;
+  дельта-пересборкой в replanning layer. Пустая строка в таблице честнее фиктивного вызова;
 * живые вызовы только когда `--provider` (или `LLM_PROVIDER`) не `mock`. Прогон по умолчанию
   бесплатный, и `env -u LLM_API_KEY` при старте обязателен: переменная shell'а из-под старой
   сессии перекрывает `.env`, и «офлайн» прогон начинает платить.
@@ -57,7 +57,7 @@ from shared.contracts.enums import Outcome
 from shared.contracts.money import BudgetLedger
 from shared.contracts.state import RunBudget, TripState
 
-#: Сообщение золотого пути — то же, на котором стоят ассерты T-05: менять его здесь значит
+#: Сообщение золотого пути — то же, на котором стоят ассерты offline fixture: менять его здесь значит
 #: потерять сравнимость с тестом.
 DEFAULT_MESSAGE = "хочу к тёплому морю в ноябре вдвоём с ребёнком, 150к, без долгих перелётов"
 #: Дата тестов: источники фикстуруют цены относительно неё, и на реальной дате числа плана
@@ -145,7 +145,7 @@ class MeasuredSlots:
 
 
 class ChatMockRerankLive:
-    """Гибрид замеров SL-3: чат — моки T-05, слот №3 — живой `/rerank`.
+    """Гибрид замеров SL-3: чат — моки offline fixture, слот №3 — живой `/rerank`.
 
     Приёмка слота №3 — качество порядка отелей и время одного обращения. Если вместе с
     реранкером включить чат, живыми становятся пять мест сразу: `parse` каждый раз отдаёт
@@ -225,7 +225,7 @@ def build_sources(kind: str = "fixture") -> dict[str, Source]:
     """Источники прогона: `fixture` — фикстуры сценария, `seed` — каталог `data/seeds`.
 
     Импорт из тестового модуля осознанный: фикстуры золотого пути — единственный набор, на
-    котором ассерты T-05 сходятся до копейки, и остаются значением по умолчанию. `seed` —
+    котором ассерты offline fixture сходятся до копейки, и остаются значением по умолчанию. `seed` —
     тот же интерфейс над реальными строками сида: он нужен ровно для проверки честности
     исходов («не нашли» должно означать «не нашли», а не «в фикстуре нет строчки»).
     """
@@ -318,7 +318,7 @@ def _fill(run: Any, runtime: Runtime, report: TurnReport) -> None:
 
     state: TripState = run.state
     budget = state.budgets
-    #: состояние целиком — то, что ждёт фронт (T-06): план, кандидаты, provenance, счётчики.
+    #: состояние целиком — то, что ждёт фронт (API layer): план, кандидаты, provenance, счётчики.
     #: Сериализуется до `_fill`, а не в самом конце: прогон обязан отдавать JSON и когда
     #: денег в плане нет, и когда до плана не дошли.
     report.state_dump = json.loads(state.model_dump_json())
@@ -382,10 +382,10 @@ def slot_models(slots: LLMSlots) -> dict[str, str]:
     """
 
     if isinstance(slots, MockSlots):
-        return {label: "mock (T-05)" for _, label, _ in SLOTS}
+        return {label: "mock (offline fixture)" for _, label, _ in SLOTS}
     if isinstance(slots, ChatMockRerankLive):
         #: чат остаётся моком, и врать в таблице про пять слотов, которые не вызывались, нельзя
-        hybrid = {label: "mock (T-05)" for _, label, _ in SLOTS}
+        hybrid = {label: "mock (offline fixture)" for _, label, _ in SLOTS}
         hybrid["SL-3 relevance"] = (slots.reranker.model if slots.reranker is not None
                                      else "(слот выключен: RERANK_MODEL не задан)")
         return hybrid
@@ -394,7 +394,7 @@ def slot_models(slots: LLMSlots) -> dict[str, str]:
     for name, label, env_name in SLOTS:
         chosen = os.environ.get(env_name, "").strip()
         if name == "diff":
-            chosen = f"{chosen or base or '(не задан)'} — не вызывается до T-08"
+            chosen = f"{chosen or base or '(не задан)'} — не вызывается до replanning layer"
         elif name == "soft_relevance":
             chosen = chosen or "(слот выключен: RERANK_MODEL не задан)"
         elif not chosen:
@@ -416,7 +416,7 @@ def print_routing(slots: LLMSlots, sources: str = "fixture") -> None:
         print(f"  chat={summary['chat']} (бесплатно), rerank={summary['rerank']}")
         return
     if isinstance(slots, MockSlots):
-        print("  все слоты — моки T-05: сеть не трогается, денег нет")
+        print("  все слоты — моки offline fixture: сеть не трогается, денег нет")
         return
     models = slot_models(slots)
     for name, label, env_name in SLOTS:
@@ -478,7 +478,7 @@ def plan_calls(message: str, answers: Mapping[str, str], sources: str, *,
                repeat: int, now: datetime) -> dict[str, Any]:
     """Сколько обращений сделает прогон — числа моков, а не строчка «примерно по одному».
 
-    Считается бесплатным прогоном тех же слотов T-05 на том же сообщении и тех же `--answer`:
+    Считается бесплатным прогоном тех же слотов offline fixture на том же сообщении и тех же `--answer`:
     форма хода от живого провайдера не меняется, меняется только содержимое ответов. Поэтому
     числа можно получить до первого платного запроса, и на `--repeat` они умножаются ровно.
     """
@@ -516,13 +516,13 @@ def print_plan(plan: Mapping[str, Any], provider: str, rerank_only: bool) -> Non
     """Таблица плана: что и сколько раз будет вызвано, и платно ли это в этой конфигурации."""
 
     paid = paid_slots(provider, rerank_only)
-    print("\n=== план вызовов (посчитан моками T-05 на этом же входе; сеть не трогали)")
+    print("\n=== план вызовов (посчитан моками offline fixture на этом же входе; сеть не трогали)")
     print(f"  {'слот':<16} {'на ход':>6} {'всего':>6}  чем")
     for name, label, env_name in SLOTS:
         count = plan["per_run"][label]
         kind = ("/rerank" if name == "soft_relevance" else "чат")
         if name == "diff":
-            kind += " — не вызывается до T-08"
+            kind += " — не вызывается до replanning layer"
         elif kind == "чат":
             kind += " — платно" if paid["chat"] else " — моки, бесплатно"
         else:
@@ -621,7 +621,7 @@ def json_payload(reports: Sequence[TurnReport], measured: MeasuredSlots, *,
                  slots: LLMSlots) -> dict[str, Any]:
     """Ответ прогона одним объектом: метрика, план, состояние и маршрут моделей.
 
-    Фронту (T-06) и замеру слотов нужен один и тот же результат в машиночитаемом виде:
+    Фронту (API layer) и замеру слотов нужен один и тот же результат в машиночитаемом виде:
     человек читает таблицу, а `--repeat` по 12 фразам никто таблицей не разберёт. Поля
     названы как в состоянии, и `state` лежит целиком — пересобирать numbers из строк
     объяснения значило бы иметь два источника чисел (инвариант №1).
@@ -699,7 +699,7 @@ def json_payload(reports: Sequence[TurnReport], measured: MeasuredSlots, *,
 
 
 def build_slots(provider: str, rerank_only: bool = False) -> LLMSlots:
-    """Слоты из флага или окружения: `mock` — моки T-05, иначе живой провайдер.
+    """Слоты из флага или окружения: `mock` — моки offline fixture, иначе живой провайдер.
 
     Флаг не дублирует `LLM_PROVIDER` каприза ради: живой прогон не должен зависеть от того, что
     осталось в `.env` после замера другой модели, а `--provider mock` обязан гарантированно

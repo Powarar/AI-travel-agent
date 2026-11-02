@@ -1,4 +1,4 @@
-"""T-08 repair-планировщик: не ослабляет hard и не повторяет действие."""
+"""replanning layer repair-планировщик: не ослабляет hard и не повторяет действие."""
 
 from services.agent.app.repair import next_action
 from shared.contracts.enums import Severity, ViolationCode

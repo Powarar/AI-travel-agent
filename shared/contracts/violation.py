@@ -25,6 +25,6 @@ class Violation(BaseModel):
         return self.severity == Severity.BLOCKING
 
     def signature(self) -> str:
-        """Дедуп действий repair-петли: (code, component) — подпись из T-08."""
+        """Дедуп действий repair-петли: (code, component) — подпись из replanning layer."""
 
         return f"{self.code.value}:{self.affected_component}"

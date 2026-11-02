@@ -1,4 +1,4 @@
-"""Приёмка T-03: границы стыковок, вместимости, питомцев и наличия ставок."""
+"""Приёмка validation layer: границы стыковок, вместимости, питомцев и наличия ставок."""
 
 from datetime import date, datetime, timedelta, timezone
 from uuid import uuid4
@@ -328,7 +328,7 @@ def direction_violation(plan: Plan, request: TripRequest, state: TripState) -> V
 
 
 class TestNamedDestinationAgainstPlan:
-    """CONTRACTS.md, «Названное направление»: план в другом месте — это blocking, а не тишина.
+    """AGENTS.md, «Названное направление»: план в другом месте — это blocking, а не тишина.
 
     Ровно тот вход, который прогон 2026-10-28 отдал как `plan_ready` с пустыми нарушениями:
     пользователь сказал «сочи», источник вернул своё, сборка взяла Анталью.

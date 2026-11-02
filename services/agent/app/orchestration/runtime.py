@@ -1,4 +1,4 @@
-"""Рантайм оркестратора: цикл одного хода (`docs/ARCHITECTURE.md` §3).
+"""Рантайм оркестратора: цикл одного хода (`AGENTS.md` §3).
 
 Здесь живёт всё, что узлам запрещено: обращения к инструментам, счётчики хода, `interrupt`
 с сериализацией состояния и возобновление по ответу. Узлы остаются чистыми, поэтому прогон
@@ -56,7 +56,7 @@ from shared.contracts.violation import Violation
 
 logger = logging.getLogger(__name__)
 
-#: Заглушка источника (T-10 заменит её retrieval-ом поверх БД): аргументы → кандидаты.
+#: Заглушка источника (retrieval layer заменит её retrieval-ом поверх БД): аргументы → кандидаты.
 Source = Callable[[Mapping[str, object]], SearchResult]
 
 INSPIRE_TOOLS: frozenset[str] = frozenset({"suggest_destinations", "weather_climate"})
@@ -90,11 +90,11 @@ class Scratch:
     """Допустимое множество хода в памяти процесса: ответы источников и собранный план.
 
     Решения — в `TripState`; здесь только то, что уже отдали инструменты, чтобы ступень 0
-    пересобрала план без обращений к источнику (CONTRACTS.md, «Ступени эскалации»).
+    пересобрала план без обращений к источнику (AGENTS.md, «Ступени эскалации»).
 
     Ограничение этого блока: после рестарта процесса черновика нет, и ступень 0/1 собрать
     план не из чего — сборка отдаст `CANDIDATES_EMPTY`, а не молча сходит в источник
-    поверх `tools_for`. Снимает это T-10: кандидаты начинают читаться из БД, и `results`
+    поверх `tools_for`. Снимает это retrieval layer: кандидаты начинают читаться из БД, и `results`
     перестает быть единственным носителем данных между ходами.
     """
 
@@ -273,7 +273,7 @@ class Runtime:
     # ----------------------------------------------------------- прерванный ход
 
     def dump(self, run: Run) -> str:
-        """Сериализация прерванного хода — строку пишет П2 (T-06) в `run(status=interrupted)`."""
+        """Сериализация прерванного хода — строку пишет П2 (API layer) в `run(status=interrupted)`."""
 
         payload = InterruptedRun(
             run_id=run.run_id,
@@ -442,11 +442,11 @@ class Runtime:
         return run
 
     def _relevance(self, run: Run) -> Run:
-        """Слот №3: мягкая релевантность отелей против фраз предпочтений (CONTRACTS.md).
+        """Слот №3: мягкая релевантность отелей против фраз предпочтений (AGENTS.md).
 
         Отказ, выключенный слот или пустой запрос — не ошибка и не ноль на всех кандидатах:
         порядок остаётся тем, как его отдал источник. Иначе офлайн-прогон и прогон с сетью
-        разошлись бы составом плана, а воспроизводимость трейса — первое требование T-05.
+        разошлись бы составом плана, а воспроизводимость трейса — первое требование offline fixture.
         """
 
         documents = {candidate.candidate_id: nodes.hotel_document(candidate)
@@ -512,7 +512,7 @@ class Runtime:
 
     def _shortlist(self, run: Run) -> Run:
         """12→3 (слот №4) сыграно в INSPIRE на направлениях; здесь фаза отмечена, и счёт
-        версий растёт честно: `COMPARE`/`DIFF` — T-08."""
+        версий растёт честно: `COMPARE`/`DIFF` — replanning layer."""
 
         run.state = nodes.set_stage(run.state, Stage.SHORTLIST)
         return run
@@ -538,7 +538,7 @@ class Runtime:
             return self._stop_by_limit(run)
         bad = unverified_numbers(text, run.state, ledger)
         if bad:
-            # guard из docs/LLM-BOUNDARY.md: одна перегенерация, потом шаблон из состояния
+            # guard из AGENTS.md: одна перегенерация, потом шаблон из состояния
             logger.warning("number guard rejected explanation run=%s numbers=%s", run.run_id, bad)
             again = self._slot_explain(run, explanation)
             if again is None or unverified_numbers(again, run.state, ledger):
@@ -622,7 +622,7 @@ class Runtime:
             run.trace.append(f"REPAIR:{action.step.value}:{action.signature}")
             if action.step == EscalationStep.RE_SEARCH:
                 # Только уже затронутый дельтой re-search. Если repair просит более широкий
-                # поиск, T-08 не реализует ступень 3: вопрос/отказ остаётся честнее.
+                # поиск, replanning layer не реализует ступень 3: вопрос/отказ остаётся честнее.
                 run.dirty |= set(tools_for(run.changed, action.step))
                 self._cache.invalidate(sorted(run.dirty))
                 run.state = nodes.set_stage(run.state, Stage.DECIDE)
@@ -644,7 +644,7 @@ class Runtime:
         ])
         outcome = policy.terminal_outcome(run.state.violations)
         if outcome == Outcome.INFEASIBLE:
-            # отказ обязан называться словами с числами (CONTRACTS.md, «Названное
+            # отказ обязан называться словами с числами (AGENTS.md, «Названное
             # направление», исход 3): строку собирает код из нарушений состояния
             run.explanation = nodes.refusal_text(run.state.violations)
             self._attach_alternatives(run)
@@ -685,7 +685,7 @@ class Runtime:
 
         Слот и инструмент возвращают `None` по одной и той же причине — `exhausted()`, — и
         подпись «tool_calls» при севшем `wall_clock` была бы неправдой: `unresolved` читают
-        и пользователь, и метрики T-09 как объяснение, почему план не дошёл.
+        и пользователь, и метрики evaluation layer как объяснение, почему план не дошёл.
         """
 
         return self._best_effort(run, self._stop_reason(run) or "limit")
@@ -837,7 +837,7 @@ class Runtime:
 
         Чат-слоты и cross-encoder различаются ценой и тем, что они решают; засчитывать реранк
         в `llm_calls` значило бы, что два вопроса плюс перегенерация объяснения обнуляют ход
-        раньше, чем он успеет ранжировать (CONTRACTS.md, «Мягкая релевантность (слот №3)»).
+        раньше, чем он успеет ранжировать (AGENTS.md, «Мягкая релевантность (слот №3)»).
         """
 
         if self._stop_reason(run):
@@ -896,7 +896,7 @@ class Runtime:
     def _charge_tokens(self, run: Run) -> None:
         """Приращение счётчика провайдера → `budgets.tokens`: учёт стоимости хода в состоянии.
 
-        Поле есть в контракте с T-01 и всегда было нулём: «сколько стоил ход» приходилось
+        Поле есть в контракте с domain-model layer и всегда было нулём: «сколько стоил ход» приходилось
         считать по логам. Разность, а не абсолют, — потому что один провайдер обслуживает
         несколько ходов подряд, а отсечку хода задаёт `tokens_seen` на его старте.
         """
@@ -944,7 +944,7 @@ class Runtime:
         )
         if step == EscalationStep.RE_SEARCH:
             # ступень 2 = точечный re-search: у грязных инструментов кэш сбрасывается,
-            # чистые остаются тёплыми (CONTRACTS.md, «Ступени эскалации дельты»)
+            # чистые остаются тёплыми (AGENTS.md, «Ступени эскалации дельты»)
             self._cache.invalidate(sorted(run.dirty))
         logger.info("routed trip=%s changed=%s step=%d tools=%s", run.state.trip_id,
                     sorted(run.changed), step.value, sorted(run.dirty))
@@ -999,7 +999,7 @@ def unverified_numbers(text: str, state: TripState, ledger: BudgetLedger) -> lis
     """Числа ответа против состояния: ни одного, которого нет в `TripState`/`BudgetLedger`.
 
     Дешёвая проверка подстрокой — ровно тот механизм, который не даёт модели написать
-    «152 000 ₽» вместо посчитанных 148 900 ₽ (`docs/LLM-BOUNDARY.md`, антигаллюцинационный
+    «152 000 ₽» вместо посчитанных 148 900 ₽ (`AGENTS.md`, антигаллюцинационный
     guard). Источники чисел: состояние (даты, состав, `ref` кандидатов) и ledger — его
     `total`/`remaining`/`breakdown`, потому что их вычисляет код из тех же линий.
 

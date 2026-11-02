@@ -1,4 +1,4 @@
-"""Детерминированный repair-контур (T-08)."""
+"""Детерминированный repair-контур (replanning layer)."""
 
 from .planner import RepairAction, next_action
 

@@ -1,6 +1,6 @@
 """Policy: severity и repairable кода — свойство кода, а не вывод модели.
 
-Таблица = коды из services/agent/docs/CONTRACTS.md. Ни ранжирование, ни repair, ни
+Таблица = коды из AGENTS.md. Ни ранжирование, ни repair, ни
 review-модель не могут понизить blocking (инвариант №2).
 """
 

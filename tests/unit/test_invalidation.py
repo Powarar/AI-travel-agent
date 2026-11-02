@@ -1,4 +1,4 @@
-"""Приёмка T-04: реестр инструментов, `affected()` и кэш по content-hash."""
+"""Приёмка dependency graph: реестр инструментов, `affected()` и кэш по content-hash."""
 
 from datetime import date, datetime, timezone
 from decimal import Decimal
@@ -95,7 +95,7 @@ def test_named_destination_dirty_transport_and_hotels_via_guard():
 def test_named_destination_also_dirty_the_selector_because_it_filters_the_catalog():
     """У подборщика поле в `inputs`, а не в `guard_fields`: оно уходит в запрос к источнику.
 
-    Без него «сочи» после «подбери сам» пересобирало бы старых финалистов: CONTRACTS.md
+    Без него «сочи» после «подбери сам» пересобирало бы старых финалистов: AGENTS.md
     требует переспросить источник, а не переиспользовать ответ про другое направление.
     """
 

@@ -1,4 +1,4 @@
-"""TripRequest: каждое поле несёт метаданные, а не только значение (agent/CONTRACTS.md)."""
+"""TripRequest: каждое поле несёт метаданные, а не только значение (AGENTS.md)."""
 
 from __future__ import annotations
 
@@ -143,7 +143,7 @@ class TripRequest(BaseModel):
 
     @property
     def pref_text(self) -> str:
-        """Строит код, не модель: `" ".join(soft values)` (ARCHITECTURE.md §5)."""
+        """Строит код, не модель: `" ".join(soft values)` (AGENTS.md)."""
 
         return " ".join(self.soft_preferences)
 
@@ -164,8 +164,8 @@ class TripRequest(BaseModel):
     )
 
     def iter_fields(self) -> list[tuple[str, object]]:
-        """Имена путей — точно как в таблице CONTRACTS.md (`direction.mode`, `party.pets`);
-        на них индексируется реестр T-04."""
+        """Имена путей — точно как в таблице AGENTS.md (`direction.mode`, `party.pets`);
+        на них индексируется реестр dependency graph."""
 
         flat: list[tuple[str, object]] = [("origin", self.origin), ("nights", self.nights)]
         for prefix, attr in self._SECTIONS:

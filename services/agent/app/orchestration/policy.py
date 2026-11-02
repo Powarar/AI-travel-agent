@@ -1,9 +1,9 @@
 """Рёбра контура: какой узел следующий, что спросить, когда ход пора останавливать.
 
-Три вещи, которые здесь решаются кодом (инвариант №3 и `docs/LLM-BOUNDARY.md`: «хватает ли
+Три вещи, которые здесь решаются кодом (инвариант №3 и `AGENTS.md`: «хватает ли
 данных искать» и «какие сервисы звать» — не модель):
 
-* `next_stage` — фазы из `docs/ARCHITECTURE.md` §2, включая `CLARIFY` как паузу;
+* `next_stage` — фазы из `AGENTS.md` §2, включая `CLARIFY` как паузу;
 * `questions_to_ask` — какие unknown-поля значимы для поиска;
 * `question_for_blocking` — что спросить, когда hard-ограничение не выполняется (инвариант №2).
 
@@ -40,7 +40,7 @@ from shared.contracts.violation import Violation
 
 #: Поля, без которых поиск даст неверный результат: их надо спрашивать.
 #: `party.adults` и `direction.mode` в списке отсутствуют — на unknown они закрываются
-#: безопасным `defaulted` (CONTRACTS.md), и вопрос только потратил бы лимит.
+#: безопасным `defaulted` (AGENTS.md), и вопрос только потратил бы лимит.
 #: За вопросами про режим дело дошло до живого контура 2026-10-27: unknown-режим забирал
 #: второй вопрос хода, а ответ «конкретная страна» ставил `explicit` без названия города —
 #: то есть поиск без направления и без INSPIRE. Молча спрашивать об этом нельзя.
@@ -55,7 +55,7 @@ class QuestionSpec(BaseModel):
     """Вопрос как данные: код решает поле и числа, модель даёт формулировку (слот №2).
 
     Pydantic-модель, а не dataclass: спецификация уходит в сериализованный прерванный ход
-    (`runtime.InterruptedRun`) и в SSE-событие `question` (T-06), поэтому она должна
+    (`runtime.InterruptedRun`) и в SSE-событие `question` (API layer), поэтому она должна
     выгружаться и загружаться без ручной сборки полей.
     """
 
@@ -98,7 +98,7 @@ def next_stage(state: TripState) -> Stage | None:
         return Stage.EXPLAIN
     if stage == Stage.EXPLAIN:
         return Stage.PLAN
-    return None                            # PLAN, CHECKOUT, REPAIR (T-08) — терминал
+    return None                            # PLAN, CHECKOUT, REPAIR (replanning layer) — терминал
 
 
 def _needs_destinations(state: TripState) -> bool:
@@ -208,7 +208,7 @@ def _spec_for(path: str, request: TripRequest) -> QuestionSpec:
 def question_for_blocking(state: TripState) -> QuestionSpec | None:
     """Hard-нарушение, которое не чинится пересчётом, — это вопрос, а не ослабление.
 
-    `repairable=True` оставлен T-08: в этом блоке пересборку-чинимку не играем, такой
+    `repairable=True` оставлен replanning layer: в этом блоке пересборку-чинимку не играем, такой
     терминал — `infeasible` с посчитанными числами.
     """
 
@@ -242,7 +242,7 @@ def _ask_about(violation: Violation, state: TripState) -> QuestionSpec:
             evidence={"expected": violation.expected or "", "actual": violation.actual or ""},
         )
     if path == "direction.explicit":
-        # Формулировка для человека, а не имя поля (CONTRACTS.md, «Названное направление»):
+        # Формулировка для человека, а не имя поля (AGENTS.md, «Названное направление»):
         # ответ здесь ровно двух видов — другое название или «подбери сам», и оба должны
         # читаться из варианта. Число рассмотренных направлений берётся из `evidence`
         # валидатора: узел решения их не пересчитывает и не выдумывает, а слот №2 кладёт
@@ -283,14 +283,14 @@ def _shortest_flight_hours(state: TripState) -> str | None:
 
 
 def blocking_actions(violations: list[Violation]) -> list[str]:
-    """Что бы чинил repair (T-08) — уходит в `unresolved` и в `budget_exhausted`."""
+    """Что бы чинил repair (replanning layer) — уходит в `unresolved` и в `budget_exhausted`."""
 
     return sorted({f"{violation.code.value}:{action}"
                    for violation in violations for action in violation.suggested_actions})
 
 
 def terminal_outcome(violations: list[Violation]) -> Outcome:
-    """Без repair (T-08) допустимое множество под hard-нарушением пусто → `infeasible`.
+    """Без repair (replanning layer) допустимое множество под hard-нарушением пусто → `infeasible`.
 
     Числа, объясняющие отказ, остаются в `Violation.expected/actual/evidence` — их берёт код,
     и «не нашлось вариантов» без цифр здесь не появляется.

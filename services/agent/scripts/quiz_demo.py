@@ -1,8 +1,8 @@
 """Викторина: цикл PARSE → DECIDE → question (interrupt) → answer → SEARCH.
 
-Парсер — мок `MockSlots` из `app/llm/slots.py` (тот же, что в тестах T-05/T-07), а не своя
+Парсер — мок `MockSlots` из `app/llm/slots.py` (тот же, что в тестах offline fixture/provider integration), а не своя
 копия; контракт вопросов — тот же, что уйдёт на фронт SSE-событием `question`
-(services/agent/docs/CONTRACTS.md).
+(AGENTS.md).
 
 Запуск:
     python services/agent/scripts/quiz_demo.py                 # интерактивно
@@ -58,7 +58,7 @@ QUESTIONS: dict[str, dict[str, Any]] = {
 
 
 def mock_parse(text: str) -> TripRequest:
-    """Слот №1 (Parse) на моке T-05 — тонкая обёртка, а не второй парсер.
+    """Слот №1 (Parse) на моке offline fixture — тонкая обёртка, а не второй парсер.
 
     Здесь жила копия детерминированного парсера, и она расходилась с `app/llm/slots.py`
     на каждом исправлении: копия теряла названное направление, не знала «впятером»,
@@ -113,7 +113,7 @@ def apply_answer(request: TripRequest, field: str, raw: str) -> TripRequest:
             request.dates.flexibility_days = FieldValue[int].defaulted(3, kind=ConstraintKind.SOFT)
             request.nights = FieldValue[int].defaulted(7, kind=ConstraintKind.HARD)
         else:
-            #: разборщик общий с моком T-05, коэрсером живой цитаты и узлом ответа:
+            #: разборщик общий с моком offline fixture, коэрсером живой цитаты и узлом ответа:
             #: «с 28 по 5» даёт ноябрь→декабрь, а не пустой диапазон, и «3 - 4 часа»
             #: не притворяется датами. Своя копия здесь расходилась с прод-путём.
             said_start = request.dates.start.value or DEMO_MONTH
@@ -248,7 +248,7 @@ def main() -> int:
 
     render_state(state)
     if state.stage == Stage.SEARCH:
-        print("\n→ SEARCH: suggest_destinations, transport_search, weather_climate (в T-05 — по реестру)")
+        print("\n→ SEARCH: suggest_destinations, transport_search, weather_climate (в offline fixture — по реестру)")
     return 0
 
 

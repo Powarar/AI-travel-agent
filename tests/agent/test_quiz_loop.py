@@ -1,4 +1,4 @@
-"""Викторина (кусок T-05): ≤2 вопроса, interrupt переживает рестарт, hard-поле нельзя пропустить."""
+"""Викторина (кусок offline fixture): ≤2 вопроса, interrupt переживает рестарт, hard-поле нельзя пропустить."""
 
 import json
 from datetime import date

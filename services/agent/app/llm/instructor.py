@@ -1,6 +1,6 @@
 """Structured output без пакета `instructor`: тот же механизм в ~60 строк.
 
-Доска T-07 требует «structured output с retry по validation-ошибке и фидбеком конкретных
+Доска provider integration требует «structured output с retry по validation-ошибке и фидбеком конкретных
 полей». Готовый пакет мы поставить не можем (новые зависимости блоку запрещены), поэтому
 здесь ровно то, за что он и нужен:
 
