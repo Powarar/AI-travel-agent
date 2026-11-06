@@ -1,6 +1,8 @@
 import { CheckoutPanel } from '../../features/checkout/CheckoutPanel'
 import type { TripSession } from '../../features/trip-session/useTripSession'
 import { Skeleton } from '../../shared/ui/Skeleton/Skeleton'
+import { formatMoney } from '../../shared/lib/money'
+import { ruNames } from '../../shared/lib/placeNames'
 import { FinalistCards } from '../FinalistCards/FinalistCards'
 import { PhaseStepper } from '../PhaseStepper/PhaseStepper'
 import { PlanDiff } from '../PlanDiff/PlanDiff'
@@ -57,6 +59,18 @@ export function TripBoard({ session }: { session: TripSession }) {
             <PlanDiff key={`diff-${state.version}`} previous={previous} current={state} update={planUpdate} />
           )}
           <FinalistCards key={`fin-${state.version}`} state={state} />
+          {state.outcome === 'plan_ready' && (state.options?.length ?? 0) > 1 && (
+            <section aria-label="Сравнение вариантов поездки">
+              <h3>Доступные варианты</h3>
+              <p>Все варианты прошли проверку дат, бюджета и совместимости.</p>
+              {state.options?.map((option, index) => (
+                <p key={option.option_id}>
+                  <strong>{ruNames(option.facts.hotel ?? '')}</strong> — {formatMoney(option.total)}
+                  {index === 0 ? ' · в текущем плане' : ''}
+                </p>
+              ))}
+            </section>
+          )}
           {hasPlan && (
             <div className={styles.split}>
               <TripTimeline key={`tl-${state.version}`} state={state} />

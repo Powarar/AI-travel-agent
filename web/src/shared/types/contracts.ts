@@ -64,6 +64,12 @@ export interface TripState {
     transfers: Candidate[]
   }
   chosen: { items: PriceLine[]; component_refs: Record<string, string> }
+  options?: {
+    option_id: string
+    component_refs: Record<string, string>
+    total: Money
+    facts: Record<string, string>
+  }[]
   violations: Violation[]
   provenance: Record<string, DataStatus>
   outcome: Outcome | null
@@ -82,7 +88,7 @@ export interface SSEPayloads {
   violation: { code: string; severity: string; expected: string | null; actual: string | null; affected_component: string }
   repair_started: { violation_code: string; action_signature: string; iteration: number }
   plan_updated: { version: number; changed_components: string[]; kept_components: string[] }
-  answer_text: { block_id: string; text: string; numbers_verified: boolean }
+  answer_text: { block_id: string; text: string; numbers_verified: boolean; followups?: string[] }
   checkout_completed: { order_id: string; idempotent_replay: boolean; simulated: true }
   budget_exhausted: { limit_hit: string; best_effort_version: number; unresolved: string[] }
 }

@@ -12,7 +12,8 @@ COPY web/ ./
 
 EXPOSE 5173
 
-# /app монтируется с хоста, а /app/node_modules — отдельным volume. При первом создании
-# volume он пустой и скрывает зависимости, положенные в образ на этапе build. Устанавливаем
-# их один раз прямо в volume, чтобы dev-server не работал с частично доступным Vite.
-CMD ["sh", "-c", "if [ ! -x node_modules/.bin/vite ]; then npm ci; fi; exec npm run dev -- --host 0.0.0.0 --port 5173"]
+# /app is bind-mounted from the host while /app/node_modules is a named volume. A
+# volume may contain a partial install after an interrupted startup; checking only
+# for the Vite executable misses broken package chunks. `npm ci` makes every local
+# stack startup deterministic from package-lock.json.
+CMD ["sh", "-c", "npm ci && exec npm run dev -- --host 0.0.0.0 --port 5173"]

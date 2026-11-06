@@ -86,6 +86,9 @@ export function useTripSession() {
       case 'plan_updated':
         setPlanUpdate(event.data)
         break
+      case 'answer_text':
+        if (event.data.followups) setSuggestions(event.data.followups)
+        break
       default:
         break
     }
@@ -102,7 +105,6 @@ export function useTripSession() {
     // (`Не получилось прочитать ответ`) состояние остаётся `interrupted`, и вопрос
     // возвращается на экран — иначе экран застревает без поля ввода.
     if (next.run_status !== 'interrupted') setQuestion(null)
-    setSuggestions(api.suggestions())
     persist(trip, prev)
     return next
   }, [persist])
@@ -129,6 +131,8 @@ export function useTripSession() {
           setFeed(trace.events.map((event, i) => ({ id: i + 1, turn: 1, event })))
           run.current.seen = trace.events.length
           const update = [...trace.events].reverse().find((e) => e.event === 'plan_updated')
+          const response = [...trace.events].reverse().find((e) => e.event === 'answer_text')
+          if (response?.event === 'answer_text' && response.data.followups) setSuggestions(response.data.followups)
           if (update?.event === 'plan_updated') setPlanUpdate(update.data)
           if (current.run_status === 'interrupted') {
             setQuestion(lastQuestion(trace.events, current.awaiting_fields))
