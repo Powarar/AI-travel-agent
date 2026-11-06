@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import json
 import os
 from uuid import UUID, uuid4
@@ -44,9 +43,13 @@ def _trace(row: asyncpg.Record) -> RunTrace:
 
 
 async def _execute(executor: RunExecutor, state: TripState, turn: RunInput) -> RunResult:
-    """Ход агента синхронный и с живым LLM длится секунды: в поток, чтобы не стоял event loop."""
+    """The HTTP executor awaits network I/O directly; fixtures do no network I/O."""
     try:
-        return await asyncio.to_thread(executor.execute, state, turn)
+        async_execute = getattr(executor, "aexecute", None)
+        if async_execute is not None:
+            result: RunResult = await async_execute(state, turn)
+            return result
+        return executor.execute(state, turn)
     except InvalidAnswer as exc:
         raise Conflict(str(exc)) from exc
 
@@ -108,7 +111,13 @@ class TripStore:
                 if state.run_status == RunStatus.INTERRUPTED:
                     raise Conflict("Сначала ответьте на текущий вопрос")
                 run_id = uuid4()
-                result = await _execute(executor, state, RunInput(run_id, trip_id, "message", text=message))
+                resume = await conn.fetchval(
+                    "SELECT r.agent_run FROM runs r WHERE r.trip_id=$1 "
+                    "AND (r.agent_run::jsonb -> 'state' ->> 'version')::int = $2 LIMIT 1",
+                    trip_id, state.version,
+                )
+                result = await _execute(executor, state, RunInput(run_id, trip_id, "message", text=message,
+                                                                 resume=resume))
                 self._check_result(state, result.state)
                 events = [SSEEvent(event="run_started", data={"run_id": str(run_id), "trip_id": str(trip_id)}), *result.events]
                 await self._save_state(conn, result.state)

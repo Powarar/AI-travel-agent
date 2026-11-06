@@ -57,6 +57,17 @@ class RepairAttempt(BaseModel):
     note: str | None = None
 
 
+class PackageOption(BaseModel):
+    """A deterministically validated alternative, distinct from the chosen basket."""
+    model_config = ConfigDict(extra="forbid")
+
+    option_id: str
+    component_refs: dict[str, str]
+    items: list[PriceLine]
+    total: Money
+    facts: dict[str, str] = Field(default_factory=dict)
+
+
 class RunBudget(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -98,6 +109,7 @@ class TripState(BaseModel):
     awaiting_fields: list[str] = Field(default_factory=list)
     candidates: Candidates = Field(default_factory=Candidates)
     chosen: Basket = Field(default_factory=Basket)
+    options: list[PackageOption] = Field(default_factory=list)
     violations: list[Violation] = Field(default_factory=list)
     repair_log: list[RepairAttempt] = Field(default_factory=list)
     questions_asked: int = 0

@@ -26,6 +26,8 @@
 
 from __future__ import annotations
 
+from contextvars import ContextVar
+
 import json
 import logging
 import re
@@ -156,8 +158,17 @@ def require_catalog() -> None:
             "или запустите прогон без --sources seed")
 
 
-@lru_cache(maxsize=1)
+catalog_override: ContextVar[_Catalog | None] = ContextVar("catalogue_snapshot", default=None)
+
+
 def catalog() -> _Catalog:
+    """Pure converters can consume a DB snapshot scoped to the current async task."""
+    snapshot = catalog_override.get()
+    return snapshot if snapshot is not None else _seed_catalog()
+
+
+@lru_cache(maxsize=1)
+def _seed_catalog() -> _Catalog:
     """Загрузка сида; кэш — потому что файлы за прогон не меняются, а сканов будет шесть."""
 
     require_catalog()
@@ -431,6 +442,51 @@ def suggest_destinations(args: Mapping[str, object]) -> SearchResult:
     themes = _items(args, "themes")
     if themes:
         kept = [row for row in kept if str(row.get("theme", "")) in themes]
+
+    # Do not ask the finalist model to select a destination that the deterministic
+    # catalogue already knows cannot form a package. Ranking is only meaningful
+    # inside the feasible set: a candidate needs transport arriving on check-in,
+    # one hotel with every requested available night, and its matching transfer.
+    # This is deliberately deterministic and runs before the LLM slot: an LLM
+    # may rank admissible options, never make an unavailable one admissible.
+    start = _day(args, "dates.start")
+    origin_iatas = _origin_airports(_text(args, "origin"))
+    if start is not None and origin_iatas:
+        reachable = {
+            str(leg["dest_code"])
+            for leg in catalog().legs
+            if str(leg["dep_iata"]) in origin_iatas
+            and _local_day(str(leg["arr_at"])) == start
+        }
+        nights = _count(args, "nights")
+        end = _day(args, "dates.end")
+        if not nights and end is not None:
+            nights = (end - start).days
+        guests = _count(args, "party.adults") + len(_items(args, "party.children"))
+        pets = _flag(args, "party.pets")
+        transfer_hotels = {
+            str(row["hotel_id"])
+            for row in catalog().transfers
+            if (not guests or int(row["capacity"]) >= guests)
+            and (pets is not True or row["pet_ok"] is True)
+        }
+        package_codes: set[str] = set()
+        for hotel in catalog().hotels:
+            code = str(hotel["dest_code"])
+            hotel_id = str(hotel["hotel_id"])
+            if code not in reachable or hotel_id not in transfer_hotels:
+                continue
+            if pets is True and hotel["pet_friendly"] is not True:
+                continue
+            if nights <= 0:
+                continue
+            if all(
+                (rate := catalog().rates.get((hotel_id, (start + timedelta(days=offset)).isoformat())))
+                is not None and bool(rate["availability"])
+                for offset in range(nights)
+            ):
+                package_codes.add(code)
+        kept = [row for row in kept if str(row["code"]) in package_codes]
 
     minutes = catalog().min_flight_minutes()
     if max_hours is not None:

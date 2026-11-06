@@ -21,9 +21,9 @@ def ready_runtime() -> tuple[Runtime, object]:
     ("message", "step", "source_calls"),
     [
         ("давай на троих", EscalationStep.RECOMPOSE, 0),
-        ("у нас собака", EscalationStep.RE_SEARCH, 3),
+        ("у нас собака", EscalationStep.RE_SEARCH, 5),
         ("бюджет -30%", EscalationStep.RE_RANK, 0),
-        ("на два дня позже", EscalationStep.RE_SEARCH, 3),
+        ("на два дня позже", EscalationStep.RE_SEARCH, 5),
     ],
 )
 def test_delta_has_bounded_replan_and_keeps_old_components(

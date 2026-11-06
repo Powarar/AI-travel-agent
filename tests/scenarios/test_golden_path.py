@@ -711,9 +711,10 @@ class TestEscalationSteps:
 
         second = runtime.start("с 20 по 27 ноября", state=run.state, now=NOW)
         assert second.changed == {"dates.start", "dates.end"}
-        assert second.dirty == {"transport_search", "hotel_search", "transfer_search"}
-        assert second.state.budgets.tool_calls == 3
-        assert runtime.cache.source_calls == calls_before + 3
+        assert second.dirty == {"suggest_destinations", "weather_climate", "transport_search",
+                                "hotel_search", "transfer_search"}
+        assert second.state.budgets.tool_calls == 5
+        assert runtime.cache.source_calls == calls_before + 5
         assert second.state.outcome == Outcome.PLAN_READY
         assert str(second.state.request.dates.start.value) == "2026-11-20"
         assert second.state.chosen.items[0].line_id.endswith("20261120")

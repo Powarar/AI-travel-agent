@@ -691,6 +691,17 @@ def coerce(path: str, raw: str, *, year: int, message: str = "", inferred: bool 
                         latest=path == "dates.end")
     if path == "themes":
         return _to_themes(raw)
+    if path == "lodging.must":
+        # Preserve quoted user evidence while normalizing only known amenities.
+        # Negated amenities must not become positive requirements.
+        lowered = raw.lower()
+        if re.search(r"\b(?:без|не нужен|не нужна)\b", lowered):
+            raise ValueError("negated amenity is not a positive must-have")
+        known = {"бассейн": "pool", "пляж": "beach_first_line", "завтрак": "breakfast",
+                 "парков": "parking", "спа": "spa", "детский клуб": "kids_club",
+                 "кондиционер": "air_conditioning", "ресторан": "restaurant", "wifi": "wifi"}
+        normalized = [slug for stem, slug in known.items() if stem in lowered]
+        return normalized or [item.strip() for item in raw.split(",") if item.strip()]
     if path == "direction.mode":
         return DirectionMode(raw.strip().lower())
     if path == "budget.currency":

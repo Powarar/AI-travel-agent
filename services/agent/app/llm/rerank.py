@@ -25,6 +25,7 @@
 from __future__ import annotations
 
 import logging
+import math
 import os
 import time
 from dataclasses import dataclass
@@ -109,7 +110,7 @@ def parse_rerank_response(body: dict[str, Any], *, documents: list[str]) -> list
         score = item.get("relevance_score", item.get("score"))
         if not isinstance(index, int) or not 0 <= index < len(documents):
             continue
-        if not isinstance(score, (int, float)):
+        if not isinstance(score, (int, float)) or not math.isfinite(score):
             continue
         hits.append(RerankHit(index=index, score=float(score), text=documents[index]))
     hits.sort(key=lambda hit: hit.score, reverse=True)

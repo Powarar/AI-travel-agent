@@ -17,6 +17,12 @@ from ..executor import RunExecutor
 from ..identity import get_owner, require_owner
 from ..schemas import AnswerIn, CheckoutCompleted, MessageIn, OrderOut, RunTrace, TripCreated
 from ..store import Conflict, NotFound, TripStore
+from ...metrics.schemas import MonitoringSummary
+from ...metrics.service import collector
+import asyncpg  # type: ignore[import-untyped]
+from ...retrieval.catalogue import database_url
+from ...metrics.models import summarize_costs
+from shared.evaluation_metrics import parse_accuracy_summary
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -26,6 +32,87 @@ def _http_error(exc: NotFound | Conflict) -> HTTPException:
     if isinstance(exc, NotFound):
         return HTTPException(status_code=404, detail="Запись не найдена")
     return HTTPException(status_code=409, detail=str(exc))
+
+
+@router.get("/monitoring/summary", response_model=MonitoringSummary)
+async def monitoring_summary() -> MonitoringSummary:
+    """Aggregated operational and quality metrics; never exposes prompts or secrets."""
+    return collector.summary()
+
+
+@router.get("/monitoring/models")
+async def model_metrics() -> dict[str, object]:
+    """Persistent model/slot aggregates derived from recorded HTTP turns."""
+    conn = await asyncpg.connect(database_url())
+    try:
+        rows = await conn.fetch("""
+            WITH spans AS (
+                SELECT event->'data' AS data FROM runs,
+                LATERAL jsonb_array_elements(events) AS event
+                WHERE event->>'event' = 'llm_call' AND event->'data'->>'model' IS NOT NULL
+            )
+            SELECT data->>'slot' AS slot, data->>'model' AS model,
+                count(*) AS calls,
+                count(*) FILTER (WHERE data->>'status' <> 'ok') AS errors,
+                count(*) FILTER (WHERE data->>'fallback' = 'true') AS fallbacks,
+                sum((data->>'input_tokens')::bigint)::bigint AS input_tokens,
+                sum((data->>'output_tokens')::bigint)::bigint AS output_tokens,
+                sum((data->>'total_tokens')::bigint)::bigint AS total_tokens,
+                percentile_cont(0.5) WITHIN GROUP (ORDER BY (data->>'latency_ms')::int) AS p50_ms,
+                percentile_cont(0.95) WITHIN GROUP (ORDER BY (data->>'latency_ms')::int) AS p95_ms
+            FROM spans GROUP BY data->>'slot', data->>'model' ORDER BY 1, 2
+        """)
+        costs = await conn.fetch("""
+            SELECT event->'data' AS data FROM runs,
+            LATERAL jsonb_array_elements(events) AS event
+            WHERE event->>'event'='llm_call' AND event->'data'->>'model' IS NOT NULL
+        """)
+        grouped: dict[tuple[str, str], list[dict[str, object]]] = {}
+        for cost in costs:
+            span = cost["data"] if isinstance(cost["data"], dict) else json.loads(cost["data"])
+            grouped.setdefault((span["slot"], span["model"]), []).append(span)
+        quality_rows = await conn.fetch("""
+            SELECT DISTINCT ON(model, dataset_id, dataset_hash, prompt_version) model, report
+            FROM evaluation_runs WHERE mode='live'
+            ORDER BY model, dataset_id, dataset_hash, prompt_version, created_at DESC
+        """)
+        quality: dict[str, list[dict[str, object]]] = {}
+        for item in quality_rows:
+            report = item["report"] if isinstance(item["report"], dict) else json.loads(item["report"])
+            if report.get("rows"):
+                report = {**report, **parse_accuracy_summary(report["rows"])}
+            quality.setdefault(item["model"], []).append({key: value for key, value in report.items()
+                                                         if key not in {"rows", "spans"}})
+        return {"window": "persisted HTTP runs", "models": [
+            {**dict(row), **summarize_costs(grouped.get((row["slot"], row["model"]), [])),
+             "accuracy_evaluations": quality.get(row["model"], []) if row["slot"] == "parse" else []} for row in rows
+        ]}
+    finally:
+        await conn.close()
+
+
+@router.get("/monitoring/accuracy")
+async def accuracy_metrics() -> dict[str, object]:
+    conn = await asyncpg.connect(database_url())
+    try:
+        rows = await conn.fetch("""
+            SELECT DISTINCT ON(dataset_id, dataset_hash, model, prompt_version, mode)
+                eval_id, created_at, dataset_id, dataset_hash, model, prompt_version, mode, report
+            FROM evaluation_runs
+            ORDER BY dataset_id, dataset_hash, model, prompt_version, mode, created_at DESC
+        """)
+        evaluations = []
+        for row in rows:
+            report = row["report"] if isinstance(row["report"], dict) else json.loads(row["report"])
+            if report.get("rows"):
+                report = {**report, **parse_accuracy_summary(report["rows"])}
+            evaluations.append({**{key: row[key] for key in ("eval_id", "created_at", "dataset_id", "dataset_hash",
+                                                           "model", "prompt_version", "mode")},
+                                **{key: value for key, value in report.items() if key not in {"rows", "spans"}}})
+        return {"source": "labelled evaluation datasets", "evaluations": evaluations,
+                "note": "Production calls have no ground truth; accuracy is measured only on labelled evaluations."}
+    finally:
+        await conn.close()
 
 
 @router.post("/trips", response_model=TripCreated, status_code=201)

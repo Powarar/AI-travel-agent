@@ -176,8 +176,9 @@ def _stay_rates(hotels: list[dict[str, Any]]) -> list[dict[str, Any]]:
         for d in dates:
             key = f"rate:{h['hotel_id']}|{d.isoformat()}"
             r = unit(key)
-            if r < 0.07:
-                continue  # нет ставки — статус unknown, не средняя цена
+            # Keep the generated catalogue coverage-complete. Provider outages and
+            # missing rates are tested by explicit fixtures, not random holes in
+            # every locally advertised destination.
             price = h["base_price_rub"]
             if d.weekday() in (4, 5):
                 price *= 1.15  # пт/сб

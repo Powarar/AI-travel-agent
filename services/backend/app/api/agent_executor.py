@@ -10,19 +10,23 @@
 from __future__ import annotations
 
 import logging
+import inspect
 import os
 import threading
 import time
-from collections.abc import Callable, Mapping
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from typing import Any
 
 from services.agent.app.orchestration.runtime import Run, Runtime, Source
+from services.agent.app.orchestration.runtime import AsyncRuntime
 from shared.contracts.enums import Outcome, RunStatus
 from shared.contracts.state import TripState
+from shared.telemetry import model_spans
 
 from .executor import InvalidAnswer, RunInput, RunResult
 from .schemas import SSEEvent
+from ..metrics.service import collector
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +47,29 @@ class ToolCall:
     ms: int
     count: int
     status: str
+    meta: dict[str, str] = field(default_factory=dict)
+
+
+def _answer_error(exc: ValueError) -> str:
+    """Map expected short-answer errors to user-facing Russian messages.
+
+    An internal ``ValueError`` is useful to engineers but is not an HTTP contract:
+    it must not reach chat with an English function name or raw input. Unexpected
+    errors stay neutral to avoid exposing runtime details.
+    """
+
+    detail = str(exc)
+    if detail.startswith("cannot read a date range"):
+        return "Не удалось распознать даты. Напишите диапазон, например: «с 7 по 11 ноября»."
+    if detail.startswith("date range is empty"):
+        return "Дата возвращения должна быть позже даты выезда."
+    if detail.startswith("cannot read a budget"):
+        return "Не удалось распознать бюджет. Например: «150 000 ₽»."
+    if detail.startswith("cannot read travel hours"):
+        return "Не удалось распознать время в пути. Например: «не больше 4 часов»."
+    if detail.startswith("origin is hard-required"):
+        return "Нужен город отправления — без него нельзя подобрать перелёт."
+    return "Не удалось обработать ответ. Попробуйте сформулировать его иначе."
 
 
 class _Recorder:
@@ -60,9 +87,23 @@ class _Recorder:
                 self.calls.append(ToolCall(name, _ms(started), 0, "error"))
                 raise
             count = sum(len(getattr(result, part, ())) for part in _TOOL_SLICES.get(name, ()))
-            self.calls.append(ToolCall(name, _ms(started), count, "ok"))
+            self.calls.append(ToolCall(name, _ms(started), count, "ok", dict(getattr(result, "meta", {}))))
             return result
 
+        return call
+
+    def awrap(self, name: str, source: Any) -> Any:
+        async def call(args: Mapping[str, object]) -> Any:
+            started = time.perf_counter()
+            try:
+                pending = source(args)
+                result = await pending if inspect.isawaitable(pending) else pending
+            except Exception:
+                self.calls.append(ToolCall(name, _ms(started), 0, "error"))
+                raise
+            count = sum(len(getattr(result, part, ())) for part in _TOOL_SLICES.get(name, ()))
+            self.calls.append(ToolCall(name, _ms(started), count, "ok", dict(getattr(result, "meta", {}))))
+            return result
         return call
 
 
@@ -89,6 +130,8 @@ def build_events(before: TripState, run: Run, trace_from: int, calls: list[ToolC
     for call in calls:
         events.append(_event("tool_started", tool=call.tool, args_hash="", from_cache=False))
         events.append(_event("tool_completed", tool=call.tool, ms=call.ms, count=call.count, status=call.status))
+        if call.meta.get("retrieval_mode"):
+            events[-1].data["retrieval_mode"] = call.meta["retrieval_mode"]
 
     finalists = [c for c in state.candidates.destinations if c.ref.get("finalist") == "true"]
     if finalists and finalists != [c for c in before.candidates.destinations if c.ref.get("finalist") == "true"]:
@@ -139,7 +182,7 @@ class AgentRunExecutor:
         self._recorder = _Recorder()
         wrapped = {name: self._recorder.wrap(name, source) for name, source in sources.items()}
         self._runtime = Runtime(wrapped, slots=slots)
-        # Runtime не потокобезопасен, а store гонит ходы через asyncio.to_thread.
+        # Legacy synchronous CLI facade; the HTTP factory below uses isolated async runtimes.
         self._lock = threading.Lock()
 
     def execute(self, state: TripState, turn: RunInput) -> RunResult:
@@ -158,8 +201,13 @@ class AgentRunExecutor:
                 try:
                     run = self._runtime.answer(run, turn.field, turn.value or "")
                 except ValueError as exc:
-                    raise InvalidAnswer(f"Не получилось прочитать ответ: {exc}") from exc
+                    raise InvalidAnswer(_answer_error(exc)) from exc
             events = build_events(state, run, trace_from, self._recorder.calls)
+            collector.record(
+                run.state,
+                tool_errors=[call.tool for call in self._recorder.calls if call.status == "error"],
+                fallbacks=len(getattr(self._runtime._slots, "failures", [])),
+            )
         # Store ведёт версии по ходам HTTP: агент внутри хода поднимает свою много раз.
         next_state = run.state.model_copy(update={"version": state.version + 1})
         resume = self._runtime.dump(run) if next_state.run_status == RunStatus.INTERRUPTED else None
@@ -167,14 +215,93 @@ class AgentRunExecutor:
                     next_state.outcome, len(events))
         return RunResult(state=next_state, events=tuple(events), resume=resume)
 
+    async def aexecute(self, state: TripState, turn: RunInput) -> RunResult:
+        """Compatibility for injected deterministic executors in API integration tests."""
+        self._recorder.calls = []
+        if turn.kind == "message":
+            if not turn.text:
+                raise InvalidAnswer("Пустое сообщение")
+            run = await AsyncRuntime.start(self._runtime, turn.text, state=state)
+            trace_from = 0
+        else:
+            if turn.resume is None or turn.field is None:
+                raise InvalidAnswer("Ход нельзя продолжить")
+            run = self._runtime.load(turn.resume)
+            trace_from = len(run.trace)
+            try:
+                run = await AsyncRuntime.answer(self._runtime, run, turn.field, turn.value or "")
+            except ValueError as exc:
+                raise InvalidAnswer(_answer_error(exc)) from exc
+        events = build_events(state, run, trace_from, self._recorder.calls)
+        next_state = run.state.model_copy(update={"version": state.version + 1})
+        resume = self._runtime.dump(run) if next_state.run_status == RunStatus.INTERRUPTED else None
+        return RunResult(state=next_state, events=tuple(events), resume=resume)
 
-def agent_executor_from_env() -> AgentRunExecutor:
+
+class AsyncAgentRunExecutor:
+    """An isolated runtime per turn; trip serialization belongs to the DB row lock."""
+
+    def __init__(self, sources_factory: Any, slots_factory: Any) -> None:
+        self.sources_factory = sources_factory
+        self.slots_factory = slots_factory
+
+    async def aexecute(self, state: TripState, turn: RunInput) -> RunResult:
+        slots = self.slots_factory()
+        recorder = _Recorder()
+        # Async sources record their own spans; source arguments remain structured JSON.
+        runtime = AsyncRuntime({name: recorder.awrap(name, source)
+                                for name, source in self.sources_factory().items()}, slots=slots,
+                               wall_clock_limit_ms=int(os.environ.get("AGENT_WALL_CLOCK_LIMIT_MS", "45000")))
+        failures_before = len(getattr(slots, "failures", []))
+        spans: list[dict[str, Any]] = getattr(slots, "spans", [])
+        telemetry_token = model_spans.set(spans)
+        try:
+            previous = runtime.load(turn.resume) if turn.resume else None
+            if turn.kind == "message":
+                if not turn.text:
+                    raise InvalidAnswer("Пустое сообщение")
+                run = await runtime.start(turn.text, state=state)
+                trace_from = 0
+            else:
+                if previous is None or turn.field is None:
+                    raise InvalidAnswer("Ход нельзя продолжить: нет сохранённого состояния")
+                trace_from = len(previous.trace)
+                try:
+                    run = await runtime.answer(previous, turn.field, turn.value or "")
+                except ValueError as exc:
+                    raise InvalidAnswer(_answer_error(exc)) from exc
+            events = build_events(state, run, trace_from, recorder.calls)
+            for event in events:
+                if event.event == "answer_text":
+                    event.data["followups"] = getattr(slots, "followups", [])
+                    event.data["number_guard_rejections"] = run.guard_rejections
+            if run.options:
+                events.append(_event("candidates", kind="package", items=[
+                    {"candidate_id": option.option_id, "kind": "package",
+                     "ref": {**option.facts, **option.component_refs, "total": option.total.as_ru()},
+                     "score": None, "data_status": "synthetic" if any(
+                         line.data_status.value == "synthetic" for line in option.items) else "unknown"}
+                    for option in run.state.options
+                ], ranking_factors=["hard_validation", "hybrid", "rerank"]))
+            for span in spans:
+                events.append(_event("llm_call", **span))
+            collector.record(run.state, tool_errors=[call.tool for call in recorder.calls if call.status == "error"],
+                             fallbacks=len(getattr(slots, "failures", [])) - failures_before)
+            next_state = run.state.model_copy(update={"version": state.version + 1})
+            # Persist collected facts even after PLAN so selective replanning survives restarts.
+            run.state = next_state
+            return RunResult(state=next_state, events=tuple(events), resume=runtime.dump(run))
+        finally:
+            model_spans.reset(telemetry_token)
+            close = getattr(slots, "close", None)
+            if close is not None:
+                await close()
+
+
+def agent_executor_from_env() -> Any:
     """Собирает локальный оркестратор поверх каталога проекта и его слотов."""
 
-    from services.agent.app.llm.provider_openai_compatible import slots_from_config
-    from services.agent.app.tools.seed_sources import seed_sources
+    from services.agent.app.llm.async_provider import async_slots_from_config
+    from ..retrieval.catalogue import database_sources
 
-    sources: dict[str, Callable[[Mapping[str, object]], Any]] = dict(seed_sources())
-    slots = slots_from_config()
-    logger.info("agent executor ready catalog=local slots=%s", type(slots).__name__)
-    return AgentRunExecutor(sources, slots=slots)
+    return AsyncAgentRunExecutor(database_sources, async_slots_from_config)

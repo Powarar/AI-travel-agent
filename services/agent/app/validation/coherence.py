@@ -427,7 +427,10 @@ def validate(plan: Plan, ledger: BudgetLedger, state: TripRequest | TripState | 
                      expected=budget_for_plan.as_ru(), actual=total.as_ru(),
                      evidence={"over_by": over.as_ru(),
                                "lodging_now": lodging.as_ru(),
-                               "reduce_lodging_to": reduced_lodging.as_ru()})
+                               "reduce_lodging_to": reduced_lodging.as_ru(),
+                               # `0 ₽` is ambiguous without this fact: it may be a
+                               # reachable free stay or a capped negative remainder.
+                               "lodging_can_close_gap": str(lodging.amount >= over.amount).lower()})
             )
 
     # --- инвариант №2: план не может молча отступать от hard-полей -------------

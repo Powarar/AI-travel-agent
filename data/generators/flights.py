@@ -195,7 +195,11 @@ def run() -> None:
 
     origins = [_airports_by_iata[i] | {"iata": i} for i in ORIGINS if i in _airports_by_iata]
     legs: list[dict[str, Any]] = []
-    date = WINDOW_START
+    # Search is keyed by the local *arrival* day (the check-in day), while a
+    # long-haul flight can leave Russia on the preceding calendar day. Generate
+    # that preceding departure day too, otherwise a perfectly valid first-day
+    # package is absent from the catalogue for an implementation artefact.
+    date = WINDOW_START - dt.timedelta(days=1)
     while date <= WINDOW_END:
         for o in origins:
             for giata, (code, g) in sorted(gw_rep.items()):

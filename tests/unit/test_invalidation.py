@@ -63,16 +63,18 @@ def test_every_declared_input_is_a_real_field_path():
 
 
 def test_party_pets_dirty_set():
-    """Ступень 2 на «у нас собака»: транспорт, отели, трансфер; направления и погода не тронуты."""
+    """A pet changes package feasibility, so candidates and climate refresh too."""
 
     assert affected({"party.pets"}) == {
-        "transport_search", "hotel_search", "transfer_search", *DOWNSTREAM
+        "suggest_destinations", "weather_climate", "transport_search", "hotel_search",
+        "transfer_search", *DOWNSTREAM
     }
 
 
 def test_dates_start_researches_transport_and_hotels():
     assert affected({"dates.start"}) == {
-        "transport_search", "hotel_search", "transfer_search", *DOWNSTREAM
+        "suggest_destinations", "weather_climate", "transport_search", "hotel_search",
+        "transfer_search", *DOWNSTREAM
     }
 
 
@@ -112,7 +114,7 @@ def test_month_shift_pulls_destinations_and_climate():
         "suggest_destinations", "weather_climate", "transport_search",
         "hotel_search", "transfer_search", *DOWNSTREAM
     }
-    assert "weather_climate" not in affected({"dates.start"})
+    assert "weather_climate" in affected({"dates.start"})
 
 
 def test_resolved_destinations_pull_the_whole_downstream_branch():

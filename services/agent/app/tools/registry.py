@@ -28,10 +28,11 @@
 from __future__ import annotations
 
 import json
+import inspect
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 from hashlib import sha256
-from typing import Literal
+from typing import Any, Literal
 
 from shared.contracts.state import TripState
 
@@ -102,7 +103,11 @@ REGISTRY: dict[str, Tool] = {
         inputs=frozenset({
             "direction.mode", "direction.explicit", "direction.excluded", "dates.month",
             "themes", "transport.max_hours_direct", "budget.amount", "budget.includes",
-            "party.adults",
+            # The source removes destinations which cannot form a complete package.
+            # These fields are therefore part of its cache key and invalidation contract,
+            # not incidental implementation details.
+            "origin", "dates.start", "dates.end", "nights", "party.adults",
+            "party.children", "party.pets",
         }),
         provides=frozenset({"destinations"}),
         output="candidates.destinations",
@@ -249,6 +254,22 @@ class ToolCache:
         for key in stale:
             self._entries.pop(key)
         return len(stale)
+
+    async def acall(self, tool: Tool, args: Mapping[str, object], fetch: Callable[[], Any],
+                    *, now_s: float = 0.0) -> tuple[object, bool]:
+        key = args_hash(tool, args)
+        entry = self._entries.get(key)
+        if entry is not None:
+            _, value, expires = entry
+            if expires is None or now_s < expires:
+                self.cache_hits += 1
+                return value, True
+        self.source_calls += 1
+        pending = fetch()
+        value = await pending if inspect.isawaitable(pending) else pending
+        expires = None if tool.cache_ttl_s is None else now_s + tool.cache_ttl_s
+        self._entries[key] = (tool.name, value, expires)
+        return value, False
 
     def size(self) -> int:
         return len(self._entries)

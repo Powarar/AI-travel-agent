@@ -1008,6 +1008,10 @@ def merge_request(base: TripRequest, delta: TripRequest) -> tuple[TripRequest, l
             continue
         old = base.field_value(path)
         if isinstance(old, FieldValue) and isinstance(new_field, FieldValue):
+            if new_field.status == FieldStatus.DEFAULTED and not old.is_unknown:
+                # An omitted field in a follow-up is not permission to erase an
+                # existing requirement (e.g. pool disappears after "direct flight").
+                continue
             if _differs(old, new_field):
                 conflicts.append(make(
                     ViolationCode.CONFLICTING_STATE, "request",
@@ -1275,7 +1279,8 @@ def _refusal_line(violation: Violation) -> str:
         line = (f"Самый дешёвый вариант стоит {violation.actual} при бюджете {violation.expected} — "
                 f"на {ev['over_by']} дороже.")
         cut = ev.get("reduce_lodging_to", "")
-        if cut and not cut.lstrip().startswith(("-", "−")):
+        if (cut and not cut.lstrip().startswith(("-", "−"))
+                and ev.get("lodging_can_close_gap", "true") == "true"):
             return f"{line} Чтобы уложиться, проживание ({ev.get('lodging_now', '')}) нужно удешевить до {cut}."
         return f"{line} Даже без проживания поездка дороже бюджета — поднимите бюджет или выберите место ближе."
     named, catalog = ev.get("направлений названо"), ev.get("направлений в каталоге")

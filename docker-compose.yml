@@ -44,7 +44,9 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       # ход исполняет агент в процессе backend (api/agent_executor.py); fixture — заглушка
       BACKEND_EXECUTOR: ${BACKEND_EXECUTOR:-agent}
-      LLM_PROVIDER: ${LLM_PROVIDER:-aitunnel}
+      # A local ``make up`` must be reproducible and free. A live provider is
+      # enabled only through an explicit .env setting.
+      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
       LLM_BASE_URL: ${LLM_BASE_URL:-https://api.aitunnel.ru/v1}
       LLM_API_KEY: ${LLM_API_KEY:-}
       LLM_MODEL: ${LLM_MODEL:-}
@@ -52,7 +54,17 @@ services:
       LLM_MODEL_QUESTIONS: ${LLM_MODEL_QUESTIONS:-}
       LLM_MODEL_FINALISTS: ${LLM_MODEL_FINALISTS:-}
       LLM_MODEL_EXPLAIN: ${LLM_MODEL_EXPLAIN:-}
+      LLM_MODEL_DIFF: ${LLM_MODEL_DIFF:-}
       RERANK_MODEL: ${RERANK_MODEL:-}
+      RERANK_MODEL_FALLBACK: ${RERANK_MODEL_FALLBACK:-rerank-3-lite}
+      LLM_TIMEOUT_S: ${LLM_TIMEOUT_S:-12}
+      AGENT_WALL_CLOCK_LIMIT_MS: ${AGENT_WALL_CLOCK_LIMIT_MS:-45000}
+      MODEL_PRICES_VERSION: ${MODEL_PRICES_VERSION:-user-rates-2026-11-05}
+      MODEL_PRICES_JSON: ${MODEL_PRICES_JSON:-null}
+      LLM_TEMPERATURE_EXPLAIN: ${LLM_TEMPERATURE_EXPLAIN:-0.2}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-}
+      EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL:-https://api.aitunnel.ru/v1}
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:-${LLM_API_KEY:-}}
       # подпись initData Mini App проверяется токеном бота; без него вход через Telegram отключён
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
     ports:
@@ -63,6 +75,8 @@ services:
       - ./services/__init__.py:/app/services/__init__.py:ro
       - ./services/agent:/app/services/agent:ro
       - ./data:/app/data:ro
+      - ./evaluation:/app/evaluation:ro
+      - ./artifacts:/app/artifacts
     depends_on:
       postgres:
         condition: service_healthy
@@ -80,7 +94,7 @@ services:
     environment:
       BACKEND_URL: http://backend:8000
       HTTP_PORT: "8001"
-      LLM_PROVIDER: ${LLM_PROVIDER:-aitunnel}
+      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     ports:
       - "127.0.0.1:${AGENT_PORT:-8011}:8001"

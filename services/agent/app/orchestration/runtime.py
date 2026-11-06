@@ -21,6 +21,9 @@
 
 from __future__ import annotations
 
+import asyncio
+import inspect
+import json
 import logging
 import re
 import time
@@ -30,6 +33,7 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from enum import Enum
 from uuid import UUID, uuid4
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -51,7 +55,7 @@ from services.agent.app.validation.inputs import Plan
 from shared.contracts.enums import ConstraintKind, DirectionMode, EscalationStep, Outcome, RunStatus, Stage
 from shared.contracts.money import BudgetLedger
 from shared.contracts.request import FieldValue, TripRequest
-from shared.contracts.state import Candidate, RunBudget, TripState
+from shared.contracts.state import Candidate, PackageOption, RunBudget, TripState
 from shared.contracts.violation import Violation
 
 logger = logging.getLogger(__name__)
@@ -134,6 +138,9 @@ class Run:
     #: Похожие направления — не выбранный план и не ослабление explicit-города. HTTP-слой
     #: показывает их отдельными карточками, из которых пользователь может начать новый запрос.
     alternatives: list[DestinationFact] = field(default_factory=list)
+    options: list[Composition] = field(default_factory=list)
+    user_message: str = ""
+    guard_rejections: int = 0
 
 
 class InterruptedRun(BaseModel):
@@ -155,18 +162,20 @@ class InterruptedRun(BaseModel):
     composition: Composition | None = None
     trace: list[str] = Field(default_factory=list)
     unresolved: list[str] = Field(default_factory=list)
+    user_message: str = ""
 
 
-class Runtime:
+class AsyncRuntime:
     """Оркестратор: рёбра из `policy`, чистые узлы из `nodes`, инструменты из реестра."""
 
-    def __init__(self, sources: Mapping[str, Source], *, slots: LLMSlots | None = None,
-                 clock: Callable[[], float] = time.monotonic) -> None:
+    def __init__(self, sources: Mapping[str, Source], *, slots: Any = None,
+                 clock: Callable[[], float] = time.monotonic, wall_clock_limit_ms: int = 20_000) -> None:
         self._sources = dict(sources)
-        self._slots: LLMSlots = slots if slots is not None else MockSlots()
+        self._slots: Any = slots if slots is not None else MockSlots()
         self._clock = clock
         self._cache = ToolCache()
         self._scratch: dict[UUID, Scratch] = {}
+        self._wall_clock_limit_ms = wall_clock_limit_ms
 
     @property
     def cache(self) -> ToolCache:
@@ -174,7 +183,7 @@ class Runtime:
 
     # --------------------------------------------------------------- вход хода
 
-    def start(self, message: str, *, state: TripState | None = None, trip_id: UUID | None = None,
+    async def start(self, message: str, *, state: TripState | None = None, trip_id: UUID | None = None,
               now: datetime | None = None) -> Run:
         """Новый ход: `POST /v1/trips/{id}/messages` → `run_id`.
 
@@ -185,13 +194,15 @@ class Runtime:
         base = state if state is not None else TripState(
             trip_id=trip_id if trip_id is not None else uuid4()
         )
-        base = base.model_copy(update={"budgets": RunBudget()}, deep=True)
+        base = base.model_copy(update={"budgets": RunBudget(wall_clock_limit_ms=self._wall_clock_limit_ms),
+                                       "options": []}, deep=True)
         run = Run(
             run_id=str(uuid4()),
             state=base,
             scratch=self._scratch.setdefault(base.trip_id, Scratch()),
             started_at=self._clock(),
             tokens_seen=self._tokens_baseline(),
+            user_message=message,
         )
         before = run.state.request
         run.previous_version = run.state.version
@@ -211,7 +222,7 @@ class Runtime:
                 run.state, Outcome.UNSUPPORTED, wall_clock_ms=self._elapsed_ms(run)
             )
             return run
-        delta = self._slot_parse(run, message)
+        delta = await self._slot_parse(run, message)
         if delta is None:
             return self._stop_by_limit(run)
         delta = self._contextual_delta(message, delta, before)
@@ -219,9 +230,9 @@ class Runtime:
         self._route(run, before)
         logger.info("run started trip=%s run=%s changed=%d tools=%s", base.trip_id, run.run_id,
                     len(run.changed), sorted(run.dirty))
-        return self._drive(run, _stamp(now))
+        return await self._drive(run, _stamp(now))
 
-    def answer(self, run: Run, path: str, raw: str, *, now: datetime | None = None) -> Run:
+    async def answer(self, run: Run, path: str, raw: str, *, now: datetime | None = None) -> Run:
         """`POST /v1/runs/{run_id}/answers` — тот же ход, идемпотентно по (run_id, field).
 
         Вопрос засчитывается там, где рантайм его задаёт (`_ask`), а не здесь: повторный
@@ -244,9 +255,9 @@ class Runtime:
         # время хода продолжается с момента ответа
         run.started_at = self._clock()
         self._route(run, before)
-        return self._drive(run, _stamp(now))
+        return await self._drive(run, _stamp(now))
 
-    def checkout(self, run: Run, *, idempotency_key: str | None = None,
+    async def checkout(self, run: Run, *, idempotency_key: str | None = None,
                  now: datetime | None = None) -> Run:
         """Подтверждение пользователя после PLAN: `POST /v1/trips/{id}/checkout`.
 
@@ -263,7 +274,7 @@ class Runtime:
             "basket": dict(sorted(run.state.chosen.component_refs.items())),
             "idempotency_key": idempotency_key if idempotency_key is not None else run.run_id,
         }
-        result = self._call(run, "checkout_mock", args=args, now=_stamp(now))
+        result = await self._call(run, "checkout_mock", args=args, now=_stamp(now))
         if result is None:
             return self._stop_by_limit(run)
         run.order_id = result.order_id
@@ -285,6 +296,7 @@ class Runtime:
             composition=run.scratch.composition,
             trace=list(run.trace),
             unresolved=list(run.unresolved),
+            user_message=run.user_message,
         )
         return payload.model_dump_json()
 
@@ -306,6 +318,7 @@ class Runtime:
             answered=set(stored.answered),
             trace=list(stored.trace),
             unresolved=list(stored.unresolved),
+            user_message=stored.user_message,
             started_at=self._clock(),
             tokens_seen=self._tokens_baseline(),
         )
@@ -315,7 +328,7 @@ class Runtime:
 
     # --------------------------------------------------------------- цикл хода
 
-    def _drive(self, run: Run, now: datetime) -> Run:
+    async def _drive(self, run: Run, now: datetime) -> Run:
         while run.state.run_status == RunStatus.RUNNING:
             stage = policy.next_stage(run.state)
             if stage is None:
@@ -323,32 +336,32 @@ class Runtime:
                                run.state.stage.value)
                 return self._best_effort(run, "no_outgoing_edge")
             run.trace.append(stage.value)
-            run = self._handle(run, stage, now)
+            run = await self._handle(run, stage, now)
             if run.state.run_status == RunStatus.RUNNING:
                 self._charge_clock(run)
         return run
 
-    def _handle(self, run: Run, stage: Stage, now: datetime) -> Run:
+    async def _handle(self, run: Run, stage: Stage, now: datetime) -> Run:
         if stage == Stage.DECIDE:
-            return self._decide(run)
+            return await self._decide(run)
         if stage == Stage.INSPIRE:
-            return self._inspire(run, now)
+            return await self._inspire(run, now)
         if stage == Stage.SEARCH:
-            return self._search(run, now)
+            return await self._search(run, now)
         if stage == Stage.COMPOSE:
-            return self._compose(run, now)
+            return await self._compose(run, now)
         if stage == Stage.VALIDATE:
-            return self._validate(run)
+            return await self._validate(run)
         if stage == Stage.SHORTLIST:
-            return self._shortlist(run)
+            return await self._shortlist(run)
         if stage == Stage.EXPLAIN:
-            return self._explain(run)
+            return await self._explain(run)
         if stage == Stage.PLAN:
-            return self._plan(run)
+            return await self._plan(run)
         logger.warning("stage has no handler trip=%s stage=%s", run.state.trip_id, stage.value)
         return self._best_effort(run, f"no_handler_{stage.value}")
 
-    def _decide(self, run: Run) -> Run:
+    async def _decide(self, run: Run) -> Run:
         """DECIDE: спросить или идти собирать; фаза обязана отметить себя в `stage`.
 
         Ребро `policy.next_stage` читает завершённую фазу из состояния, поэтому узел без
@@ -359,21 +372,21 @@ class Runtime:
 
         specs = policy.questions_to_ask(run.state)
         if specs:
-            return self._ask(run, specs[0])
+            return await self._ask(run, specs[0])
         return self._mark(run, Stage.DECIDE)
 
     def _mark(self, run: Run, stage: Stage) -> Run:
         run.state = nodes.set_stage(run.state, stage)
         return run
 
-    def _ask(self, run: Run, spec: QuestionSpec) -> Run:
+    async def _ask(self, run: Run, spec: QuestionSpec) -> Run:
         """Вопрос = interrupt: текст даёт слот №2, паузу и след в состоянии создаёт узел.
 
         Счётчик вопросов поднимает рантайм на самом вопросе: и в счётчик хода (`budgets`,
         лимит из контракта), и в накопленный по путешествию (`nodes.ask`).
         """
 
-        text = self._slot_formulate(run, spec)
+        text = await self._slot_formulate(run, spec)
         if text is None:
             return self._stop_by_limit(run)
         self._charge(run, questions=1)
@@ -383,27 +396,27 @@ class Runtime:
         logger.info("question raised run=%s field=%s", run.run_id, spec.field)
         return run
 
-    def _inspire(self, run: Run, now: datetime) -> Run:
+    async def _inspire(self, run: Run, now: datetime) -> Run:
         """INSPIRE: направления и климат (вход, когда своих направлений ещё нет)."""
 
-        collected = self._collect(run, INSPIRE_TOOLS_ORDER, now)
+        collected = await self._collect(run, INSPIRE_TOOLS_ORDER, now)
         if collected is None:
             return self._stop_by_limit(run)
         return self._mark(collected, Stage.INSPIRE)
 
-    def _search(self, run: Run, now: datetime) -> Run:
+    async def _search(self, run: Run, now: datetime) -> Run:
         """SEARCH: все источники хода в порядке зависимостей; решает `_needs`.
 
         Список полный намеренно: на дельте по датам выезда грязнеют и подбор направлений,
         и климат, а фаза INSPIRE в этот ход может не входиться.
         """
 
-        collected = self._collect(run, COLLECT_ORDER, now)
+        collected = await self._collect(run, COLLECT_ORDER, now)
         if collected is None:
             return self._stop_by_limit(run)
         return self._mark(collected, Stage.SEARCH)
 
-    def _collect(self, run: Run, names: tuple[str, ...], now: datetime) -> Run | None:
+    async def _collect(self, run: Run, names: tuple[str, ...], now: datetime) -> Run | None:
         """Вызвать инструменты, которые надо переоткрыть, и унести их ответ в `candidates`.
 
         Финалистов слот №4 выбирает сразу после подбора направлений и до того, как по ним
@@ -424,7 +437,7 @@ class Runtime:
         for name in names:
             if not self._needs(run, name):
                 continue
-            result = self._call(run, name, args=self._args_for(run.state, name), now=now)
+            result = await self._call(run, name, args=self._args_for(run.state, name), now=now)
             if result is None:
                 return None
             run.scratch.results[name] = result
@@ -433,15 +446,15 @@ class Runtime:
             if name == "suggest_destinations":
                 awaiting_climate = "weather_climate" not in run.fetched
                 if not awaiting_climate:
-                    run = self._finalists(run)
+                    run = await self._finalists(run)
             elif name == "weather_climate" and awaiting_climate:
                 awaiting_climate = False
-                run = self._finalists(run)
+                run = await self._finalists(run)
             elif name == "hotel_search":
-                run = self._relevance(run)
+                run = await self._relevance(run)
         return run
 
-    def _relevance(self, run: Run) -> Run:
+    async def _relevance(self, run: Run) -> Run:
         """Слот №3: мягкая релевантность отелей против фраз предпочтений (AGENTS.md).
 
         Отказ, выключенный слот или пустой запрос — не ошибка и не ноль на всех кандидатах:
@@ -449,6 +462,12 @@ class Runtime:
         разошлись бы составом плана, а воспроизводимость трейса — первое требование offline fixture.
         """
 
+        if getattr(self._slots, "package_rerank", False):
+            retrieval_scores = {candidate.candidate_id: candidate.score for candidate in run.state.candidates.hotels
+                      if candidate.score is not None and candidate.score > 0}
+            if retrieval_scores:
+                run.state = nodes.apply_relevance(run.state, retrieval_scores)
+            return run
         documents = {candidate.candidate_id: nodes.hotel_document(candidate)
                      for candidate in run.state.candidates.hotels}
         query = nodes.relevance_query(run.state.request)
@@ -456,7 +475,7 @@ class Runtime:
             logger.info("relevance skipped trip=%s docs=%d query_empty=%s",
                         run.state.trip_id, len(documents), not query)
             return run
-        scores = self._slot_relevance(run, query, documents)
+        scores = await self._slot_relevance(run, query, documents)
         if not scores:
             logger.info("relevance unavailable trip=%s docs=%d", run.state.trip_id, len(documents))
             return run
@@ -466,18 +485,18 @@ class Runtime:
                     run.state.trip_id, len(scores), best)
         return run
 
-    def _finalists(self, run: Run) -> Run:
+    async def _finalists(self, run: Run) -> Run:
         """Слот №4: из отобранного кодом набора — три направления с причиной."""
 
         if not run.state.candidates.destinations or not self._needs_finalists(run):
             return run
-        finalists = self._slot_finalists(run, run.state.candidates.destinations)
+        finalists = await self._slot_finalists(run, run.state.candidates.destinations)
         if finalists is None:
             return self._stop_by_limit(run)
         run.state = nodes.mark_finalists(run.state, finalists)
         return run
 
-    def _compose(self, run: Run, now: datetime) -> Run:
+    async def _compose(self, run: Run, now: datetime) -> Run:
         composition = nodes.compose(run.state, nodes.merge_results(list(run.scratch.results.values())),
                                     now=now)
         run.scratch.composition = composition
@@ -486,11 +505,11 @@ class Runtime:
                         [violation.code.value for violation in composition.blocking])
             run.state = nodes.record_violations(run.state,
                                                 nodes.with_notes(composition.blocking, composition.notes))
-            return self._resolve_blocking(run)
+            return await self._resolve_blocking(run)
         run.state = nodes.commit_plan(run.state, composition)
         return run
 
-    def _validate(self, run: Run) -> Run:
+    async def _validate(self, run: Run) -> Run:
         if run.scratch.composition is None or run.scratch.composition.plan is None:
             raise ValueError("VALIDATE requires a composed plan")
         if run.state.request.budget.amount.is_unknown:
@@ -507,17 +526,68 @@ class Runtime:
             repaired = self._repair(run, violations)
             if repaired is not None:
                 return repaired
-            return self._resolve_blocking(run)
+            return await self._resolve_blocking(run)
         return run
 
-    def _shortlist(self, run: Run) -> Run:
+    async def _shortlist(self, run: Run) -> Run:
         """12→3 (слот №4) сыграно в INSPIRE на направлениях; здесь фаза отмечена, и счёт
         версий растёт честно: `COMPARE`/`DIFF` — replanning layer."""
 
+        if getattr(self._slots, "package_rerank", False) and run.scratch.composition is not None:
+            search = nodes.merge_results(list(run.scratch.results.values()))
+            options: list[Composition] = [run.scratch.composition]
+            seen = {tuple(sorted(run.scratch.composition.refs.items()))}
+            # Reuse facts already fetched. Every option passes the same deterministic
+            # validator before the cross-encoder sees it.
+            for hotel in sorted(search.hotels, key=lambda h: (-h.score, h.specs.hotel_id))[:64]:
+                composition = nodes.compose(run.state, search.model_copy(update={"hotels": [hotel]}), now=_stamp(None))
+                if composition.plan is None:
+                    continue
+                option_state = nodes.commit_plan(run.state, composition)
+                budget, scope = run.state.request.budget.amount.value, run.state.request.budget.scope.value
+                if budget is None or scope is None:
+                    continue
+                ledger = BudgetLedger(lines=composition.lines, budget=budget, scope=scope,
+                                      party_size=composition.plan.guests)
+                if has_blocking(validate(composition.plan, ledger, option_state)):
+                    continue
+                identity = tuple(sorted(composition.refs.items()))
+                if identity in seen:
+                    continue
+                seen.add(identity)
+                options.append(composition)
+                if len(options) == 12:
+                    break
+            documents = {
+                str(index): " ".join([item.facts.get("headline", ""), item.facts.get("hotel", ""),
+                                      "Перелёт " + item.facts.get("flight_h", "") + " ч.",
+                                      next((nodes.hotel_document(c) for c in run.state.candidates.hotels
+                                            if c.candidate_id == item.refs.get("hotel")), "")])
+                for index, item in enumerate(options)
+            }
+            request = run.state.request
+            query = (nodes.relevance_query(request) + f"; гостей: {request.party.adults.value}; "
+                     f"питомец: {bool(request.party.pets.value)}; "
+                     f"заезд: {request.dates.start.value}; выезд: {request.dates.end.value}")
+            scores = await self._slot_relevance(run, query, documents)
+            if scores:
+                options = [item for index, item in sorted(enumerate(options),
+                           key=lambda pair: -scores.get(str(pair[0]), float("-inf")))]
+            run.options = options[:3]
+            if run.options:
+                run.scratch.composition = run.options[0]
+                run.state = nodes.commit_plan(run.state, run.options[0])
+                run.state = run.state.model_copy(update={"options": [
+                    PackageOption(
+                        option_id=item.refs["hotel"], component_refs=item.refs, items=item.lines, facts=item.facts,
+                        total=BudgetLedger(lines=item.lines, budget=budget, scope=scope,
+                                           party_size=item.plan.guests).total,
+                    ) for item in run.options if item.plan is not None and budget is not None and scope is not None
+                ]})
         run.state = nodes.set_stage(run.state, Stage.SHORTLIST)
         return run
 
-    def _explain(self, run: Run) -> Run:
+    async def _explain(self, run: Run) -> Run:
         composition = run.scratch.composition
         if composition is None or composition.plan is None:
             raise ValueError("EXPLAIN requires a composed plan")
@@ -533,15 +603,27 @@ class Runtime:
             ledger=ledger,
             facts={key: value for key, value in composition.facts.items() if key != "headline"},
         )
-        text = self._slot_explain(run, explanation)
+        if run.user_message:
+            explanation.facts["untrusted_user_request"] = run.user_message
+        if run.options:
+            explanation.facts["options"] = json.dumps([
+                {"destination": option.refs.get("destination"), "hotel": option.facts.get("hotel"),
+                 "total": display(BudgetLedger(lines=option.lines, budget=ledger.budget,
+                                               scope=ledger.scope, party_size=plan.guests).total)}
+                for option in run.options
+            ], ensure_ascii=False)
+        text = await self._slot_explain(run, explanation)
         if text is None:
             return self._stop_by_limit(run)
-        bad = unverified_numbers(text, run.state, ledger)
+        extra_numbers = explanation.facts.get("options", "")
+        bad = unverified_numbers(text, run.state, ledger, extra=extra_numbers)
         if bad:
+            run.guard_rejections += 1
             # guard из AGENTS.md: одна перегенерация, потом шаблон из состояния
             logger.warning("number guard rejected explanation run=%s numbers=%s", run.run_id, bad)
-            again = self._slot_explain(run, explanation)
-            if again is None or unverified_numbers(again, run.state, ledger):
+            again = await self._slot_explain(run, explanation)
+            if again is None or unverified_numbers(again, run.state, ledger, extra=extra_numbers):
+                run.guard_rejections += 1
                 text = self._template(explanation)
                 logger.info("fell back to template run=%s", run.run_id)
             else:
@@ -565,7 +647,7 @@ class Runtime:
             raise ValueError("EXPLAIN requires lodging or dates: neither is in the plan")
         return start, start + timedelta(days=max(plan.nights, 1))
 
-    def _plan(self, run: Run) -> Run:
+    async def _plan(self, run: Run) -> Run:
         #: `affected()` — консервативный прогноз до поиска. В отчёт же должна попасть
         #: фактическая разница refs после пересборки, иначе UI помечает сменившийся рейс
         #: как сохранённый.
@@ -576,7 +658,7 @@ class Runtime:
                 if current.get(component) == ref
             )
         if run.previous_components and run.changed:
-            diff = self._slot_diff(run, run.previous_components, run.state.chosen.component_refs)
+            diff = await self._slot_diff(run, run.previous_components, run.state.chosen.component_refs)
             if diff is None:
                 return self._stop_by_limit(run)
             run.diff_text = diff
@@ -633,12 +715,12 @@ class Runtime:
 
     # ------------------------------------------------------- исход и лимиты
 
-    def _resolve_blocking(self, run: Run) -> Run:
+    async def _resolve_blocking(self, run: Run) -> Run:
         """Hard-нарушение не ослабляется молча: вопрос с посчитанными числами или `infeasible`."""
 
         spec = policy.question_for_blocking(run.state)
         if spec is not None:
-            return self._ask(run, spec)
+            return await self._ask(run, spec)
         run.unresolved = policy.blocking_actions([
             violation for violation in run.state.violations if violation.is_blocking
         ])
@@ -647,13 +729,13 @@ class Runtime:
             # отказ обязан называться словами с числами (AGENTS.md, «Названное
             # направление», исход 3): строку собирает код из нарушений состояния
             run.explanation = nodes.refusal_text(run.state.violations)
-            self._attach_alternatives(run)
+            await self._attach_alternatives(run)
         logger.info("blocking left trip=%s outcome=%s unresolved=%s", run.state.trip_id,
                     outcome.value, run.unresolved)
         run.state = nodes.finish(run.state, outcome, wall_clock_ms=self._elapsed_ms(run))
         return run
 
-    def _attach_alternatives(self, run: Run) -> None:
+    async def _attach_alternatives(self, run: Run) -> None:
         """Для неизвестного явно названного города показать похожие направления отдельно.
 
         Hard-ограничение не меняем и план не собираем: это именно следующий выбор человека.
@@ -671,7 +753,7 @@ class Runtime:
         if source is None or self._stop_reason(run):
             return
         self._charge(run, tool=1)
-        result, _ = self._cache.call(REGISTRY["suggest_destinations"], args,
+        result, _ = await self._cache.acall(REGISTRY["suggest_destinations"], args,
                                      lambda: source(args), now_s=self._clock())
         if not isinstance(result, SearchResult):
             return
@@ -772,7 +854,7 @@ class Runtime:
             return dict(sorted(state.chosen.component_refs.items()))
         raise ValueError(f"no derived argument for {path}")
 
-    def _call(self, run: Run, name: str, *, args: Mapping[str, object],
+    async def _call(self, run: Run, name: str, *, args: Mapping[str, object],
               now: datetime) -> SearchResult | None:
         if self._stop_reason(run):
             return None
@@ -785,7 +867,7 @@ class Runtime:
             raise ValueError(f"no source wired for tool {name}")
         # обращение к инструменту — это ход; в источник идём только когда кэш пуст
         self._charge(run, tool=1)
-        value, from_cache = self._cache.call(tool, args, lambda: source(args), now_s=now.timestamp())
+        value, from_cache = await self._cache.acall(tool, args, lambda: source(args), now_s=now.timestamp())
         logger.info("tool called trip=%s tool=%s cached=%s source_calls=%d cache_hits=%d",
                     run.state.trip_id, name, from_cache, self._cache.source_calls, self._cache.cache_hits)
         if not isinstance(value, SearchResult):
@@ -815,23 +897,23 @@ class Runtime:
 
     # ------------------------------------------------------------------- слоты
 
-    def _slot_parse(self, run: Run, message: str) -> TripRequest | None:
+    async def _slot_parse(self, run: Run, message: str) -> TripRequest | None:
         if self._stop_reason(run):
             return None
         self._charge(run, llm=1)
-        delta = self._slots.parse(message)
+        delta: TripRequest = await _await_result(self._slots.parse(message))
         self._charge_tokens(run)
         return delta
 
-    def _slot_formulate(self, run: Run, spec: QuestionSpec) -> str | None:
+    async def _slot_formulate(self, run: Run, spec: QuestionSpec) -> str | None:
         if self._stop_reason(run):
             return None
         self._charge(run, llm=1)
-        text = self._slots.formulate(spec)
+        text: str = await _await_result(self._slots.formulate(spec))
         self._charge_tokens(run)
         return text
 
-    def _slot_relevance(self, run: Run, query: str,
+    async def _slot_relevance(self, run: Run, query: str,
                         documents: dict[str, str]) -> dict[str, float] | None:
         """Слот №3 — вне `llm_calls`: лимит шести обращений хода считается по чат-слотам.
 
@@ -842,31 +924,31 @@ class Runtime:
 
         if self._stop_reason(run):
             return None
-        scores = self._slots.soft_relevance(query, documents)
+        scores: dict[str, float] | None = await _await_result(self._slots.soft_relevance(query, documents))
         self._charge_tokens(run)
         return scores
 
-    def _slot_finalists(self, run: Run, candidates: list[Candidate]) -> list[Candidate] | None:
+    async def _slot_finalists(self, run: Run, candidates: list[Candidate]) -> list[Candidate] | None:
         if self._stop_reason(run):
             return None
         self._charge(run, llm=1)
-        picked = self._slots.pick_finalists(candidates)
+        picked: list[Candidate] = await _await_result(self._slots.pick_finalists(candidates))
         self._charge_tokens(run)
         return picked
 
-    def _slot_explain(self, run: Run, explanation: Explanation) -> str | None:
+    async def _slot_explain(self, run: Run, explanation: Explanation) -> str | None:
         if self._stop_reason(run):
             return None
         self._charge(run, llm=1)
-        text = self._slots.explain(explanation)
+        text: str = await _await_result(self._slots.explain(explanation))
         self._charge_tokens(run)
         return text
 
-    def _slot_diff(self, run: Run, old_plan: dict[str, str], new_plan: dict[str, str]) -> str | None:
+    async def _slot_diff(self, run: Run, old_plan: dict[str, str], new_plan: dict[str, str]) -> str | None:
         if self._stop_reason(run):
             return None
         self._charge(run, llm=1)
-        text = self._slots.diff(old_plan, new_plan)
+        text: str = await _await_result(self._slots.diff(old_plan, new_plan))
         self._charge_tokens(run)
         return text
 
@@ -936,6 +1018,11 @@ class Runtime:
         run.fetched = set()
         step = entry_step(run.changed)
         run.dirty = set(tools_for(run.changed, step))
+        if getattr(self._slots, "package_rerank", False) and "soft_preferences" in run.changed:
+            # New descriptive preferences require a new embedding query, not just
+            # sorting the previous result set. Flight inventory stays untouched.
+            run.dirty.add("hotel_search")
+            self._cache.invalidate(["hotel_search"])
         run.replan_step = step
         run.affected_components = set(affected(run.changed))
         run.kept_components = sorted(
@@ -995,7 +1082,7 @@ class Runtime:
         return adjusted
 
 
-def unverified_numbers(text: str, state: TripState, ledger: BudgetLedger) -> list[str]:
+def unverified_numbers(text: str, state: TripState, ledger: BudgetLedger, *, extra: str = "") -> list[str]:
     """Числа ответа против состояния: ни одного, которого нет в `TripState`/`BudgetLedger`.
 
     Дешёвая проверка подстрокой — ровно тот механизм, который не даёт модели написать
@@ -1010,7 +1097,7 @@ def unverified_numbers(text: str, state: TripState, ledger: BudgetLedger) -> lis
     `_without_invented_numbers` — два счётчика честности обязаны сходиться.
     """
 
-    haystack = (state.model_dump_json() + ledger.model_dump_json() + _ledger_numbers(ledger))
+    haystack = (state.model_dump_json() + ledger.model_dump_json() + _ledger_numbers(ledger) + extra)
     haystack = haystack.replace(" ", "").replace("\u00a0", "")
     found: list[str] = []
     for token in _NUMBER.findall(text):
@@ -1052,3 +1139,21 @@ def _stamp(now: datetime | None) -> datetime:
     """Время хода решает рантайм и передаёт его узлам аргументом — узлы его не берут."""
 
     return now if now is not None else datetime.now(timezone.utc)
+
+
+async def _await_result(value: Any) -> Any:
+    """Await network providers; deterministic fixtures remain ordinary functions."""
+    return await value if inspect.isawaitable(value) else value
+
+
+class Runtime(AsyncRuntime):
+    """Compatibility facade for offline CLI/tests. HTTP uses AsyncRuntime directly."""
+
+    def start(self, message: str, **kwargs: Any) -> Run:  # type: ignore[override]
+        return asyncio.run(super().start(message, **kwargs))
+
+    def answer(self, run: Run, path: str, raw: str, **kwargs: Any) -> Run:  # type: ignore[override]
+        return asyncio.run(super().answer(run, path, raw, **kwargs))
+
+    def checkout(self, run: Run, **kwargs: Any) -> Run:  # type: ignore[override]
+        return asyncio.run(super().checkout(run, **kwargs))
