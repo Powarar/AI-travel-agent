@@ -20,6 +20,13 @@
     "hard_respected": [
       "budget.amount не ослаблен без user_approved"
     ],
+    "answer_contains": [
+      "даже без проживания"
+    ],
+    "answer_not_contains": [
+      "до 0 ₽",
+      "cannot read"
+    ],
     "sane_numbers": "reduce_lodging_to не бывает отрицательным: если не влезает даже без проживания, так и сказать",
     "checkout": false
   },

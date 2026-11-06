@@ -1,0 +1,26 @@
+{
+  "dataset_id": "parse-ru-v1",
+  "description": "Manually labelled Russian intent extraction; aliases are explicit, not fuzzy prefixes.",
+  "cases": [
+    {"id":"full_sochi","message":"Хочу в Сочи из Москвы с 14 по 21 ноября 2026 года, нас двое, бюджет 200000 рублей","expected":{"direction.explicit":["Сочи"],"origin":["Москва","Москвы"],"party.adults":2,"dates.start":"2026-11-14","dates.end":"2026-11-21","budget.amount":{"amount":"200000","currency":"RUB"}}},
+    {"id":"budget_direct","message":"Бюджет 150к на двоих, только прямые рейсы","expected":{"budget.amount":{"amount":"150000","currency":"RUB"},"party.adults":2,"transport.prefer_direct":true}},
+    {"id":"pets_child","message":"Летим с собакой и ребёнком 5 лет, не больше 3.5 часов в пути","expected":{"party.pets":true,"party.children":[5],"transport.max_hours_direct":"3.5"}},
+    {"id":"large_party","message":"В Сочи, нас 12 взрослых, бюджет 900000 рублей","expected":{"party.adults":12,"direction.explicit":["Сочи"],"budget.amount":{"amount":"900000","currency":"RUB"}}},
+    {"id":"seven_nights","message":"На семь ночей, вдвоём","expected":{"nights":7,"party.adults":2}},
+    {"id":"per_person","message":"Бюджет 45 тысяч на человека","expected":{"budget.amount":{"amount":"45000","currency":"RUB"},"budget.scope":"per_person"}},
+    {"id":"december_dates","message":"С 3 по 9 декабря 2026 года, нас трое","expected":{"dates.start":"2026-12-03","dates.end":"2026-12-09","party.adults":3}},
+    {"id":"pool_required","message":"Обязательно нужен отель с бассейном","expected":{"lodging.must":["pool"]}},
+    {"id":"quiet_preference","message":"Нужен тихий атмосферный отель рядом с кафе","expected":{},"preferences_contain":["тих"],"forbidden":["budget.amount","dates.start","dates.end"]},
+    {"id":"unknown_budget","message":"Хочу куда-нибудь в ноябре, недорого","expected":{},"forbidden":["budget.amount","dates.start","dates.end"]},
+    {"id":"adults_four","message":"Нас четверо взрослых, поездка на пять ночей","expected":{"party.adults":4,"nights":5}},
+    {"id":"cat","message":"Еду с кошкой на 4 ночи","expected":{"party.pets":true,"nights":4}},
+    {"id":"explicit_budget","message":"Потратим не больше 60к","expected":{"budget.amount":{"amount":"60000","currency":"RUB"}}},
+    {"id":"children","message":"Двое взрослых и ребёнок 6 лет","expected":{"party.adults":2,"party.children":[6]}},
+    {"id":"origin_only","message":"Вылетаем из Санкт-Петербурга","expected":{"origin":["Санкт-Петербург","Санкт-Петербурга"]},"forbidden":["direction.explicit","budget.amount","dates.start"]},
+    {"id":"flight_followup","message":"Только прямые рейсы","expected":{"transport.prefer_direct":true},"forbidden":["budget.amount","dates.start","direction.explicit"]},
+    {"id":"short_flight","message":"Перелёт не больше 4 часов","expected":{"transport.max_hours_direct":"4"}},
+    {"id":"million_budget","message":"Бюджет 1 млн рублей на всех, 14 ночей","expected":{"budget.amount":{"amount":"1000000","currency":"RUB"},"nights":14}},
+    {"id":"named_country","message":"Хочу в Турцию на 6 ночей","expected":{"direction.explicit":["Турция","Турцию"],"nights":6}},
+    {"id":"no_numeric_facts","message":"Привет, пока просто расскажи что умеешь","expected":{},"forbidden":["budget.amount","dates.start","dates.end","direction.explicit","origin"]}
+  ]
+}

@@ -17,6 +17,7 @@ help:
 	@echo "make seed      — load the development catalogue"
 	@echo "make migrate   — run Alembic migrations in the backend"
 	@echo "make eval      — run offline evaluation scenarios"
+	@echo "make eval-live — run explicitly enabled live-model acceptance checks"
 	@echo "make warmup    — prepare the ingestion adapter cache"
 	@echo "make psql      — open a PostgreSQL shell"
 	@echo "make test      — run the Python test suite"
@@ -79,9 +80,26 @@ test:
 eval:
 	$(PYTHON) -m evaluation.run_eval --json
 
+.PHONY: eval-live
+eval-live:
+	@test "$(RUN_LIVE_EVALS)" = "1" || (echo "Set RUN_LIVE_EVALS=1 to allow billable live-model checks" >&2; exit 2)
+	$(PYTHON) -m pytest tests/scenarios/test_parse_accuracy.py tests/scenarios/test_live_agent_e2e.py -q
+
 .PHONY: warmup
 warmup:
 	$(PYTHON) -m services.backend.app.ingestion.warmup
+
+.PHONY: index-search
+index-search:
+	$(DC) exec backend python -m app.ingestion.search_index
+
+.PHONY: eval-async-live
+eval-async-live:
+	$(PYTHON) -m evaluation.run_async_e2e
+
+.PHONY: eval-accuracy
+eval-accuracy:
+	$(DC) exec -e RUN_LIVE_EVALS=$(RUN_LIVE_EVALS) backend python -m evaluation.run_parse_accuracy --live --persist
 
 .PHONY: lint
 lint:

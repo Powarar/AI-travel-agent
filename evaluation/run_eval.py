@@ -28,6 +28,9 @@ def grade(report: TurnReport, expect: dict[str, Any]) -> dict[str, bool]:
         else (not blocking or (report.outcome is not None
                                and report.outcome.value in expected_outcomes))
     )
+    text = report.explanation_text
+    must_contain = [str(item).lower() for item in expect.get("answer_contains", [])]
+    must_not_contain = [str(item).lower() for item in expect.get("answer_not_contains", [])]
     return {
         "completed": report.outcome in {
             Outcome.PLAN_READY, Outcome.BEST_EFFORT, Outcome.INFEASIBLE, Outcome.UNSUPPORTED,
@@ -37,6 +40,10 @@ def grade(report: TurnReport, expect: dict[str, Any]) -> dict[str, bool]:
         "fabricated": not report.invented_numbers,
         "required_violations": set(expect.get("violation_codes", [])) <= codes,
         "questions": report.questions <= int(expect.get("max_questions", 99)),
+        # Refusal wording is product quality: technical English and advice such as
+        # "reduce lodging to 0 ₽" must not regress unnoticed.
+        "answer_contains": all(fragment in text.lower() for fragment in must_contain),
+        "answer_not_contains": not any(fragment in text.lower() for fragment in must_not_contain),
     }
 
 

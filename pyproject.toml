@@ -6,6 +6,11 @@ mypy_path = "."
 explicit_package_bases = true
 exclude = "shared/contracts/(hotel|flight)\\.py"
 
+[tool.pytest.ini_options]
+markers = [
+  "live: explicitly enabled checks that call a billable model provider",
+]
+
 [[tool.mypy.overrides]]
 module = ["tests.*"]
 disallow_untyped_defs = false

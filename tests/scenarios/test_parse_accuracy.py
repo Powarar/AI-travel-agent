@@ -75,7 +75,9 @@ def _live_provider() -> OpenAICompatibleSlots | None:
     return provider if isinstance(provider, OpenAICompatibleSlots) else None
 
 
-HAVE_LIVE = _live_provider() is not None
+# A configured key alone must never make the regular test suite billable. Live checks
+# are intentionally opt-in through `RUN_LIVE_EVALS=1` and `make eval-live`.
+HAVE_LIVE = os.environ.get("RUN_LIVE_EVALS") == "1" and _live_provider() is not None
 
 
 class Case:
@@ -1068,7 +1070,7 @@ class TestProviderLimits:
         assert provider.failures[0]["kind"] == "input_limit"
 
 
-@pytest.mark.skipif(not HAVE_LIVE, reason="LLM_PROVIDER=mock — живой прогон недоступен")
+@pytest.mark.skipif(not HAVE_LIVE, reason="live checks require RUN_LIVE_EVALS=1 and a configured provider")
 class TestLiveMetric:
     """Живьём на 12 фразах: та же метрика, что и офлайн, плюс латентность вызова."""
 
