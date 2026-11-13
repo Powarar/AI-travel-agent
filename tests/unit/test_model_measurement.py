@@ -1,4 +1,5 @@
 """Measurement correctness: decimal cost, incomplete usage and unbiased labels."""
+from datetime import date
 from decimal import Decimal
 
 from shared.model_pricing import price_span
@@ -76,6 +77,19 @@ def test_accuracy_denominators_do_not_mix_absence_checks_and_required_values():
     assert report["assertion_accuracy"] == 2 / 3
 
 
+def test_month_only_date_is_allowed_only_as_unconfirmed_context():
+    request = TripRequest()
+    request.dates.start = FieldValue.inferred(
+        date(2026, 11, 1), kind=ConstraintKind.HARD, source="context", confidence=0.5,
+    )
+    result = grade(
+        {"id": "month", "expected": {}, "unconfirmed_allowed": ["dates.start"]},
+        request,
+        fallback=False,
+    )
+    assert result["checks"]["absent_or_unconfirmed:dates.start"] is True
+
+
 @pytest.mark.asyncio
 async def test_real_async_provider_boundary_records_usage_price_and_prompt_hash():
     payload = {"deltas": [{"path": "nights", "raw": "7 ночей", "kind": "hard"}]}
@@ -93,6 +107,23 @@ async def test_real_async_provider_boundary_records_usage_price_and_prompt_hash(
         assert slots.spans[0]["total_tokens"] == 1100
         assert Decimal(slots.spans[0]["estimated_cost_rub"]) == Decimal("0.042")
         assert len(slots.spans[0]["prompt_version"]) == 16
+
+
+@pytest.mark.asyncio
+async def test_async_parser_preserves_literal_preference_when_model_omits_quote():
+    payload = {"deltas": [], "preference_quotes": []}
+
+    async def respond(request):
+        return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(payload)},
+                                                        "finish_reason": "stop"}],
+                                         "usage": {"prompt_tokens": 1, "completion_tokens": 1,
+                                                   "total_tokens": 2}})
+
+    async with httpx.AsyncClient(base_url="https://test.invalid", transport=httpx.MockTransport(respond)) as client:
+        config = OpenAICompatibleSlots(model="deepseek-v4.1-flash-1017", api_key="test-only", year=2026)
+        slots = AsyncSlots(config, client=client)
+        request = await slots.parse("Нужен тихий атмосферный отель рядом с кафе")
+        assert any("тих" in value.casefold() for value in request.soft_preferences)
 
 
 def test_bad_pricing_config_does_not_break_inference(monkeypatch):

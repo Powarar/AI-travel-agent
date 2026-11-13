@@ -11,7 +11,7 @@
     {"id":"december_dates","message":"С 3 по 9 декабря 2026 года, нас трое","expected":{"dates.start":"2026-12-03","dates.end":"2026-12-09","party.adults":3}},
     {"id":"pool_required","message":"Обязательно нужен отель с бассейном","expected":{"lodging.must":["pool"]}},
     {"id":"quiet_preference","message":"Нужен тихий атмосферный отель рядом с кафе","expected":{},"preferences_contain":["тих"],"forbidden":["budget.amount","dates.start","dates.end"]},
-    {"id":"unknown_budget","message":"Хочу куда-нибудь в ноябре, недорого","expected":{},"forbidden":["budget.amount","dates.start","dates.end"]},
+    {"id":"unknown_budget","message":"Хочу куда-нибудь в ноябре, недорого","expected":{},"forbidden":["budget.amount","dates.end"],"unconfirmed_allowed":["dates.start"]},
     {"id":"adults_four","message":"Нас четверо взрослых, поездка на пять ночей","expected":{"party.adults":4,"nights":5}},
     {"id":"cat","message":"Еду с кошкой на 4 ночи","expected":{"party.pets":true,"nights":4}},
     {"id":"explicit_budget","message":"Потратим не больше 60к","expected":{"budget.amount":{"amount":"60000","currency":"RUB"}}},

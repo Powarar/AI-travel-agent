@@ -54,6 +54,12 @@ def grade(case: dict[str, Any], request: TripRequest, *, fallback: bool) -> dict
     for path in case.get("forbidden", []):
         field = request.field_value(path)
         checks["absent:" + path] = isinstance(field, FieldValue) and field.value is None
+    for path in case.get("unconfirmed_allowed", []):
+        field = request.field_value(path)
+        checks["absent_or_unconfirmed:" + path] = (
+            isinstance(field, FieldValue)
+            and (field.value is None or (field.status.value == "inferred" and field.needs_confirmation))
+        )
     preferences = " ".join(request.soft_preferences).casefold()
     for fragment in case.get("preferences_contain", []):
         checks["preference:" + fragment] = fragment.casefold() in preferences

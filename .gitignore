@@ -28,6 +28,7 @@ dist/
 artifacts/
 outputs/
 *.inspect.ndjson
+interview/
 
 # IDE and OS files
 .DS_Store

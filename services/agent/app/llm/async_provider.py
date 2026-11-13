@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import hashlib
 import os
+import re
 import time
 from datetime import date
 from typing import Any, TypeVar
@@ -33,6 +34,29 @@ from shared.contracts.state import Candidate
 from shared.model_pricing import price_span
 
 T = TypeVar("T", bound=BaseModel)
+
+
+_LITERAL_PREFERENCE_RE = re.compile(
+    r"\b(?:тих\w*|атмосферн\w*|уютн\w*|спокойн\w*|семейн\w*)\b"
+    r"(?:\s+[а-яёa-z0-9-]+){0,7}",
+    re.IGNORECASE,
+)
+
+
+def literal_preferences(message: str) -> list[str]:
+    """Return verbatim preference phrases when the model omitted them.
+
+    This is extraction rather than classification: every returned phrase is a substring
+    of the user's message. It cannot turn a soft wish into a hard constraint or add a
+    fact that the user did not provide.
+    """
+
+    found: list[str] = []
+    for match in _LITERAL_PREFERENCE_RE.finditer(message):
+        phrase = match.group(0).strip(" ,.;:!?")
+        if phrase and phrase.casefold() not in {item.casefold() for item in found}:
+            found.append(phrase)
+    return found
 
 
 class FinalResponse(BaseModel):
@@ -144,6 +168,8 @@ class AsyncSlots:
             result = top_up_soft_fields(result, self._fallback.parse(message))
         quotes = [quote for quote in parsed.preference_quotes if quote.strip()
                   and quote.casefold() in message.casefold() and len(quote) <= 300]
+        if not quotes:
+            quotes = literal_preferences(message)
         if quotes:
             result.request.soft_preferences = quotes
         return result.request
