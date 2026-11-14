@@ -4,7 +4,6 @@ strict = true
 files = ["shared/contracts"]
 mypy_path = "."
 explicit_package_bases = true
-exclude = "shared/contracts/(hotel|flight)\\.py"
 
 [tool.pytest.ini_options]
 markers = [

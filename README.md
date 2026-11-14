@@ -78,7 +78,7 @@ make down     # stop the stack
 make seed     # load the development catalogue
 make test     # run the Python test suite
 make lint     # run type checks and architecture guardrails
-make eval     # run offline evaluation scenarios
+make      #eval run offline evaluation scenarios
 make web      # run the frontend in Docker with hot reload
 ```
 

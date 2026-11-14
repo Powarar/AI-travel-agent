@@ -86,11 +86,7 @@ services:
     build:
       <<: *build-root
       dockerfile: services/agent/Dockerfile
-    command: >-
-      python -c 'from importlib import import_module; from fastapi import FastAPI;
-      from uvicorn import run;
-      run(getattr(import_module("app.main"), "app", FastAPI()),
-      host="0.0.0.0", port=8001)'
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
     environment:
       BACKEND_URL: http://backend:8000
       HTTP_PORT: "8001"

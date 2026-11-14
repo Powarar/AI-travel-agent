@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections import Counter
 from threading import Lock
 
-from shared.contracts.enums import Outcome, RunStatus
+from shared.contracts.enums import RunStatus
 from shared.contracts.state import TripState
 
 from .schemas import MonitoringSummary, OutcomeMetrics, QualityMetrics

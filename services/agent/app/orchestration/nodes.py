@@ -262,6 +262,17 @@ def apply_answer(state: TripState, path: str, raw: str) -> TripState:
             request.direction.mode = FieldValue[DirectionMode].known(
                 DirectionMode.EXPLICIT, kind=ConstraintKind.HARD
             )
+    elif path == "party.pets":
+        no_pet = raw.strip().lower() in {"нет", "без питомца", "без собаки", "без кошки", "оставить дома", "false", "no", ""}
+        request.party.pets = FieldValue[bool].known(not no_pet, kind=ConstraintKind.HARD, source="user")
+    elif path == "party.adults":
+        match = re.search(r"\d+", raw)
+        if match is None:
+            raise ValueError(f"cannot read adults from {raw!r}")
+        request.party.adults = FieldValue[int].known(int(match.group(0)), kind=ConstraintKind.HARD, source="user")
+    elif path == "transport.prefer_direct":
+        prefer = raw.strip().lower() in {"да", "прямой", "только прямой", "yes", "true"}
+        request.transport.prefer_direct = FieldValue[bool].known(prefer, kind=ConstraintKind.SOFT, source="user")
     else:
         raise ValueError(f"no such question: {path}")
 
@@ -1451,16 +1462,24 @@ def _apply_dates(request: TripRequest, raw: str) -> None:
 
 def _money(raw: str) -> Money | None:
     lowered = raw.strip().lower()
-    if match := re.search(r"(\d{1,3})\s*[кk]\b", lowered):
-        return Money(amount=Decimal(match.group(1)) * 1000, currency="RUB")
+    if match := re.search(r"(\d+(?:[.,]\d+)?)\s*млн\b", lowered):
+        amount = Decimal(match.group(1).replace(",", ".")) * Decimal(1_000_000)
+        return Money(amount=amount, currency="RUB")
+    if match := re.search(r"(\d+(?:[.,]\d+)?)\s*(?:[кk]|тыс(?:яч|\.|\b)|т\.?\s*р\.?)", lowered):
+        amount = Decimal(match.group(1).replace(",", ".")) * Decimal(1000)
+        return Money(amount=amount, currency="RUB")
     compact = lowered.replace(" ", "").replace("\u00a0", "")
-    if match := re.search(r"\d{2,7}", compact):
+    if match := re.search(r"\d{4,8}", compact):
+        return Money(amount=Decimal(match.group(0)), currency="RUB")
+    if match := re.search(r"\d{2,3}", compact):
         return Money(amount=Decimal(match.group(0)), currency="RUB")
     return None
 
 
 def _hours(raw: str) -> float | None:
-    match = re.search(r"(\d{1,2})(?:[.,](\d))?", raw.strip())
-    if match is None:
-        return None
-    return float(f"{match.group(1)}.{match.group(2) or 0}")
+    lowered = raw.strip().lower()
+    if match := re.search(r"(\d+(?:[.,]\d+)?)\s*(?:мин(?:ут\w*|\b))", lowered):
+        return round(float(match.group(1).replace(",", ".")) / 60.0, 2)
+    if match := re.search(r"(\d{1,2}(?:[.,]\d+)?)", lowered):
+        return float(match.group(1).replace(",", "."))
+    return None

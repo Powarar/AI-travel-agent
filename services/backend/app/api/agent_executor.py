@@ -67,6 +67,8 @@ def _answer_error(exc: ValueError) -> str:
         return "Не удалось распознать бюджет. Например: «150 000 ₽»."
     if detail.startswith("cannot read travel hours"):
         return "Не удалось распознать время в пути. Например: «не больше 4 часов»."
+    if detail.startswith("cannot read adults"):
+        return "Не удалось распознать количество человек. Например: «2 взрослых»."
     if detail.startswith("origin is hard-required"):
         return "Нужен город отправления — без него нельзя подобрать перелёт."
     return "Не удалось обработать ответ. Попробуйте сформулировать его иначе."

@@ -680,6 +680,9 @@ def coerce(path: str, raw: str, *, year: int, message: str = "", inferred: bool 
     if path in {"transport.prefer_direct", "transport.overnight_ok"}:
         return _to_bool(raw)
     if path == "transport.max_hours_direct":
+        lowered = raw.lower()
+        if match := re.search(r"(\d+(?:[.,]\d+)?)\s*(?:мин(?:ут\w*|\b))", lowered):
+            return round(float(match.group(1).replace(",", ".")) / 60.0, 2)
         match = re.search(r"\d+(?:[.,]\d+)?", raw)
         if match is None:
             raise ValueError(f"no hours in {raw!r}")

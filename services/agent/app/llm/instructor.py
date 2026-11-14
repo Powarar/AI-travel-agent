@@ -42,14 +42,28 @@ def extract_json(text: str) -> dict[str, object]:
         if start == -1:
             raise ValueError(f"no JSON object in response: {text[:120]!r}") from None
         depth = 0
+        in_string = False
+        escaped = False
         for index in range(start, len(stripped)):
-            if stripped[index] == "{":
-                depth += 1
-            elif stripped[index] == "}":
-                depth -= 1
-                if depth == 0:
-                    parsed = json.loads(stripped[start:index + 1])
-                    break
+            char = stripped[index]
+            if escaped:
+                escaped = False
+                continue
+            if char == "\\":
+                if in_string:
+                    escaped = True
+                continue
+            if char == '"':
+                in_string = not in_string
+                continue
+            if not in_string:
+                if char == "{":
+                    depth += 1
+                elif char == "}":
+                    depth -= 1
+                    if depth == 0:
+                        parsed = json.loads(stripped[start:index + 1])
+                        break
         else:
             raise ValueError(f"unbalanced JSON in response: {text[:120]!r}") from None
     if not isinstance(parsed, dict):
