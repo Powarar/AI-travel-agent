@@ -1,16 +1,17 @@
 """BM25 + semantic retrieval over admissible IDs using weighted reciprocal rank fusion."""
 from __future__ import annotations
 
-import json
 import hashlib
+import json
 import math
 import os
 import time
 from typing import Any
 
 import httpx
-from shared.telemetry import model_spans
+
 from shared.model_pricing import price_span
+from shared.telemetry import model_spans
 
 
 class AsyncEmbedder:
@@ -141,6 +142,10 @@ async def hybrid_search(conn: Any, query: str, admissible: list[str]) -> tuple[d
                     "ON CONFLICT(model,content_hash) DO UPDATE SET embedding=EXCLUDED.embedding,created_at=now()",
                     embedder.model, digest, json.dumps(vector),
                 )
+            #: Полный перебор по admissible-набору, а не ANN: набор уже отфильтрован
+            #: жёсткими ограничениями (~40 из 1318), поэтому HNSW здесь и медленнее
+            #: (54.5 мс против 1.7 мс), и терял бы половину кандидатов на post-filter.
+            #: Замеры и условие возврата к ANN — в миграции 0012_drop_unused_hnsw.
             hits = await conn.fetch(
                 "SELECT entity_id, 1 - (embedding <=> $1::vector) AS score FROM search_documents "
                 "WHERE model=$2 AND entity_id=ANY($3::text[]) AND embedding IS NOT NULL",

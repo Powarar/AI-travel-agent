@@ -40,7 +40,7 @@ def price_span(span: dict[str, Any]) -> dict[str, Any]:
         rates = [Decimal(str(rate[key])) for key in keys if type(rate[key]) in {int, str}]
         if len(rates) != len(keys) or any(not value.is_finite() or value < 0 for value in rates):
             raise ValueError("invalid rate")
-        cost = sum((Decimal(str(count)) * value for value, count in zip(rates, tokens)), Decimal(0))
+        cost = sum((Decimal(str(count)) * value for value, count in zip(rates, tokens, strict=True)), Decimal(0))
     except (ValueError, ArithmeticError):
         return {**result, "cost_status": "invalid_pricing_config"}
     result.update(estimated_cost_rub=str(cost / Decimal(1_000_000)), cost_status="estimated")

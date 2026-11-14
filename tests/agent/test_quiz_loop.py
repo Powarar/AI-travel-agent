@@ -228,6 +228,30 @@ class TestInterrupt:
     @pytest.mark.parametrize(
         "phrase,named",
         [
+            ("давай лучше в сочи, перелёт покороче", "сочи"),
+            ("давайте в турцию на неделю", "турцию"),
+        ],
+    )
+    def test_imperative_request_keeps_the_named_destination(self, phrase: str, named: str):
+        """Просьба без глагола поездки: «давай в Сочи» — такое же названное направление.
+
+        Раньше `_TRAVEL_VERB_RE` не знал повелительного наклонения, и реплика правки
+        теряла город: поиск шёл по открытому режиму и возвращал прежний план.
+        """
+
+        request = mock_parse(phrase)
+        assert request.direction.explicit.value == named
+        assert request.direction.explicit.source == "user"
+        assert request.direction.mode.value == DirectionMode.EXPLICIT
+
+    def test_imperative_without_a_place_is_not_a_destination(self):
+        request = mock_parse("давай посчитаем бюджет ещё раз")
+        assert request.direction.explicit.is_unknown
+        assert request.direction.mode.status.value == "defaulted"
+
+    @pytest.mark.parametrize(
+        "phrase,named",
+        [
             ("хочу в турцию в ноябре", "турцию"),
             ("нужен тур в египет", "египет"),
             ("еду в мармарис", "мармарис"),

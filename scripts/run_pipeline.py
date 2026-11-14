@@ -31,6 +31,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import logging
 import os
@@ -39,7 +40,7 @@ import sys
 import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
 
@@ -47,22 +48,29 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from services.agent.app.llm.provider_openai_compatible import DEFAULT_BASE_URL, load_env_file
-from services.agent.app.llm.provider_openai_compatible import slots_from_config
-from services.agent.app.llm.rerank import MODEL_ENV as RERANK_MODEL_ENV
-from services.agent.app.llm.rerank import Reranker
-from services.agent.app.llm.slots import Explanation, LLMSlots, MockSlots, display
-from services.agent.app.orchestration.runtime import Runtime, Source, unverified_numbers
-from shared.contracts.enums import Outcome
-from shared.contracts.money import BudgetLedger
-from shared.contracts.state import RunBudget, TripState
+from services.agent.app.llm.provider_openai_compatible import (  # noqa: E402 — sys.path.insert выше
+    DEFAULT_BASE_URL,
+    load_env_file,
+    slots_from_config,
+)
+from services.agent.app.llm.rerank import MODEL_ENV as RERANK_MODEL_ENV  # noqa: E402 — sys.path.insert выше
+from services.agent.app.llm.rerank import Reranker  # noqa: E402 — sys.path.insert выше
+from services.agent.app.llm.slots import Explanation, LLMSlots, MockSlots, display  # noqa: E402 — sys.path.insert выше
+from services.agent.app.orchestration.runtime import (  # noqa: E402 — sys.path.insert выше
+    Runtime,
+    Source,
+    unverified_numbers,
+)
+from shared.contracts.enums import Outcome  # noqa: E402 — sys.path.insert выше
+from shared.contracts.money import BudgetLedger  # noqa: E402 — sys.path.insert выше
+from shared.contracts.state import RunBudget, TripState  # noqa: E402 — sys.path.insert выше
 
 #: Сообщение золотого пути — то же, на котором стоят ассерты offline fixture: менять его здесь значит
 #: потерять сравнимость с тестом.
 DEFAULT_MESSAGE = "хочу к тёплому морю в ноябре вдвоём с ребёнком, 150к, без долгих перелётов"
 #: Дата тестов: источники фикстуруют цены относительно неё, и на реальной дате числа плана
 #: разъедутся с ассертами. `--real-now` включает текущую дату, если нужно посмотреть «как сейчас».
-FIXTURE_NOW = datetime(2026, 11, 1, 9, 0, tzinfo=timezone.utc)
+FIXTURE_NOW = datetime(2026, 11, 1, 9, 0, tzinfo=UTC)
 
 #: имя метода слота → (подпись в таблице, переменная окружения модели, номер слота на доске)
 SLOTS: tuple[tuple[str, str, str], ...] = (
@@ -370,7 +378,7 @@ def _percentile(values: Sequence[float], q: float) -> float:
     if not values:
         return 0.0
     ordered = sorted(values)
-    return ordered[min(len(ordered) - 1, max(0, int(round(q * (len(ordered) - 1)))))]
+    return ordered[min(len(ordered) - 1, max(0, round(q * (len(ordered) - 1))))]
 
 
 def slot_models(slots: LLMSlots) -> dict[str, str]:
@@ -419,7 +427,7 @@ def print_routing(slots: LLMSlots, sources: str = "fixture") -> None:
         print("  все слоты — моки offline fixture: сеть не трогается, денег нет")
         return
     models = slot_models(slots)
-    for name, label, env_name in SLOTS:
+    for _name, label, env_name in SLOTS:
         print(f"  {label:<16} {env_name:<20} {models[label]}")
 
 
@@ -493,10 +501,8 @@ def plan_calls(message: str, answers: Mapping[str, str], sources: str, *,
         raise _PlanQuestion
 
     report = TurnReport()
-    try:
+    with contextlib.suppress(_PlanQuestion):
         walk(runtime, message, answers, now=now, ask=ask, report=report)
-    except _PlanQuestion:
-        pass
     per_run = {label: len(measured.ms[name]) for name, label, _ in SLOTS}
     chat = sum(len(measured.ms[name]) for name, _, _ in SLOTS if name != "soft_relevance")
     return {
@@ -518,7 +524,7 @@ def print_plan(plan: Mapping[str, Any], provider: str, rerank_only: bool) -> Non
     paid = paid_slots(provider, rerank_only)
     print("\n=== план вызовов (посчитан моками offline fixture на этом же входе; сеть не трогали)")
     print(f"  {'слот':<16} {'на ход':>6} {'всего':>6}  чем")
-    for name, label, env_name in SLOTS:
+    for name, label, _env_name in SLOTS:
         count = plan["per_run"][label]
         kind = ("/rerank" if name == "soft_relevance" else "чат")
         if name == "diff":
@@ -635,7 +641,7 @@ def json_payload(reports: Sequence[TurnReport], measured: MeasuredSlots, *,
     runs: list[dict[str, Any]] = []
     for report in reports:
         runs.append({
-            "answers": [dict(zip(("path", "value"), pair)) for pair in report.answers],
+            "answers": [dict(zip(("path", "value"), pair, strict=True)) for pair in report.answers],
             "trace": report.trace,
             "outcome": report.outcome.value if report.outcome is not None else None,
             "stage": report.stage,
@@ -653,7 +659,7 @@ def json_payload(reports: Sequence[TurnReport], measured: MeasuredSlots, *,
                        "kept_components": report.kept_components, "diff": report.diff_text},
             "money": {"total": report.total, "budget": report.budget,
                       "remaining": report.remaining, "over_budget": report.over_budget,
-                      "breakdown": [dict(zip(("kind", "amount"), row))
+                      "breakdown": [dict(zip(("kind", "amount"), row, strict=True))
                                     for row in report.breakdown]},
             "metrics": {"tool_calls": report.tool_calls, "llm_calls": report.llm_calls,
                         "questions": report.questions, "tokens": report.tokens,
@@ -812,7 +818,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("нужно в .env: LLM_PROVIDER=aitunnel, LLM_MODEL=<чат-модель>, LLM_API_KEY; "
               "слот №3 включается переменной RERANK_MODEL", file=sys.stderr)
         return 2
-    now = datetime.now(timezone.utc) if args.real_now else FIXTURE_NOW
+    now = datetime.now(UTC) if args.real_now else FIXTURE_NOW
     if not args.json:
         print_routing(slots.inner, args.sources)
         if checks:

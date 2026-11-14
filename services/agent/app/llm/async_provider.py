@@ -5,8 +5,8 @@ Each HTTP turn owns a provider instance and its token/failure accounting.
 """
 from __future__ import annotations
 
-import json
 import hashlib
+import json
 import os
 import re
 import time
@@ -14,24 +14,34 @@ from datetime import date
 from typing import Any, TypeVar
 
 import httpx
-from pydantic import BaseModel, ValidationError
-from pydantic import Field
+from pydantic import BaseModel, Field, ValidationError
 
-from .instructor import extract_json, field_errors
-from .provider_openai_compatible import (
-    MAX_INPUT_CHARS, OpenAICompatibleSlots, ProviderError, _describe_path,
-    _legal_paths, load_env_file, parse_system_prompt,
-)
-from .rerank import parse_rerank_response, prepare_documents
-from .schemas import (
-    ExplainSchema, ParseSchema, ParsedDelta, QuestionSchema, apply_deltas,
-    soft_fields_missing, top_up_soft_fields,
-)
-from .slots import Explanation, MockSlots
 from services.agent.app.orchestration.policy import QuestionSpec
 from shared.contracts.request import TripRequest
 from shared.contracts.state import Candidate
 from shared.model_pricing import price_span
+
+from .instructor import extract_json, field_errors
+from .provider_openai_compatible import (
+    MAX_INPUT_CHARS,
+    OpenAICompatibleSlots,
+    ProviderError,
+    _describe_path,
+    _legal_paths,
+    load_env_file,
+    parse_system_prompt,
+)
+from .rerank import parse_rerank_response, prepare_documents
+from .schemas import (
+    ExplainSchema,
+    ParsedDelta,
+    ParseSchema,
+    QuestionSchema,
+    apply_deltas,
+    soft_fields_missing,
+    top_up_soft_fields,
+)
+from .slots import Explanation, MockSlots
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -234,7 +244,8 @@ class AsyncSlots:
             ExplainSchema, slot="diff",
             system='Кратко опиши по-русски изменённые компоненты поездки. Верни JSON {"text":"..."}. '
                    'Идентификаторы технические: не выдавай их за названия. Новых чисел и фактов не добавляй.',
-            user=json.dumps({"changed": list(changed), "kept": [k for k in new_plan if k not in changed]}, ensure_ascii=False),
+            user=json.dumps({"changed": list(changed),
+                             "kept": [k for k in new_plan if k not in changed]}, ensure_ascii=False),
         )
         return result.text if result and result.text.strip() else self._fallback.diff(old_plan, new_plan)
 

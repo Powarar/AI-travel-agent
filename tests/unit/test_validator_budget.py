@@ -1,20 +1,18 @@
 """Приёмка validation layer: деньги — превышение на 1 ₽, scope, двойной учёт, валюта, конфликт источников."""
 
-from datetime import date, datetime, timezone
+from datetime import UTC, datetime
 
-from tests.unit.test_validator_coherence import (
-    baseline_plan,
-    ledger_of,
-    money,
-    night,
-    price,
-)
 from services.agent.app.validation.coherence import validate
 from services.agent.app.validation.inputs import Plan
 from shared.contracts.enums import BudgetScope, DataStatus, PriceKind, ViolationCode
 from shared.contracts.money import BudgetLedger
+from tests.unit.test_validator_coherence import (
+    baseline_plan,
+    ledger_of,
+    money,
+)
 
-UTC = timezone.utc
+UTC = UTC
 NOW = datetime(2026, 10, 26, 9, 0, tzinfo=UTC)
 
 

@@ -26,10 +26,11 @@ import time
 from datetime import date
 from decimal import Decimal
 from enum import Enum
-from typing import Any
+from typing import Any, ClassVar
 
 import httpx
 import pytest
+from pydantic import ValidationError
 
 from services.agent.app.llm.instructor import StructuredCaller, extract_json, field_errors
 from services.agent.app.llm.provider_openai_compatible import (
@@ -60,7 +61,7 @@ YEAR = 2026
 
 #: `.env` читаем на импорте: `skipif` вычисляется до запуска тестов, и иначе живой прогон
 #: молча оставался бы «skipped», даже когда ключ лежит в файле.
-from services.agent.app.llm.provider_openai_compatible import load_env_file
+from services.agent.app.llm.provider_openai_compatible import load_env_file  # noqa: E402 — после чтения .env выше
 
 load_env_file()
 def _live_provider() -> OpenAICompatibleSlots | None:
@@ -341,7 +342,7 @@ class TestProvenanceGuard:
         assert field.needs_confirmation is True
 
     def test_unknown_path_never_parses(self) -> None:
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             ParsedDelta(path="party.dinosaurs", raw="2", kind=ConstraintKind.HARD)
 
     def test_direction_named_without_mode_still_marks_explicit(self) -> None:
@@ -531,7 +532,7 @@ class TestSharedDateReader:
 
     #: (фраза, заезд, выезд) — пересечение месяца, два названных месяца, `дд.мм`, ISO
     #: и короткие формы ответа на вопрос, где дата названа у одного конца вилки
-    RANGES = [
+    RANGES: ClassVar[list[tuple[str, date, date]]] = [
         ("с 28 октября по 5 ноября", date(YEAR, 10, 28), date(YEAR, 11, 5)),
         ("с 28 по 5 ноября", date(YEAR, 11, 28), date(YEAR, 12, 5)),
         ("28.10 - 05.11", date(YEAR, 10, 28), date(YEAR, 11, 5)),
@@ -821,8 +822,8 @@ class TestProviderFailureIsolation:
         assert len(rows) == len(CASES)
         assert len(provider.failures) == len(CASES)
         assert {item["kind"] for item in provider.failures} == {"provider"}
-        for message, _, expected, rejected in rows:
-            assert rejected == [f"*: provider_unavailable → fallback_parser"], message
+        for message, _, _expected, rejected in rows:
+            assert rejected == ["*: provider_unavailable → fallback_parser"], message
         #: до live-прогона дело не дошло, поэтому hard-поля те же, что у моков offline fixture
         result = score(rows)
         assert result == score(run_cases(MockSlots()))
@@ -846,7 +847,7 @@ class TestProviderLimits:
                 return {"choices": [{"message": {"content": content}, "finish_reason": "stop"}],
                         "usage": {"prompt_tokens": 1, "completion_tokens": 1}}
 
-        def post(url: str, *, json: dict[str, Any]) -> Any:  # noqa: A002 — имя аргумента httpx
+        def post(url: str, *, json: dict[str, Any]) -> Any:
             bodies.append(dict(json))
             return Response()
 
@@ -930,7 +931,7 @@ class TestProviderLimits:
                 return {"choices": [{"message": {"content": '{"deltas": []}'},
                                      "finish_reason": "stop"}]}
 
-        def post(url: str, *, json: dict[str, Any]) -> Any:  # noqa: A002
+        def post(url: str, *, json: dict[str, Any]) -> Any:
             #: копия, а не сам dict: `_complete` дописывает тело в тот же объект при деградации
             seen.append(dict(json))
             return Response(first=len(seen) == 1)
@@ -973,7 +974,7 @@ class TestProviderLimits:
             def json(self) -> dict[str, Any]:
                 raise AssertionError("error body must not be parsed")
 
-        def post(url: str, *, json: dict[str, Any]) -> Any:  # noqa: A002
+        def post(url: str, *, json: dict[str, Any]) -> Any:
             seen.append(dict(json))
             return Response()
 
@@ -1029,7 +1030,7 @@ class TestProviderLimits:
                 return {"choices": [{"message": {"content": '{"text": "у моря"}'},
                                      "finish_reason": "stop"}]}
 
-        def post(url: str, *, json: dict[str, Any]) -> Any:  # noqa: A002
+        def post(url: str, *, json: dict[str, Any]) -> Any:
             seen.append(dict(json))
             #: flash не знает response_format, plus знает
             rejected = json["model"] == "flash" and "response_format" in json

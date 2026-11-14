@@ -1,9 +1,7 @@
 """Приёмка validation layer: границы стыковок, вместимости, питомцев и наличия ставок."""
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime
 from uuid import uuid4
-
-import pytest
 
 from services.agent.app.validation.coherence import has_blocking, validate
 from services.agent.app.validation.inputs import HotelSpecs, Plan, StayNight, TransferLeg, TransportLeg
@@ -23,7 +21,7 @@ from shared.contracts.request import Budget, Direction, FieldValue, Party, Trans
 from shared.contracts.state import Candidate, Candidates, TripState
 from shared.contracts.violation import Violation
 
-UTC = timezone.utc
+UTC = UTC
 NOW = datetime(2026, 10, 26, 9, 0, tzinfo=UTC)
 
 

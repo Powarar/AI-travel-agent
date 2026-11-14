@@ -13,7 +13,7 @@ import time
 from typing import Any
 
 import data.generators.common as common
-from data.generators.common import chunked, haversine_km, jitter, unit
+from data.generators.common import chunked, haversine_km, unit
 
 OSRM_TABLE = "https://router.project-osrm.org/table/v1/driving"
 MAX_CHUNK = 40   # координат на запрос (демо-сервер держит ~40)
@@ -91,8 +91,8 @@ def run() -> None:
                     "dest_code": code,
                     "hotel_id": h["hotel_id"],
                     "airport_iata": g["iata"],
-                    "distance_m": int(round(dist_m)),
-                    "duration_s": int(round(dur_s)),
+                    "distance_m": round(dist_m),
+                    "duration_s": round(dur_s),
                     "price_rub": _price_rub(dests[code]["country_code"], km),
                     "pet_ok": unit(key + "|pet") < 0.4,
                     "capacity": 4 if unit(key + "|cap") < 0.85 else 7,

@@ -10,7 +10,7 @@ from typing import Any
 import asyncpg  # type: ignore[import-untyped]
 
 from ..retrieval.catalogue import database_url
-from ..retrieval.hybrid import AsyncEmbedder, query_terms
+from ..retrieval.hybrid import AsyncEmbedder
 from ..retrieval.index_text import AMENITY_RU
 
 

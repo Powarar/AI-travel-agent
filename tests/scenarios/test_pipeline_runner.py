@@ -20,7 +20,7 @@ import pytest
 from scripts import run_pipeline as rp
 from services.agent.app.llm import provider_openai_compatible as provider_mod
 from services.agent.app.llm import rerank as rerank_mod
-from services.agent.app.llm.rerank import RerankHit, Reranker
+from services.agent.app.llm.rerank import Reranker, RerankHit
 from services.agent.app.llm.slots import MockSlots
 from services.agent.app.orchestration.runtime import Runtime
 

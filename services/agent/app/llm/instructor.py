@@ -117,7 +117,8 @@ class StructuredCaller:
                     errors = field_errors(error)
             if attempt > self._retries:
                 break
-            messages = messages[:2] + [
+            messages = [
+                *messages[:2],
                 {"role": "assistant", "content": raw},
                 {"role": "user", "content": "Твой ответ не прошёл проверку схемы. Исправь поля и "
                                              "верни только JSON.\n" + "\n".join(f"- {item}" for item in errors)},

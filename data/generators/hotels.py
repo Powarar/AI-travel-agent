@@ -16,7 +16,7 @@ import os
 from typing import Any
 
 import data.generators.common as common
-from data.generators.common import pick, randint, sample, unit, jitter
+from data.generators.common import jitter, pick, randint, sample, unit
 
 # Окно демо: даты показа ±14 дней вокруг середины ноября.
 WINDOW_START = dt.date(2026, 11, 1)

@@ -18,8 +18,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from shared.contracts.enums import EscalationStep
 from services.agent.app.tools.registry import REGISTRY, Tool
+from shared.contracts.enums import EscalationStep
 
 #: Стадии, которые пересобираются при любой дельте (AGENTS.md).
 DOWNSTREAM: frozenset[str] = frozenset({"compose", "validate"})

@@ -9,9 +9,11 @@ from __future__ import annotations
 import itertools
 import re
 from collections.abc import Sequence
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from decimal import Decimal
 
+from services.agent.app.validation.inputs import Plan
+from services.agent.app.validation.policy import policy_for
 from shared.contracts.enums import (
     BudgetScope,
     ConstraintKind,
@@ -25,8 +27,6 @@ from shared.contracts.money import BudgetLedger, Money, PriceLine
 from shared.contracts.request import TripRequest
 from shared.contracts.state import Candidate, TripState
 from shared.contracts.violation import Violation
-from services.agent.app.validation.inputs import Plan
-from services.agent.app.validation.policy import policy_for
 
 
 def make(code: ViolationCode, component: str, *, expected: object = None, actual: object = None,
@@ -242,7 +242,7 @@ def check_direction(request: TripRequest, plan: Plan,
 
     named = _name_forms(named_value)
     rows = [_catalog_forms(candidate) for candidate in candidates]
-    matched = [candidate.candidate_id for candidate, forms in zip(candidates, rows)
+    matched = [candidate.candidate_id for candidate, forms in zip(candidates, rows, strict=True)
                if _matches(named, forms)]
     #: сверять не с чем (источник направлений ещё не отвечал) — остаётся прямое сравнение
     #: кода плана с названным словом: «сочи» и `sochi` здесь совпадут, «сочи» и `AYT` — нет
@@ -448,15 +448,15 @@ def validate(plan: Plan, ledger: BudgetLedger, state: TripRequest | TripState | 
             )
 
         claimed_budget = request.budget.amount
-        if not claimed_budget.is_unknown and claimed_budget.value is not None:
-            if claimed_budget.value != ledger.budget:
-                violations.append(
-                    make(ViolationCode.HARD_CONSTRAINT_UNSATISFIED, "budget",
-                         expected=claimed_budget.value.as_ru(),
-                         actual=ledger.budget.as_ru(),
-                         field_path="budget.amount",
-                         evidence={"why": "замер считается от названного бюджета, не от подменённого"})
-                )
+        if (not claimed_budget.is_unknown and claimed_budget.value is not None
+                and claimed_budget.value != ledger.budget):
+            violations.append(
+                make(ViolationCode.HARD_CONSTRAINT_UNSATISFIED, "budget",
+                     expected=claimed_budget.value.as_ru(),
+                     actual=ledger.budget.as_ru(),
+                     field_path="budget.amount",
+                     evidence={"why": "замер считается от названного бюджета, не от подменённого"})
+            )
 
         max_hours = request.transport.max_hours_direct
         if not max_hours.is_unknown and max_hours.value is not None:

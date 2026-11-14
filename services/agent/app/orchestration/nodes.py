@@ -263,7 +263,8 @@ def apply_answer(state: TripState, path: str, raw: str) -> TripState:
                 DirectionMode.EXPLICIT, kind=ConstraintKind.HARD
             )
     elif path == "party.pets":
-        no_pet = raw.strip().lower() in {"нет", "без питомца", "без собаки", "без кошки", "оставить дома", "false", "no", ""}
+        no_pet = raw.strip().lower() in {"нет", "без питомца", "без собаки", "без кошки",
+                                         "оставить дома", "false", "no", ""}
         request.party.pets = FieldValue[bool].known(not no_pet, kind=ConstraintKind.HARD, source="user")
     elif path == "party.adults":
         match = re.search(r"\d+", raw)

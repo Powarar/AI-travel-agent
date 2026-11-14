@@ -193,7 +193,7 @@ def _word_in(raw_value: str, message: str) -> bool:
         # только цифры или знаки: это числовое поле, и сюда попадают пути, забытые в
         # `_NUMERIC_PATHS` — пустая подстрока ловила бы что угодно
         return False
-    haystack = re.findall(r"[а-яёa-z]{%d,}" % _WORD_PREFIX, message.lower())
+    haystack = re.findall(rf"[а-яёa-z]{{{_WORD_PREFIX},}}", message.lower())
     for word in needle_words:
         if len(word) < _WORD_PREFIX:
             if word in message.lower():
@@ -218,11 +218,8 @@ def _number_traceable(raw_value: str, message: str) -> bool:
         # цитаты-слова: «вдвоём» — проверяем по буквам, цифр в цитате нет
         return _word_in(raw_value, message)
     spoken = _numbers_from_words(message)
-    for group in _NUMBERS.findall(raw_value):
-        # юзер мог назвать число словом: «вчетвером» → 4, и цифры «4» в сообщении нет
-        if int(re.sub(r"[^\d]", "", group) or 0) in spoken:
-            return True
-    return False
+    # юзер мог назвать число словом: «вчетвером» → 4, и цифры «4» в сообщении нет
+    return any(int(re.sub(r"[^\d]", "", group) or 0) in spoken for group in _NUMBERS.findall(raw_value))
 
 
 #: Поля, чьё значение — число: их проверяем по цифрам, а не по буквам.

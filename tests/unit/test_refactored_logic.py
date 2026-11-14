@@ -1,7 +1,6 @@
 """Tests verifying bugfixes and refactored logic across nodes, instructor, and schemas."""
 from decimal import Decimal
 from uuid import uuid4
-import pytest
 
 from services.agent.app.llm.instructor import extract_json
 from services.agent.app.llm.schemas import coerce
