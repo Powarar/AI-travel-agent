@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 from collections.abc import AsyncIterator
 from uuid import UUID
 
@@ -11,18 +11,16 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
 from shared.contracts.state import TripState
+from shared.evaluation_metrics import parse_accuracy_summary
 
-from ..dependencies import get_executor, get_store
-from ..executor import RunExecutor
-from ..identity import get_owner, require_owner
-from ..schemas import AnswerIn, CheckoutCompleted, MessageIn, OrderOut, RunTrace, TripCreated
-from ..store import Conflict, NotFound, TripStore
+from ...metrics.models import summarize_costs
 from ...metrics.schemas import MonitoringSummary
 from ...metrics.service import collector
-import asyncpg  # type: ignore[import-untyped]
-from ...retrieval.catalogue import database_url
-from ...metrics.models import summarize_costs
-from shared.evaluation_metrics import parse_accuracy_summary
+from ..dependencies import get_executor, get_store
+from ..executor import RunExecutor
+from ..identity import require_owner
+from ..schemas import AnswerIn, CheckoutCompleted, MessageIn, OrderOut, RunTrace, TripCreated
+from ..store import Conflict, NotFound, TripStore, get_pool
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -43,8 +41,8 @@ async def monitoring_summary() -> MonitoringSummary:
 @router.get("/monitoring/models")
 async def model_metrics() -> dict[str, object]:
     """Persistent model/slot aggregates derived from recorded HTTP turns."""
-    conn = await asyncpg.connect(database_url())
-    try:
+    pool = await get_pool()
+    async with pool.acquire() as conn:
         rows = await conn.fetch("""
             WITH spans AS (
                 SELECT event->'data' AS data FROM runs,
@@ -87,14 +85,12 @@ async def model_metrics() -> dict[str, object]:
             {**dict(row), **summarize_costs(grouped.get((row["slot"], row["model"]), [])),
              "accuracy_evaluations": quality.get(row["model"], []) if row["slot"] == "parse" else []} for row in rows
         ]}
-    finally:
-        await conn.close()
 
 
 @router.get("/monitoring/accuracy")
 async def accuracy_metrics() -> dict[str, object]:
-    conn = await asyncpg.connect(database_url())
-    try:
+    pool = await get_pool()
+    async with pool.acquire() as conn:
         rows = await conn.fetch("""
             SELECT DISTINCT ON(dataset_id, dataset_hash, model, prompt_version, mode)
                 eval_id, created_at, dataset_id, dataset_hash, model, prompt_version, mode, report
@@ -111,22 +107,22 @@ async def accuracy_metrics() -> dict[str, object]:
                                 **{key: value for key, value in report.items() if key not in {"rows", "spans"}}})
         return {"source": "labelled evaluation datasets", "evaluations": evaluations,
                 "note": "Production calls have no ground truth; accuracy is measured only on labelled evaluations."}
-    finally:
-        await conn.close()
 
 
 @router.post("/trips", response_model=TripCreated, status_code=201)
-async def create_trip(store: TripStore = Depends(get_store)) -> TripCreated:
-    trip_id = await store.create_trip()
+async def create_trip(owner: str = Depends(require_owner),
+                      store: TripStore = Depends(get_store)) -> TripCreated:
+    trip_id = await store.create_trip(owner)
     logger.info("Trip created: %s", trip_id)
     return TripCreated(trip_id=trip_id)
 
 
 @router.get("/trips/{trip_id}/state", response_model=TripState)
 async def get_state(trip_id: UUID, version: int | None = Query(default=None, ge=0),
+                    owner: str = Depends(require_owner),
                     store: TripStore = Depends(get_store)) -> TripState:
     try:
-        return await store.get_state(trip_id, version)
+        return await store.get_state(trip_id, version, owner=owner)
     except NotFound as exc:
         raise _http_error(exc) from exc
 
@@ -141,10 +137,11 @@ def _stream(trace: RunTrace) -> StreamingResponse:
 
 @router.post("/trips/{trip_id}/messages", response_model=None)
 async def post_message(trip_id: UUID, body: MessageIn,
+                       owner: str = Depends(require_owner),
                        store: TripStore = Depends(get_store),
                        executor: RunExecutor = Depends(get_executor)) -> StreamingResponse:
     try:
-        trace = await store.start_run(trip_id, body.text, executor)
+        trace = await store.start_run(trip_id, body.text, executor, owner=owner)
     except (NotFound, Conflict) as exc:
         raise _http_error(exc) from exc
     logger.info("Run started: %s", trace.run_id)
@@ -152,19 +149,21 @@ async def post_message(trip_id: UUID, body: MessageIn,
 
 
 @router.get("/runs/{run_id}", response_model=RunTrace)
-async def get_run(run_id: UUID, store: TripStore = Depends(get_store)) -> RunTrace:
+async def get_run(run_id: UUID, owner: str = Depends(require_owner),
+                  store: TripStore = Depends(get_store)) -> RunTrace:
     try:
-        return await store.get_run(run_id)
+        return await store.get_run(run_id, owner=owner)
     except NotFound as exc:
         raise _http_error(exc) from exc
 
 
 @router.post("/runs/{run_id}/answers", response_model=RunTrace)
 async def post_answer(run_id: UUID, body: AnswerIn,
+                      owner: str = Depends(require_owner),
                       store: TripStore = Depends(get_store),
                       executor: RunExecutor = Depends(get_executor)) -> RunTrace:
     try:
-        trace = await store.answer(run_id, body.field, body.value, executor)
+        trace = await store.answer(run_id, body.field, body.value, executor, owner=owner)
     except (NotFound, Conflict) as exc:
         raise _http_error(exc) from exc
     logger.info("Run answered: %s", run_id)
@@ -173,7 +172,7 @@ async def post_answer(run_id: UUID, body: AnswerIn,
 
 @router.post("/trips/{trip_id}/checkout", response_model=CheckoutCompleted)
 async def checkout(trip_id: UUID, idempotency_key: str = Header(min_length=1),
-                   owner: str | None = Depends(get_owner),
+                   owner: str = Depends(require_owner),
                    store: TripStore = Depends(get_store)) -> CheckoutCompleted:
     try:
         result = await store.checkout(trip_id, idempotency_key, owner)
@@ -186,5 +185,5 @@ async def checkout(trip_id: UUID, idempotency_key: str = Header(min_length=1),
 @router.get("/orders", response_model=list[OrderOut])
 async def list_orders(owner: str = Depends(require_owner),
                       store: TripStore = Depends(get_store)) -> list[OrderOut]:
-    """Заказы вызывающего: Telegram-пользователя по подписанному initData или браузера по X-Client-Id."""
+    """Заказы вызывающего: зарегистрированного пользователя (JWT) или Telegram-пользователя."""
     return await store.list_orders(owner)
