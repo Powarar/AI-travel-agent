@@ -1,18 +1,19 @@
 """Measurement correctness: decimal cost, incomplete usage and unbiased labels."""
+import json
 from datetime import date
 from decimal import Decimal
 
-from shared.model_pricing import price_span
-from services.backend.app.metrics.models import summarize_costs
-from evaluation.run_parse_accuracy import grade
-from shared.contracts.request import FieldValue, TripRequest
-from shared.contracts.enums import ConstraintKind
-from shared.evaluation_metrics import parse_accuracy_summary
-import pytest
 import httpx
-import json
+import pytest
+
+from evaluation.run_parse_accuracy import grade
 from services.agent.app.llm.async_provider import AsyncSlots
 from services.agent.app.llm.provider_openai_compatible import OpenAICompatibleSlots
+from services.backend.app.metrics.models import summarize_costs
+from shared.contracts.enums import ConstraintKind
+from shared.contracts.request import FieldValue, TripRequest
+from shared.evaluation_metrics import parse_accuracy_summary
+from shared.model_pricing import price_span
 
 
 def test_cost_is_decimal_and_keeps_sub_kopeck_precision():

@@ -9,8 +9,8 @@
 
 from __future__ import annotations
 
-import logging
 import inspect
+import logging
 import os
 import threading
 import time
@@ -18,15 +18,14 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
-from services.agent.app.orchestration.runtime import Run, Runtime, Source
-from services.agent.app.orchestration.runtime import AsyncRuntime
+from services.agent.app.orchestration.runtime import AsyncRuntime, Run, Runtime, Source
 from shared.contracts.enums import Outcome, RunStatus
 from shared.contracts.state import TripState
 from shared.telemetry import model_spans
 
+from ..metrics.service import collector
 from .executor import InvalidAnswer, RunInput, RunResult
 from .schemas import SSEEvent
-from ..metrics.service import collector
 
 logger = logging.getLogger(__name__)
 
@@ -160,9 +159,9 @@ def build_events(before: TripState, run: Run, trace_from: int, calls: list[ToolC
                              changed_components=sorted(k for k in new if old.get(k) != new[k]),
                              kept_components=sorted(k for k in new if old.get(k) == new[k])))
 
-    for field in state.awaiting_fields:
-        spec = run.questions.get(field)
-        events.append(_event("question", field=field, text=run.texts.get(field, spec.why if spec else field),
+    for awaiting in state.awaiting_fields:
+        spec = run.questions.get(awaiting)
+        events.append(_event("question", field=awaiting, text=run.texts.get(awaiting, spec.why if spec else awaiting),
                              options=list(spec.options) if spec else [], allow_skip=bool(spec and spec.allow_skip)))
 
     if run.explanation and state.run_status != RunStatus.INTERRUPTED:
@@ -304,6 +303,7 @@ def agent_executor_from_env() -> Any:
     """Собирает локальный оркестратор поверх каталога проекта и его слотов."""
 
     from services.agent.app.llm.async_provider import async_slots_from_config
+
     from ..retrieval.catalogue import database_sources
 
     return AsyncAgentRunExecutor(database_sources, async_slots_from_config)

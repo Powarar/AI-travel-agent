@@ -1,7 +1,7 @@
 """domain-model layer приёмка: модели TripRequest/TripState/Money/Violation."""
 
 import re
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from pathlib import Path
 from uuid import uuid4
@@ -11,7 +11,6 @@ from pydantic import ValidationError
 
 from shared.contracts import BudgetLedger, Money, PriceLine, TripRequest, TripState, Violation
 from shared.contracts.enums import (
-    BudgetInclude,
     BudgetScope,
     ConstraintKind,
     CostScope,
@@ -26,7 +25,7 @@ from shared.contracts.enums import (
 from shared.contracts.request import FieldValue
 from shared.contracts.state import RunBudget
 
-NOW = datetime(2026, 10, 26, 12, 0, tzinfo=timezone.utc)
+NOW = datetime(2026, 10, 26, 12, 0, tzinfo=UTC)
 
 
 def line(line_id: str, amount: str, kind: PriceKind = PriceKind.LODGING, included: bool = True) -> PriceLine:
@@ -163,7 +162,8 @@ class TestTripRequestFields:
 
     def test_fabricated_source_on_unknown_is_rejected(self):
         with pytest.raises(ValidationError):
-            FieldValue[int | None](value=None, kind=ConstraintKind.SOFT, status=FieldStatus.UNKNOWN, source="model_guess")
+            FieldValue[int | None](value=None, kind=ConstraintKind.SOFT, status=FieldStatus.UNKNOWN,
+                                   source="model_guess")
 
     def test_budget_amount_rejects_float(self):
         with pytest.raises(ValidationError):

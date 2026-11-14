@@ -1,6 +1,6 @@
 """Приёмка dependency graph: реестр инструментов, `affected()` и кэш по content-hash."""
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from uuid import uuid4
 
@@ -24,7 +24,7 @@ from shared.contracts.money import Money, PriceLine
 from shared.contracts.request import FieldValue, TripRequest
 from shared.contracts.state import Candidate, TripState
 
-UTC = timezone.utc
+UTC = UTC
 
 
 def make_state() -> TripState:
@@ -125,7 +125,7 @@ def test_resolved_destinations_pull_the_whole_downstream_branch():
 
 def test_compose_and_validate_are_always_downstream():
     for changed in ({"party.pets"}, {"dates.start"}, {"budget.amount"}, {"origin"}):
-        assert DOWNSTREAM <= affected(changed)
+        assert affected(changed) >= DOWNSTREAM
 
 
 def test_local_tools_are_not_marked_dirty():

@@ -1,8 +1,8 @@
 import os
-from typing import Any
 from functools import lru_cache
+from typing import Any
 
-from .executor import FixtureRunExecutor, RunExecutor
+from .executor import FixtureRunExecutor
 from .store import TripStore
 
 
