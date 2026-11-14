@@ -1,0 +1,60 @@
+{
+  "steps": [
+    {
+      "name": "auth-screen",
+      "atMs": 4150
+    },
+    {
+      "name": "registered",
+      "atMs": 5124,
+      "email": "demo+1794658012980@okuda.dev"
+    },
+    {
+      "name": "trip-request-sent",
+      "atMs": 5932
+    },
+    {
+      "name": "question",
+      "atMs": 6009,
+      "option": "Москва"
+    },
+    {
+      "name": "question",
+      "atMs": 8151,
+      "option": "с 10 по 17"
+    },
+    {
+      "name": "plan-ready",
+      "atMs": 14632
+    },
+    {
+      "name": "checkout",
+      "atMs": 16016,
+      "injected401": 1,
+      "refreshCalls": 1
+    },
+    {
+      "name": "session-resumed-after-reload",
+      "atMs": 17292,
+      "refreshCalls": 2
+    },
+    {
+      "name": "second-message-sent",
+      "atMs": 17316
+    },
+    {
+      "name": "plan-diff",
+      "atMs": 22526
+    },
+    {
+      "name": "logged-out",
+      "atMs": 22595
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "failedRequests": [],
+  "refreshCalls": 2,
+  "injected401": 1
+}

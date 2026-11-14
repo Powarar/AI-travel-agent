@@ -1,101 +1,181 @@
 # AI Travel Agent
 
-[Русская версия](README.ru.md)
+[![CI](https://github.com/Powarar/AI-travel-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/Powarar/AI-travel-agent/actions/workflows/ci.yml)
 
-An AI-assisted trip-planning application that turns a conversational request into a
-traceable, constraint-aware travel plan. It keeps language understanding separate
-from deterministic planning: the model extracts intent and explains choices, while
-code owns prices, availability, validation, and the final decision.
+[Русская версия](README.ru.md) · [Architecture](docs/ARCHITECTURE.md) · [ADR](docs/adr.md) · [Evidence](docs/evidence/)
 
-> **Project status:** active prototype. The catalogue is seeded for local development;
-> it is not a booking engine and must not be presented as one.
+A trip-planning agent that turns a conversational request into a **traceable, constraint-aware
+plan**. The model understands language and writes prose; code owns prices, availability,
+validation and the final decision.
 
-## What it demonstrates
+> **Status:** working prototype on a synthetic catalogue. Checkout is a mock. It is not a
+> booking engine and must not be presented as one.
 
-- A stateful planning flow: request → clarifying questions → search → plan → checkout mock.
-- Hard-constraint validation for dates, occupancy, pets, transfers, availability, and budget.
-- Incremental replanning: a change invalidates only the affected parts of a trip.
-- Clear provenance: offers carry source, freshness, and verification status.
-- An LLM boundary that keeps arithmetic and factual assertions out of the model.
-- A React/Vite client, FastAPI services, PostgreSQL/pgvector, and a Telegram bot adapter.
+## The idea
+
+Most LLM travel demos fail the same way: the model invents a price, drops a hard constraint,
+or quietly forgets the hotel it picked two turns ago. This project makes those failures
+structurally impossible rather than prompt-engineered away:
+
+- **`TripState` is the only source of truth.** Chat produces a typed delta, never state.
+- **Hard constraints are filtered in SQL.** Vector similarity ranks *inside* the admissible
+  set and can never widen it.
+- **Money is `Decimal`-only.** The type rejects binary floats; the frontend mirrors it with
+  BigInt kopecks.
+- **An honesty guard checks the answer against computed state** — both numbers and price
+  claims. One regeneration, then a template built from state.
+- **Incremental replanning.** "Make it three people" re-ranks; it does not re-search the weather.
 
 ## Architecture
 
 ```
-web / Telegram bot
-        │
-        ▼
-   backend API ───────── PostgreSQL + pgvector
-        │
-        ▼
-  planning agent ─────── catalog and provider adapters
-        │
-        ▼
- shared domain contracts
+browser / Telegram Mini App
+            │
+            ▼
+   nginx :8080  ── per-IP rate limits, security headers, unbuffered SSE
+            │
+      ┌─────┴─────┐
+      ▼           ▼
+ backend :8000   web :5173
+ FastAPI         React + TS
+      │
+      ├─ planning agent (in-process library, not a service)
+      │
+      ▼
+ PostgreSQL 16 + pgvector
 ```
 
-The repository is organized by deployable component:
+A modular monolith: the agent runs inside the backend process, boundaries are packages and
+typed contracts. See [ADR-001](docs/adr.md) for why, and what would change that.
 
 | Path | Responsibility |
 | --- | --- |
-| `web/` | React + TypeScript user interface |
-| `services/backend/` | Public API, persistence, search, ranking, and integrations |
-| `services/agent/` | Planning graph, validation, repair, prompts, and tool orchestration |
+| `web/` | React + TypeScript UI, Telegram Mini App |
+| `services/backend/` | HTTP, auth, persistence, retrieval, ingestion, metrics |
+| `services/agent/` | Planning graph, tool registry, validation, repair, LLM slots |
 | `services/bot/` | Telegram adapter |
-| `shared/contracts/` | Typed domain models shared by services |
-| `data/` | Reproducible seed data and generators |
-| `tests/` | Unit, integration, agent, and end-to-end scenario tests |
+| `shared/contracts/` | Typed domain models |
+| `data/` | Synthetic catalogue generators |
+| `evaluation/` | Offline scenarios and grader |
+| `tests/` | Unit, integration, agent, end-to-end |
+
+## Measured, not claimed
+
+Everything below is reproducible from a committed artifact or a command in this repo.
+
+| What | Result | Source |
+| --- | --- | --- |
+| Test suite | **492 passed, 4 skipped** | `make test` |
+| Skips | all 4 are live-LLM gated; **zero** DB skips | `pytest -rs` |
+| Coverage | **87%** | `make coverage` |
+| Types | mypy `--strict`, clean | `make lint` |
+| Offline evaluation | **16 scenarios, all checks green** | `make eval` |
+| Parse accuracy (live) | 37/37 required fields, 53/55 field checks, exact match 0.90 | [artifact](docs/evidence/parse-accuracy-2026-11-07-measured.json) |
+| Cost of that run | **1.07814 ₽** for 20 cases | same artifact |
+| Async end-to-end | 5/5 cases | [artifact](docs/evidence/async-e2e-2026-11-07.json) |
+
+**Read the evidence honestly.** Two live runs were measured; a third failed with
+`ConnectTimeout` on all 20 calls. The harness records that as
+`accuracy_status=no_successful_model_samples` with `accuracy=null` — *not* as 0% accuracy,
+because model quality is unknown when the model never answered. That run is committed too:
+[connect-timeout](docs/evidence/parse-accuracy-2026-11-07-connect-timeout.json).
+Exact match moved 0.95 → 0.90 between the two measured runs on the same dataset and prompt;
+that is model variance, and two runs give no confidence interval.
+
+No load numbers exist. The stand was never load-tested, so there is no RPS or p95-under-load
+figure anywhere in this repo.
 
 ## Quick start
 
-### Prerequisites
-
-- Docker Desktop with Docker Compose
-- Python 3.11+ for local tests and data scripts
-- Node.js 22+ only when running the frontend outside Docker
+Requires Docker Desktop with Compose. Python 3.11+ and Node 22+ only for running tests or
+the frontend outside Docker.
 
 ```bash
 cp .env.example .env
-make setup
-make up
-make seed
+make setup      # Python env from requirements.lock
+make up         # postgres + backend + web + nginx, migrations applied
+make seed       # synthetic catalogue
 make test
 ```
 
-The API is exposed on `http://localhost:8010`; the development UI is available on
-`http://localhost:5173` after `make web` (or as part of `make up`).
+Open **http://localhost:8080** — nginx is the only published port; backend and web are bound
+to loopback. Register an account, then describe a trip.
 
-The default `LLM_PROVIDER=mock` is deterministic and needs no API key. To use an
-OpenAI-compatible provider, set `LLM_PROVIDER`, `LLM_API_KEY`, `LLM_BASE_URL`, and
-the relevant model variables in `.env`. Never commit `.env` or private keys.
+The default `LLM_PROVIDER=mock` is deterministic and needs no API key. For a real
+OpenAI-compatible provider set `LLM_PROVIDER`, `LLM_API_KEY`, `LLM_BASE_URL` and the model
+variables in `.env`. Never commit `.env`.
 
-## Everyday commands
+`AUTH_JWT_SECRET` signs access and refresh tokens. An empty value is acceptable only
+locally: the backend generates a random per-process key, so sessions do not survive a
+restart. `scripts/init_dev.sh` fills in a random key when it creates `.env`; in production
+the key is set explicitly and kept out of the repository.
+
+## Demo
+
+`make demo-shots` drives a headless Chromium through the live stack over nginx and writes
+real screenshots into `docs/img/`: registration, clarifying questions, the plan, checkout,
+a reload that restores the session and the saved plan, and a replan with a price diff. The
+same run injects a single 401 on `/orders` to prove the client silently refreshes the token
+and retries; the step log, console errors and failed requests land in
+`artifacts/demo-shots-report.json`, with a committed copy of the run in
+`docs/evidence/demo-shots-2026-11-14.json`.
+
+| Plan | Replan diff |
+| --- | --- |
+| ![Computed plan](docs/img/04-plan.png) | ![Price and route diff](docs/img/07-plan-diff.png) |
+| **App landing** | **Order** |
+| ![App landing](docs/img/02-home.png) | ![Checkout](docs/img/05-order.png) |
+
+## Commands
 
 ```bash
-make setup    # create the Python development environment
-make up       # start the local stack and run migrations
-make down     # stop the stack
-make seed     # load the development catalogue
-make test     # run the Python test suite
-make lint     # run type checks and architecture guardrails
-make      #eval run offline evaluation scenarios
-make web      # run the frontend in Docker with hot reload
+make setup      # create the Python development environment
+make up         # start the stack and run migrations
+make down       # stop the stack
+make seed       # load the development catalogue
+make test       # Python test suite
+make coverage   # suite + coverage report
+make lint       # ruff + mypy strict + architecture guardrails
+make eval       # offline evaluation scenarios
+make demo-shots # real browser screenshots of the live stack
+make web        # frontend in Docker with hot reload
+make lock       # regenerate requirements.lock
 ```
+
+## Security posture
+
+- **Auth:** email + password (argon2id) with JWT access (900 s) and rotating refresh (30 d)
+  including reuse detection. Telegram `initData` HMAC is a second login path.
+- **Ownership:** `trips.owner` is `NOT NULL` and checked on every trip endpoint. Someone
+  else's trip returns **404, not 403**, so trip ids are not an existence oracle. The old
+  client-chosen `X-Client-Id` is gone.
+- **Edge:** per-IP `limit_req` zones split by endpoint cost — auth 5 r/s, planning 2 r/s,
+  reads 20 r/s — plus a connection cap. 429 is JSON in FastAPI's error shape.
+- **Concurrency:** a turn is two short transactions with the LLM call *between* them and a
+  compare-and-swap write, so no row lock or pooled connection is held for 45 s.
+
+Known trade-offs are listed in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#известные-ограничения),
+not hidden: IP limits punish NAT, JWT access cannot be revoked before it expires, the browser
+refresh token lives in `localStorage`, and there is no TLS on the local stand.
 
 ## Development principles
 
 1. `TripState` is the source of truth; chat history only produces requirement changes.
-2. Hard constraints are never silently weakened. Return alternatives or ask for an
-   explicit trade-off instead.
-3. Use `Decimal`-based domain money types—never floats—for price calculations.
-4. Treat catalogue data and offers as separate concerns, and preserve provenance.
-5. Keep LLM calls behind the provider interface. Validation, totals, dates, and facts
-   stay deterministic.
+2. Hard constraints are never silently weakened — return alternatives or ask for an explicit
+   trade-off.
+3. `Decimal`-based money types, never floats.
+4. Catalogue data and offers are separate concerns; provenance is preserved.
+5. LLM calls stay behind the provider interface. Validation, totals, dates and facts stay
+   deterministic.
+6. A test that cannot fail is worse than no test. Evaluation asserts that an injected attack
+   actually reached the model before it asserts that the answer is clean ([ADR-016](docs/adr.md)).
 
 Implementation guidance for coding agents lives in [AGENTS.md](AGENTS.md).
 
 ## Repository hygiene
 
-Generated dependencies, Python caches, build output, local evaluation output, and
-developer secrets are intentionally ignored. Recreate them locally with `npm ci`,
-the Make targets above, or the relevant generator; do not commit them.
+Generated dependencies, Python caches, build output, local evaluation output and developer
+secrets are ignored. Recreate them with `npm ci`, `make setup` or the relevant generator.
+Committed evidence under `docs/evidence/` and `docs/img/` is an explicit exception: raw run
+artifacts and screenshots produced by `make demo-shots`, kept so the numbers and the demo
+above can be checked.

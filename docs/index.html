@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>О! Куда — агент планирования поездок</title>
+<meta name="description" content="Инженерный обзор проекта: проверяемый план поездки, жёсткие ограничения в SQL, деньги в Decimal, guard честности ответа.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23acef81'/%3E%3Ctext x='16' y='22' font-family='Arial' font-size='16' font-weight='bold' text-anchor='middle' fill='%231c3a08'%3EО!%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --ink: #0e1726;
+    --muted: #5b6472;
+    --paper: #f5f8f3;
+    --card: #ffffff;
+    --line: #e3e8df;
+    --blue: #1746c8;
+    --blue-soft: #eef2fd;
+    --lime: #acef81;
+    --lime-soft: #f2fbe8;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  code { background: #eef1ea; border-radius: 6px; padding: 1px 6px; font-size: .9em; }
+  pre { background: #0e1726; color: #e8ecf4; border-radius: 14px; padding: 18px 20px; overflow-x: auto; font-size: 14px; line-height: 1.7; }
+  pre code { background: none; padding: 0; color: inherit; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  header.top {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(245, 248, 243, .92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  header.top .wrap { display: flex; align-items: center; gap: 20px; height: 60px; }
+  .brand { font-weight: 700; font-size: 18px; color: var(--ink); }
+  .brand span { color: var(--blue); }
+  nav { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; }
+  nav a { color: var(--muted); font-size: 14px; }
+  nav a:hover { color: var(--blue); text-decoration: none; }
+  .hero { padding: 72px 0 40px; }
+  .chip {
+    display: inline-block; background: var(--lime); color: #1c3a08;
+    border-radius: 999px; padding: 4px 14px; font-size: 13px; font-weight: 600;
+  }
+  h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.12; margin: 18px 0 14px; letter-spacing: -.02em; }
+  .lead { font-size: 19px; color: var(--muted); max-width: 760px; margin: 0; }
+  .status { margin-top: 22px; background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--lime); border-radius: 12px; padding: 14px 18px; color: var(--muted); font-size: 15px; max-width: 860px; }
+  section { padding: 44px 0; }
+  h2 { font-size: 28px; letter-spacing: -.01em; margin: 0 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 26px; max-width: 780px; }
+  .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; }
+  .card h3 { margin: 0 0 8px; font-size: 17px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .card .tag { display: inline-block; font-size: 12px; font-weight: 600; color: var(--blue); background: var(--blue-soft); border-radius: 999px; padding: 2px 10px; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; font-size: 15px; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: #f0f4ec; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  tr:last-child td { border-bottom: none; }
+  td b { color: var(--ink); }
+  .shots { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+  figure { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { padding: 12px 16px; font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); }
+  ul.tight { margin: 0; padding-left: 20px; color: var(--muted); }
+  ul.tight li { margin: 6px 0; }
+  footer { border-top: 1px solid var(--line); padding: 28px 0 48px; color: var(--muted); font-size: 14px; }
+  .diagram { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; overflow-x: auto; }
+  .diagram pre { background: none; color: var(--ink); padding: 0; margin: 0; font-size: 13.5px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">О! <span>Куда</span></div>
+    <nav>
+      <a href="#architecture">Архитектура</a>
+      <a href="#decisions">Решения</a>
+      <a href="#measured">Замеры</a>
+      <a href="#demo">Демо</a>
+      <a href="#run">Запуск</a>
+      <a href="#limits">Границы</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <span class="chip">Рабочий прототип · синтетический каталог</span>
+  <h1>Агент, который считает план,<br>а не сочиняет его</h1>
+  <p class="lead">Разговорный запрос превращается в проверяемый план поездки: модель понимает язык
+  и пишет текст, а цены, доступность, жёсткие ограничения и итоговое решение считает код.
+  Каждое число в ответе сверяется с посчитанным состоянием до того, как увидит пользователя.</p>
+  <div class="status">Checkout — mock на синтетическом каталоге. Это не движок бронирования
+  и не интеграция с реальными поставщиками; проект не выдаёт себя за такой.</div>
+</div>
+
+<section id="architecture">
+  <div class="wrap">
+    <h2>Архитектура</h2>
+    <p class="sub">Модульный монолит: агент планирования — библиотека внутри backend-процесса,
+    границы между модулями — пакеты и типизированные контракты. Единственная публичная точка
+    входа — nginx; backend, web и Postgres опубликованы только на loopback.</p>
+    <div class="diagram">
+<pre>browser / Telegram Mini App
+            │
+            ▼
+   nginx :8080   ── per-IP rate limits, security headers, unbuffered SSE
+            │
+      ┌─────┴─────┐
+      ▼           ▼
+ backend :8000   web :5173
+ FastAPI         React + TS
+      │
+      ├─ planning agent (in-process library)
+      │    graph → tool registry → validation → repair
+      ▼
+ PostgreSQL 16 + pgvector
+      hard filter в SQL · BM25 + cosine · RRF</pre>
+    </div>
+  </div>
+</section>
+
+<section id="decisions">
+  <div class="wrap">
+    <h2>Инженерные решения</h2>
+    <p class="sub">Каждое решение закрывает конкретный класс отказов LLM-демо: выдуманная цена,
+    потерянное ограничение, забытый отель, тихая подмена направления.</p>
+    <div class="grid">
+      <div class="card"><span class="tag">состояние</span>
+        <h3>TripState — единственный источник истины</h3>
+        <p>Чат производит типизированную дельту требований, а не состояние. Числа на экране
+        берутся из состояния после хода, текст — только подпись к ним.</p></div>
+      <div class="card"><span class="tag">retrieval</span>
+        <h3>Жёсткие ограничения фильтруются в SQL</h3>
+        <p>Векторная близость ранжирует внутри допустимого множества и не может его расширить.
+        BM25 считается в Postgres с русской морфологией, слияние lanes — weighted RRF.</p></div>
+      <div class="card"><span class="tag">деньги</span>
+        <h3>Decimal вместо float</h3>
+        <p>Тип Money отвергает бинарные дроби на входе; фронтенд зеркалит это BigInt-копейками.
+        Модель получает готовые строки сумм и копирует их, а не форматирует сама.</p></div>
+      <div class="card"><span class="tag">guard</span>
+        <h3>Проверка честности ответа</h3>
+        <p>Две правила: числа, которых нет в состоянии, и ценовые утверждения, противоречащие
+        ledger («бесплатно», «скидка»). Одна регенерация, затем шаблон из состояния.</p></div>
+      <div class="card"><span class="tag">конкурентность</span>
+        <h3>Ход вне транзакции</h3>
+        <p>Две короткие транзакции с LLM-вызовом между ними и compare-and-swap записью по версии.
+        Ни row lock, ни соединение пула не держатся 45 секунд хода.</p></div>
+      <div class="card"><span class="tag">безопасность</span>
+        <h3>Владение и вход</h3>
+        <p>argon2id + JWT access/refresh с ротацией и детектом переиспользования. Чужой trip —
+        404, а не 403: id не является оракулом существования. Telegram initData — второй путь входа.</p></div>
+      <div class="card"><span class="tag">edge</span>
+        <h3>Лимиты по стоимости эндпоинта</h3>
+        <p>Три per-IP зоны nginx: auth 5 r/s, планирование 2 r/s, чтения 20 r/s, плюс cap соединений.
+        429 отдаётся JSON в форме ошибок FastAPI, security headers попадают и на 429.</p></div>
+      <div class="card"><span class="tag">evaluation</span>
+        <h3>Тест, который не может упасть, хуже отсутствия теста</h3>
+        <p>Сценарий prompt-injection доказывает, что атака дошла до модели, и только потом —
+        что ответ чист. Прогон без ответов модели помечается «нет сэмплов», а не «0% точности».</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="measured">
+  <div class="wrap">
+    <h2>Замерено, а не обещано</h2>
+    <p class="sub">Каждая строка воспроизводится командой из репозитория или сырым артефактом
+    в <code>docs/evidence/</code>. Нагрузочных замеров нет: стенд не нагрузили — значит цифр
+    RPS и p95 под нагрузкой здесь не существует.</p>
+    <table>
+      <tr><th>Что</th><th>Результат</th><th>Источник</th></tr>
+      <tr><td>Тесты</td><td><b>492 пройдено, 4 пропущено</b>; все пропуски — live-LLM гейт</td><td><code>make test</code></td></tr>
+      <tr><td>Покрытие</td><td><b>87%</b></td><td><code>make coverage</code></td></tr>
+      <tr><td>Типы</td><td>mypy <code>--strict</code>, чисто</td><td><code>make lint</code></td></tr>
+      <tr><td>Офлайн-evaluation</td><td><b>16 сценариев, все проверки зелёные</b></td><td><code>make eval</code></td></tr>
+      <tr><td>Точность разбора (live)</td><td>37/37 обязательных полей, 53/55 проверок, exact match 0.90</td><td><a href="evidence/parse-accuracy-2026-11-07-measured.json">артефакт</a></td></tr>
+      <tr><td>Стоимость того прогона</td><td><b>1.07814 ₽</b> за 20 кейсов</td><td>тот же артефакт</td></tr>
+      <tr><td>Async end-to-end</td><td>5/5 кейсов</td><td><a href="evidence/async-e2e-2026-11-07.json">артефакт</a></td></tr>
+      <tr><td>Браузерный прогон</td><td>11 шагов, 0 упавших запросов; один искусственный 401 пережит молчаливым refresh</td><td><code>make demo-shots</code></td></tr>
+    </table>
+    <p class="sub" style="margin-top:18px">Третий live-прогон упал с <code>ConnectTimeout</code> на всех
+    20 вызовах и закоммичен рядом с успешными: <a href="evidence/parse-accuracy-2026-11-07-connect-timeout.json">артефакт</a>.
+    Exact match 0.95 → 0.90 между двумя замерами на одном датасете — дисперсия модели; два прогона
+    не дают доверительного интервала.</p>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="wrap">
+    <h2>Демо</h2>
+    <p class="sub">Снимки сделаны headless Chromium по живому стеку через nginx
+    (<code>make demo-shots</code>), не нарисованы. Сценарий: регистрация → уточняющие вопросы →
+    план → оформление → перезагрузка с продолжением хода → правка «давай в Сочи» с диффом.</p>
+    <div class="shots">
+      <figure><img src="img/02-home.png" alt="Лендинг с формой запроса поездки"><figcaption>Лендинг: запрос своими словами, примеры-чипы</figcaption></figure>
+      <figure><img src="img/04-plan.png" alt="Посчитанный план поездки с ценой и маршрутом"><figcaption>План: итог, разбивка цены, маршрут и финалисты</figcaption></figure>
+      <figure><img src="img/07-plan-diff.png" alt="Дифф перепланирования: Ларнака заменена на Сочи"><figcaption>Перепланирование: дифф направления, отеля, рейсов и цены</figcaption></figure>
+      <figure><img src="img/05-order.png" alt="Экран созданного заказа"><figcaption>Mock-оформление: идемпотентно по ключу версии плана</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="run">
+  <div class="wrap">
+    <h2>Запуск</h2>
+    <p class="sub">Нужен Docker Desktop с Compose. Дефолтный провайдер — детерминированный mock,
+    ключи не требуются; живой OpenAI-совместимый провайдер включается только явным .env.</p>
+<pre><code>cp .env.example .env
+make setup        # Python-окружение из requirements.lock
+make up           # postgres + backend + web + nginx, миграции
+make seed         # синтетический каталог
+make test         # 492 теста
+make demo-shots   # браузерный прогон и скриншоты</code></pre>
+    <p class="sub">Открыть <code>http://localhost:8080</code>: nginx — единственный опубликованный порт.</p>
+  </div>
+</section>
+
+<section id="limits">
+  <div class="wrap">
+    <h2>Честные границы</h2>
+    <div class="grid">
+      <div class="card"><h3>Что осознанно не сделано</h3>
+        <ul class="tight">
+          <li>SSE-транспорт не потоковый: ход отдаётся готовым трейсом и переживает рестарт.</li>
+          <li>IP-лимиты наказывают NAT; блокировка аккаунта — ответственность приложения.</li>
+          <li>JWT access нельзя отозвать до истечения; refresh в браузере лежит в localStorage.</li>
+          <li>На локальном стенде нет TLS; каталог синтетический, checkout — mock.</li>
+        </ul></div>
+      <div class="card"><h3>Документы</h3>
+        <ul class="tight">
+          <li><a href="ARCHITECTURE.md">ARCHITECTURE.md</a> — топология, ход, контракты, ограничения.</li>
+          <li><a href="adr.md">adr.md</a> — 16 решений с контекстом и последствиями.</li>
+          <li><a href="evidence/README.md">evidence/</a> — сырые артефакты и как их читать.</li>
+          <li><a href="../README.ru.md">README.ru.md</a> и <a href="../README.md">README.md</a>.</li>
+        </ul></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">О! Куда · агент планирования поездок. Страница собрана из файлов репозитория:
+  замеры — из артефактов прогонов, снимки — из браузерного прогона по живому стеку.</div>
+</footer>
+</body>
+</html>

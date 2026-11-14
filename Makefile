@@ -7,7 +7,8 @@ PSQL := $(DC) exec postgres psql -U ostrovok -d ostrovok
 .PHONY: help
 help:
 	@echo "make up        — start the local stack and apply migrations"
-	@echo "make setup     — create the Python development environment"
+	@echo "make setup     — create the Python development environment from the lockfile"
+	@echo "make lock      — regenerate requirements.lock from the current .venv"
 	@echo "make web       — start the frontend with hot reload on http://localhost:5173"
 	@echo "make down      — stop the stack (the pgdata volume is retained)"
 	@echo "make build     — build service images"
@@ -17,11 +18,13 @@ help:
 	@echo "make seed      — load the development catalogue"
 	@echo "make migrate   — run Alembic migrations in the backend"
 	@echo "make eval      — run offline evaluation scenarios"
+	@echo "make demo-shots — real browser screenshots of the live stack into docs/img"
 	@echo "make eval-live — run explicitly enabled live-model acceptance checks"
 	@echo "make warmup    — prepare the ingestion adapter cache"
 	@echo "make psql      — open a PostgreSQL shell"
 	@echo "make test      — run the Python test suite"
-	@echo "make lint      — run type checks and validation guardrails"
+	@echo "make coverage  — run tests with terminal + XML coverage reports"
+	@echo "make lint      — run ruff, type checks and validation guardrails"
 	@echo "make bot       — start the bot (requires TELEGRAM_BOT_TOKEN in .env)"
 	@echo "make clean     — remove containers, local images, and the pgdata volume"
 
@@ -29,11 +32,17 @@ help:
 setup:
 	python3 -m venv .venv
 	.venv/bin/python -m pip install --upgrade pip
-	.venv/bin/python -m pip install -r requirements-dev.txt
+	.venv/bin/python -m pip install -r requirements.lock
+
+# requirements-dev.txt — редактируемый вход; lock — воспроизводимая установка.
+.PHONY: lock
+lock:
+	@printf '# Lockfile: pip freeze of .venv (Python 3.11). Human-editable input: requirements-dev.txt.\n# Regenerate: make lock. Do not edit by hand.\n' > requirements.lock
+	.venv/bin/python -m pip freeze >> requirements.lock
 
 .PHONY: up
 up:
-	$(DC) up -d --build postgres backend agent web
+	$(DC) up -d --build postgres backend web nginx
 	$(MAKE) migrate
 
 .PHONY: web
@@ -66,7 +75,7 @@ seed:
 
 .PHONY: migrate
 migrate:
-	$(DC) exec backend python -c "from alembic import command; from alembic.config import Config; c=Config('/app/alembic.ini'); c.set_main_option('script_location', '/app/app/db/migrations'); command.upgrade(c, 'head')"
+	$(DC) exec backend alembic upgrade head
 
 .PHONY: psql
 psql:
@@ -76,9 +85,21 @@ psql:
 test:
 	$(PYTHON) -m pytest tests
 
+# XML кладём в artifacts/ (gitignored) — его же забирает CI как артефакт.
+.PHONY: coverage
+coverage:
+	$(PYTHON) -m pytest tests --cov=services --cov=shared \
+		--cov-report=term-missing --cov-report=xml:artifacts/coverage.xml
+
 .PHONY: eval
 eval:
 	$(PYTHON) -m evaluation.run_eval --json
+
+# Скриншоты — доказательство, а не картинка: headless Chromium ходит по живому стеку.
+.PHONY: demo-shots
+demo-shots:
+	cd web && npm install --no-audit --no-fund
+	node web/scripts/demo-shots.mjs
 
 .PHONY: eval-live
 eval-live:
@@ -103,12 +124,13 @@ eval-accuracy:
 
 .PHONY: lint
 lint:
+	$(PYTHON) -m ruff check .
 	$(PYTHON) -m mypy services/backend/app services/agent/app shared/contracts
 	@if grep -rnE '^\s*(import|from) (openai|instructor|litellm|anthropic)' services/agent/app/validation; then exit 1; fi
 
 .PHONY: bot
 bot:
-	docker compose --profile bot --profile tools up -d bot
+	docker compose --profile bot up -d bot
 
 .PHONY: clean
 clean:

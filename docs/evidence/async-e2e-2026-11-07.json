@@ -1,0 +1,560 @@
+{
+  "at": "2026-11-07T03:06:42.724225+00:00",
+  "inventory": "synthetic development catalogue",
+  "cases": 5,
+  "passed": 5,
+  "functional_passed": 5,
+  "models": {
+    "parse:deepseek-v4.1-flash-1017": {
+      "calls": 5,
+      "p50_ms": 3091,
+      "p95_ms": 3868,
+      "tokens": 7927,
+      "http_errors": 0
+    },
+    "embedding:qwen3-embedding-8b": {
+      "calls": 1,
+      "p50_ms": 1839,
+      "p95_ms": 1839,
+      "tokens": 10,
+      "http_errors": 0
+    },
+    "rerank:qwen3-reranker-8b": {
+      "calls": 3,
+      "p50_ms": 1721,
+      "p95_ms": 1805,
+      "tokens": 6421,
+      "http_errors": 0
+    },
+    "explain:qwen3.7-plus": {
+      "calls": 3,
+      "p50_ms": 4838,
+      "p95_ms": 4960,
+      "tokens": 2186,
+      "http_errors": 0
+    },
+    "formulate:deepseek-v4.1-flash-1017": {
+      "calls": 1,
+      "p50_ms": 1866,
+      "p95_ms": 1866,
+      "tokens": 117,
+      "http_errors": 0
+    }
+  },
+  "rows": [
+    {
+      "case": "hybrid_and_rerank",
+      "trip_id": "71a5abf2-d76b-4096-a2ac-1dc24070c55f",
+      "outcome": "plan_ready",
+      "checks": {
+        "outcome": true,
+        "no_transport_failure": true,
+        "no_blocking_plan": true,
+        "russian_response": true,
+        "hybrid_executed": true,
+        "rerank_executed": true,
+        "multiple_options": true,
+        "pool_requirement": true
+      },
+      "wall_clock_ms": 12236,
+      "models": [
+        {
+          "slot": "parse",
+          "model": "deepseek-v4.1-flash-1017",
+          "prompt_version": "9cc7c100280d3a44",
+          "input_tokens": 1385,
+          "output_tokens": 309,
+          "total_tokens": 1694,
+          "status": "ok",
+          "latency_ms": 3705,
+          "estimated_cost_rub": "0.07863",
+          "pricing_version": "user-rates-2026-11-05",
+          "cost_status": "estimated",
+          "cost_kind": "estimate",
+          "rate_rub_per_million": {
+            "input": "30",
+            "output": "120"
+          },
+          "rejected_fields": 0
+        },
+        {
+          "slot": "embedding",
+          "model": "qwen3-embedding-8b",
+          "dimensions": 1024,
+          "latency_ms": 1839,
+          "status": "ok",
+          "error": null,
+          "input_tokens": 10,
+          "output_tokens": 0,
+          "total_tokens": 10,
+          "estimated_cost_rub": "0.00002",
+          "pricing_version": "user-rates-2026-11-05",
+          "cost_status": "estimated",
+          "cost_kind": "estimate",
+          "rate_rub_per_million": {
+            "total": "2"
+          }
+        },
+        {
+          "slot": "rerank",
+          "model": "qwen3-reranker-8b",
+          "prompt_version": "rerank-v1",
+          "input_tokens": null,
+          "output_tokens": null,
+          "total_tokens": 2180,
+          "status": "ok",
+          "latency_ms": 1634,
+          "estimated_cost_rub": null,
+          "pricing_version": "user-rates-2026-11-05",
+          "cost_status": "unknown_model_rate",
+          "cost_kind": "estimate",
+          "fallback": false
+        },
+        {
+          "slot": "explain",
+          "model": "qwen3.7-plus",
+          "prompt_version": "8c979ed044227874",
+          "input_tokens": 590,
+          "output_tokens": 151,
+          "total_tokens": 741,
+          "status": "ok",
+          "latency_ms": 4711,
+          "estimated_cost_rub": "0.076416",
+          "pricing_version": "user-rates-2026-11-05",
+          "cost_status": "estimated",
+          "cost_kind": "estimate",
+          "rate_rub_per_million": {
+            "input": "64",
+            "output": "256"
+          }
+        }
+      ],
+      "services": [
+        {
+          "tool": "suggest_destinations",
+          "ms": 132,
+          "count": 1,
+          "status": "ok"
+        },
+        {
+          "tool": "weather_climate",
+          "ms": 6,
+          "count": 1,
+          "status": "ok"
+        },
+        {
+          "tool": "transport_search",
+          "ms": 7,
+          "count": 4,
+          "status": "ok"
+        },
+        {
+          "tool": "hotel_search",
+          "ms": 1893,
+          "count": 20,
+          "status": "ok",
+          "retrieval_mode": "hybrid"
+        },
+        {
+          "tool": "transfer_search",
+          "ms": 10,
+          "count": 40,
+          "status": "ok"
+        }
+      ],
+      "answer": [
+        {
+          "block_id": "explain",
+          "text": "Подборка включает 7 ночей в отеле «Тихая гавань» с общей стоимостью 74 700 ₽, что оставляет 125 300 ₽ от бюджета. Из доступных вариантов этот отель дешевле «Соснового» (98 400 ₽) и «Ривьеры» (101 500 ₽). Температура воздуха составит 15.5 °C, время перелёта — 2.6 часа.",
+          "numbers_verified": true,
+          "followups": [
+            "Увеличить бюджет",
+            "Выбрать другой отель",
+            "Найти прямой перелёт"
+          ],
+          "number_guard_rejections": 0
+        }
+      ],
+      "options": 3
+    },
+    {
+      "case": "flight_only_followup",
+      "trip_id": "71a5abf2-d76b-4096-a2ac-1dc24070c55f",
+      "outcome": "plan_ready",
+      "checks": {
+        "outcome": true,
+        "no_transport_failure": true,
+        "no_blocking_plan": true,
+        "russian_response": true,
+        "selective_services": true,
+        "flight_searched": true
+      },
+      "wall_clock_ms": 9752,
+      "models": [
+        {
+          "slot": "parse",
+          "model": "deepseek-v4.1-flash-1017",
+          "prompt_version": "9cc7c100280d3a44",
+          "input_tokens": 1373,
+          "output_tokens": 63,
+          "total_tokens": 1436,
+          "status": "ok",
+          "latency_ms": 2842,
+          "estimated_cost_rub": "0.04875",
+          "pricing_version": "user-rates-2026-11-05",
+          "cost_status": "estimated",
+          "cost_kind": "estimate",
+          "rate_rub_per_million": {
+            "input": "30",
+            "output": "120"
+          },
+          "rejected_fields": 0
+        },
+        {
+          "slot": "rerank",
+          "model": "qwen3-reranker-8b",
+          "prompt_version": "rerank-v1",
+          "input_tokens": null,
+          "output_tokens": null,
+          "total_tokens": 2180,
+          "status": "ok",
+          "latency_ms": 1805,
+          "estimated_cost_rub": null,
+          "pricing_version": "user-rates-2026-11-05",
+          "cost_status": "unknown_model_rate",
+          "cost_kind": "estimate",
+          "fallback": false
+        },
+        {
+          "slot": "explain",
+          "model": "qwen3.7-plus",
+          "prompt_version": "8c979ed044227874",
+          "input_tokens": 556,
+          "output_tokens": 170,
+          "total_tokens": 726,
+          "status": "ok",
+          "latency_ms": 4960,
+          "estimated_cost_rub": "0.079104",
+          "pricing_version": "user-rates-2026-11-05",
+          "cost_status": "estimated",
+          "cost_kind": "estimate",
+          "rate_rub_per_million": {
+            "input": "64",
+            "output": "256"
+          }
+        }
+      ],
+      "services": [
+        {
+          "tool": "transport_search",
+          "ms": 20,
+          "count": 4,
+          "status": "ok"
+        },
+        {
+          "tool": "transfer_search",
+          "ms": 9,
+          "count": 40,
+          "status": "ok"
+        }
+      ],
+      "answer": [
+        {
+          "block_id": "explain",
+          "text": "Предложена поездка в Сочи на 7 ночей с проживанием в отеле «Тихая гавань» и прямым перелетом длительностью 2.6 часа. Общая стоимость составляет 74 700 ₽, что укладывается в бюджет 200 000 ₽ с остатком 125 300 ₽. Среди доступных вариантов этот отель является самым дешевым по сравнению с «Сосновым» (98 400 ₽) и «Ривьерой» (101 500 ₽).",
+          "numbers_verified": true,
+          "followups": [
+            "Изменить бюджет поездки",
+            "Выбрать другой отель",
+            "Добавить питомцев"
+          ],
+          "number_guard_rejections": 0
+        }
+      ],
+      "options": 3
+    },
+    {
+      "case": "clarification",
+      "trip_id": "458bdf15-ea43-4b25-911e-c0f07df8c57d",
+      "outcome": "plan_ready",
+      "checks": {
+        "outcome": true,
+        "no_transport_failure": true,
+        "no_blocking_plan": true,
+        "russian_response": true
+      },
+      "wall_clock_ms": 12595,
+      "models": [
+        {
+          "slot": "parse",
+          "model": "deepseek-v4.1-flash-1017",
+          "status": "ok",
+          "cost_kind": "estimate",
+          "latency_ms": 3868,
+          "cost_status": "estimated",
+          "input_tokens": 1365,
+          "total_tokens": 1566,
+          "output_tokens": 201,
+          "prompt_version": "9cc7c100280d3a44",
+          "pricing_version": "user-rates-2026-11-05",
+          "rejected_fields": 0,
+          "estimated_cost_rub": "0.06507",
+          "rate_rub_per_million": {
+            "input": "30",
+            "output": "120"
+          }
+        },
+        {
+          "slot": "formulate",
+          "model": "deepseek-v4.1-flash-1017",
+          "status": "ok",
+          "cost_kind": "estimate",
+          "latency_ms": 1866,
+          "cost_status": "estimated",
+          "input_tokens": 102,
+          "total_tokens": 117,
+          "output_tokens": 15,
+          "prompt_version": "7e05a1b66d63dd34",
+          "pricing_version": "user-rates-2026-11-05",
+          "estimated_cost_rub": "0.00486",
+          "rate_rub_per_million": {
+            "input": "30",
+            "output": "120"
+          }
+        },
+        {
+          "slot": "rerank",
+          "model": "qwen3-reranker-8b",
+          "prompt_version": "rerank-v1",
+          "input_tokens": null,
+          "output_tokens": null,
+          "total_tokens": 2061,
+          "status": "ok",
+          "latency_ms": 1721,
+          "estimated_cost_rub": null,
+          "pricing_version": "user-rates-2026-11-05",
+          "cost_status": "unknown_model_rate",
+          "cost_kind": "estimate",
+          "fallback": false
+        },
+        {
+          "slot": "explain",
+          "model": "qwen3.7-plus",
+          "prompt_version": "8c979ed044227874",
+          "input_tokens": 570,
+          "output_tokens": 149,
+          "total_tokens": 719,
+          "status": "ok",
+          "latency_ms": 4838,
+          "estimated_cost_rub": "0.074624",
+          "pricing_version": "user-rates-2026-11-05",
+          "cost_status": "estimated",
+          "cost_kind": "estimate",
+          "rate_rub_per_million": {
+            "input": "64",
+            "output": "256"
+          }
+        }
+      ],
+      "services": [
+        {
+          "tool": "suggest_destinations",
+          "ms": 68,
+          "count": 1,
+          "status": "ok"
+        },
+        {
+          "tool": "weather_climate",
+          "ms": 5,
+          "count": 1,
+          "status": "ok"
+        },
+        {
+          "tool": "transport_search",
+          "ms": 6,
+          "count": 4,
+          "status": "ok"
+        },
+        {
+          "tool": "hotel_search",
+          "ms": 35,
+          "count": 40,
+          "status": "ok",
+          "retrieval_mode": "not_requested"
+        },
+        {
+          "tool": "transfer_search",
+          "ms": 4,
+          "count": 40,
+          "status": "ok"
+        }
+      ],
+      "answer": [
+        {
+          "block_id": "explain",
+          "text": "Поездка в Сочи на 7 ночей с проживанием в отеле Ореанда обойдется в 90 000 ₽, что оставляет 110 000 ₽ от вашего бюджета. Средняя дневная температура составит 15.5°C, а перелет займет 2.6 часа. Среди доступных вариантов отель Приморская дешевле (87 250 ₽), а Аквамарин дороже (97 650 ₽).",
+          "numbers_verified": true,
+          "followups": [
+            "Изменить бюджет поездки",
+            "Выбрать другой отель",
+            "Найти прямой перелет"
+          ],
+          "number_guard_rejections": 0
+        }
+      ],
+      "options": 3
+    },
+    {
+      "case": "impossible_budget",
+      "trip_id": "5449c01c-edf2-4e7f-8804-52fafc4507da",
+      "outcome": "infeasible",
+      "checks": {
+        "outcome": true,
+        "no_transport_failure": true,
+        "no_blocking_plan": true,
+        "russian_response": true
+      },
+      "wall_clock_ms": 3288,
+      "models": [
+        {
+          "slot": "parse",
+          "model": "deepseek-v4.1-flash-1017",
+          "prompt_version": "9cc7c100280d3a44",
+          "input_tokens": 1368,
+          "output_tokens": 236,
+          "total_tokens": 1604,
+          "status": "ok",
+          "latency_ms": 3091,
+          "estimated_cost_rub": "0.06936",
+          "pricing_version": "user-rates-2026-11-05",
+          "cost_status": "estimated",
+          "cost_kind": "estimate",
+          "rate_rub_per_million": {
+            "input": "30",
+            "output": "120"
+          },
+          "rejected_fields": 0
+        }
+      ],
+      "services": [
+        {
+          "tool": "suggest_destinations",
+          "ms": 88,
+          "count": 1,
+          "status": "ok"
+        },
+        {
+          "tool": "weather_climate",
+          "ms": 6,
+          "count": 1,
+          "status": "ok"
+        },
+        {
+          "tool": "transport_search",
+          "ms": 6,
+          "count": 4,
+          "status": "ok"
+        },
+        {
+          "tool": "hotel_search",
+          "ms": 39,
+          "count": 40,
+          "status": "ok",
+          "retrieval_mode": "not_requested"
+        },
+        {
+          "tool": "transfer_search",
+          "ms": 4,
+          "count": 40,
+          "status": "ok"
+        }
+      ],
+      "answer": [
+        {
+          "block_id": "explain",
+          "text": "Не получилось собрать поездку. Самый дешёвый вариант стоит 74 700 ₽ при бюджете 10 000 ₽ — на 64 700 ₽ дороже. Даже без проживания поездка дороже бюджета — поднимите бюджет или выберите место ближе.",
+          "numbers_verified": true,
+          "followups": [],
+          "number_guard_rejections": 0
+        }
+      ],
+      "options": 0
+    },
+    {
+      "case": "unknown_destination",
+      "trip_id": "71da09fe-8c61-45fe-864e-904c168f71e5",
+      "outcome": "infeasible",
+      "checks": {
+        "outcome": true,
+        "no_transport_failure": true,
+        "no_blocking_plan": true,
+        "russian_response": true
+      },
+      "wall_clock_ms": 2780,
+      "models": [
+        {
+          "slot": "parse",
+          "model": "deepseek-v4.1-flash-1017",
+          "prompt_version": "9cc7c100280d3a44",
+          "input_tokens": 1391,
+          "output_tokens": 236,
+          "total_tokens": 1627,
+          "status": "ok",
+          "latency_ms": 2453,
+          "estimated_cost_rub": "0.07005",
+          "pricing_version": "user-rates-2026-11-05",
+          "cost_status": "estimated",
+          "cost_kind": "estimate",
+          "rate_rub_per_million": {
+            "input": "30",
+            "output": "120"
+          },
+          "rejected_fields": 0
+        }
+      ],
+      "services": [
+        {
+          "tool": "suggest_destinations",
+          "ms": 88,
+          "count": 0,
+          "status": "ok"
+        },
+        {
+          "tool": "weather_climate",
+          "ms": 9,
+          "count": 0,
+          "status": "ok"
+        },
+        {
+          "tool": "transport_search",
+          "ms": 34,
+          "count": 0,
+          "status": "ok"
+        },
+        {
+          "tool": "hotel_search",
+          "ms": 45,
+          "count": 0,
+          "status": "ok",
+          "retrieval_mode": "not_requested"
+        },
+        {
+          "tool": "suggest_destinations",
+          "ms": 104,
+          "count": 42,
+          "status": "ok"
+        }
+      ],
+      "answer": [
+        {
+          "block_id": "explain",
+          "text": "Не получилось собрать поездку. Направления «Гамбург» нет среди 61 направлений, с которыми мы работаем — попробуйте другой город или опишите, какой отдых хочется. Похожие варианты для нового запроса: Sochi, Россия, Anapa, Россия, Yalta, Россия.",
+          "numbers_verified": true,
+          "followups": [],
+          "number_guard_rejections": 0
+        }
+      ],
+      "options": 0
+    }
+  ]
+}
