@@ -97,6 +97,23 @@
   color: var(--color-bad);
   font-size: 0.86rem;
   animation: fade-up 320ms var(--ease-out) both;
+
+  svg { flex: none; }
+}
+
+.errorText { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+
+.retry {
+  flex: none;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:focus-visible { outline: 2px solid var(--color-bad); outline-offset: 2px; border-radius: 4px; }
 }
 
 .clamped {

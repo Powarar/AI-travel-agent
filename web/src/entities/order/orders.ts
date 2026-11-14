@@ -37,6 +37,11 @@ export function refreshOrders(): Promise<void> {
   return inflight
 }
 
+export function resetOrders() {
+  inflight = null
+  set({ items: [], loading: false, error: null })
+}
+
 function subscribe(notify: () => void) {
   listeners.add(notify)
   return () => listeners.delete(notify)

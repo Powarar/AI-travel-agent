@@ -12,6 +12,8 @@
   min-height: 88px;
 }
 
+.right { display: flex; align-items: center; gap: 2rem; min-width: 0; }
+
 .nav {
   display: flex;
   align-items: center;
@@ -28,7 +30,11 @@
   }
 }
 
-@media (max-width: 540px) {
-  .inner { min-height: 76px; }
+@media (max-width: 720px) {
+  .right { gap: 1rem; }
   .nav { display: none; }
+}
+
+@media (max-width: 540px) {
+  .inner { min-height: 76px; gap: 1rem; }
 }

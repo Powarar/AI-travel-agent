@@ -7,11 +7,13 @@ import { formatMoney } from '../../../shared/lib/money'
 import { ruNames } from '../../../shared/lib/placeNames'
 import { dateRange, plural, summarize } from '../../../shared/lib/plan'
 import { Icon } from '../../../shared/ui/Icon/Icon'
+import { Skeleton } from '../../../shared/ui/Skeleton/Skeleton'
 
 import styles from './Screens.module.scss'
 
 interface Props {
   orders: Order[]
+  loading: boolean
   error: string | null
   session: TripSession
   onPlan: () => void
@@ -67,7 +69,7 @@ function OrderCard({ order, index }: { order: Order; index: number }) {
 }
 
 /** Мои поездки: текущий подбор и оформленные заказы. */
-export function TripsScreen({ orders, error, session, onPlan }: Props) {
+export function TripsScreen({ orders, loading, error, session, onPlan }: Props) {
   const draft = session.state && !session.order ? summarize(session.state) : null
 
   return (
@@ -93,7 +95,13 @@ export function TripsScreen({ orders, error, session, onPlan }: Props) {
         </p>
       )}
 
-      {orders.length === 0 ? (
+      {loading && orders.length === 0 ? (
+        <div className={styles.list} role="status" aria-label="Загружаем заказы">
+          <Skeleton height={92} radius={22} />
+          <Skeleton height={92} radius={22} />
+          <Skeleton height={92} radius={22} />
+        </div>
+      ) : orders.length === 0 ? (
         <div className={styles.empty}>
           <div className={styles.emptyOrb} aria-hidden="true"><Icon name="ticket" size={34} /></div>
           <h2>Пока ни одной поездки</h2>

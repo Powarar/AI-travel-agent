@@ -7,5 +7,5 @@ import { MockTripApi } from './mock/mockApi'
 // включается явно: VITE_API_MODE=mock.
 export const api: TripApi = import.meta.env.VITE_API_MODE === 'mock' ? new MockTripApi() : new HttpTripApi()
 
-export { ApiError } from './client'
+export { ApiError } from './http'
 export type { TripApi } from './client'

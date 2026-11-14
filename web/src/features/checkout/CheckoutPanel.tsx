@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 
 import { formatMoney, groupLedger } from '../../shared/lib/money'
+import { isMiniApp } from '../../shared/lib/telegram'
 import type { CheckoutResult, TripState } from '../../shared/types/contracts'
 import { Icon } from '../../shared/ui/Icon/Icon'
 
@@ -29,14 +30,18 @@ export function CheckoutPanel({ state, order, busy, onCheckout }: Props) {
             <circle cx="26" cy="26" r="23" />
             <path d="M15 27l7 7 15-16" />
           </svg>
-          <h3 id="checkout-title">Поездка оформлена!</h3>
-          <p>Номер заказа <b>{order.order_id}</b>. Детали поездки отправим на почту.</p>
+          <h3 id="checkout-title">Заказ создан</h3>
+          <p>
+            Номер заказа <b>{order.order_id}</b>.{' '}
+            {isMiniApp ? 'Он сохранён и появится в «Мои заказы».' : 'Он сохранён в вашем аккаунте.'}{' '}
+            Это демо-оформление: оплата и бронирование не выполняются.
+          </p>
         </div>
       ) : (
         <div className={styles.cta}>
           <div>
             <h3 id="checkout-title">{ready ? 'Всё готово — можно оформлять' : 'Пока нечего оформлять'}</h3>
-            <p>{ready ? 'Перелёты, отель и трансферы — одним заказом.' : 'Сначала поправьте поездку в чате.'}</p>
+            <p>{ready ? 'Перелёты, отель и трансферы — одним заказом. Демо-оформление, без реальной оплаты.' : 'Сначала поправьте поездку в чате.'}</p>
           </div>
           <button type="button" className={styles.primary} onClick={onCheckout} disabled={!ready || busy}>
             {busy ? 'Оформляем…' : <>Оформить{total ? ` за ${formatMoney(total)}` : ''} <Icon name="arrow" size={18} /></>}

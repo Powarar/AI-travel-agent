@@ -39,6 +39,11 @@ function writePersisted(value: Persisted | null) {
   }
 }
 
+/** Сброс сохранённого хода при выходе из аккаунта: чужой trip не должен открыться следующим входом. */
+export function clearPersistedSession() {
+  writePersisted(null)
+}
+
 function lastQuestion(events: SSEEvent[], awaiting: string[]): Question | null {
   for (let i = events.length - 1; i >= 0; i -= 1) {
     const e = events[i]
@@ -58,12 +63,15 @@ export function useTripSession() {
   const [busy, setBusy] = useState(false)
   const [ordering, setOrdering] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [retryable, setRetryable] = useState(false)
   const [order, setOrder] = useState<CheckoutResult | null>(null)
   const [resumed, setResumed] = useState(false)
+  const [resuming, setResuming] = useState(false)
   const [suggestions, setSuggestions] = useState<string[]>([])
   const run = useRef<{ runId: string | null; seen: number }>({ runId: null, seen: 0 })
   const counter = useRef(0)
   const turn = useRef(0)
+  const lastSend = useRef<string | null>(null)
 
   const persist = useCallback((trip: string, prev: TripState | null) => {
     writePersisted({ tripId: trip, runId: run.current.runId, seen: run.current.seen, previous: prev })
@@ -113,6 +121,7 @@ export function useTripSession() {
     const saved = readPersisted()
     if (!saved) return
     let cancelled = false
+    setResuming(true)
     ;(async () => {
       try {
         const current = await api.getState(saved.tripId)
@@ -141,6 +150,8 @@ export function useTripSession() {
         }
       } catch {
         writePersisted(null)
+      } finally {
+        if (!cancelled) setResuming(false)
       }
     })()
     return () => {
@@ -151,8 +162,10 @@ export function useTripSession() {
   const send = useCallback(async (text: string) => {
     setBusy(true)
     setError(null)
+    setRetryable(false)
     setOrder(null)
     setResumed(false)
+    lastSend.current = text
     try {
       let trip = tripId
       if (!trip) {
@@ -171,16 +184,22 @@ export function useTripSession() {
       await refresh(trip, prev)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Не удалось отправить сообщение')
+      setRetryable(true)
     } finally {
       setBusy(false)
     }
   }, [apply, previous, refresh, state, tripId])
+
+  const retry = useCallback(() => {
+    if (lastSend.current) void send(lastSend.current)
+  }, [send])
 
   const answer = useCallback(async (field: string, value: string, label?: string) => {
     const runId = run.current.runId
     if (!tripId || !runId) return
     setBusy(true)
     setError(null)
+    setRetryable(false)
     setResumed(false)
     const id = (counter.current += 1)
     const at = turn.current
@@ -209,6 +228,7 @@ export function useTripSession() {
     // Оформление — не ход агента: свой флаг, чтобы чат не показывал «агент думает».
     setOrdering(true)
     setError(null)
+    setRetryable(false)
     try {
       // Ключ от версии плана: двойной клик не создаёт второй заказ.
       setOrder(await api.checkout(tripId, `${tripId}:v${state.version}`))
@@ -233,13 +253,14 @@ export function useTripSession() {
     setPhase(null)
     setOrder(null)
     setError(null)
+    setRetryable(false)
     setResumed(false)
     setSuggestions([])
   }, [])
 
   return {
     mode: api.mode, tripId, state, previous, feed, question, planUpdate, phase, suggestions,
-    busy, ordering, error, order, resumed, send, answer, checkout, reset,
+    busy, ordering, error, order, resumed, resuming, retryable, send, answer, checkout, reset, retry,
   }
 }
 

@@ -14,7 +14,7 @@ export type Screen = 'plan' | 'trips' | 'profile'
 /** Telegram Mini App: без лендинга, экраны переключаются нижним меню. */
 export function MiniApp({ session }: { session: TripSession }) {
   const [screen, setScreen] = useState<Screen>('plan')
-  const { items: orders, error: ordersError } = useOrders()
+  const { items: orders, loading: ordersLoading, error: ordersError } = useOrders()
 
   const tabs: Tab<Screen>[] = [
     { id: 'plan', label: 'Подбор', icon: 'sparkle' },
@@ -31,12 +31,12 @@ export function MiniApp({ session }: { session: TripSession }) {
       </div>
       {screen === 'trips' && (
         <div className={styles.screen}>
-          <TripsScreen orders={orders} error={ordersError} session={session} onPlan={() => setScreen('plan')} />
+          <TripsScreen orders={orders} loading={ordersLoading} error={ordersError} session={session} onPlan={() => setScreen('plan')} />
         </div>
       )}
       {screen === 'profile' && (
         <div className={styles.screen}>
-          <ProfileScreen orders={orders} session={session} onNavigate={setScreen} />
+          <ProfileScreen orders={orders} loading={ordersLoading} session={session} onNavigate={setScreen} />
         </div>
       )}
       <TabBar tabs={tabs} active={screen} onChange={setScreen} />

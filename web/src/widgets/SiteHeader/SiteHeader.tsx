@@ -1,3 +1,4 @@
+import { AccountControl } from '../../features/auth/AccountControl'
 import { BrandLockup } from '../../shared/ui/BrandLockup/BrandLockup'
 import { Container } from '../../shared/ui/Container/Container'
 
@@ -8,10 +9,13 @@ export function SiteHeader() {
     <header className={styles.header}>
       <Container className={styles.inner}>
         <BrandLockup />
-        <nav className={styles.nav} aria-label="Основная навигация">
-          <a href="#how">Как это работает</a>
-          <a href="#planner">Начать планировать</a>
-        </nav>
+        <div className={styles.right}>
+          <nav className={styles.nav} aria-label="Основная навигация">
+            <a href="#how">Как это работает</a>
+            <a href="#planner">Начать планировать</a>
+          </nav>
+          <AccountControl />
+        </div>
       </Container>
     </header>
   )

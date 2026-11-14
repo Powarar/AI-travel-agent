@@ -71,5 +71,6 @@
     cursor: pointer;
 
     &:disabled { opacity: 0.45; cursor: not-allowed; }
+    &:focus-visible { outline: 3px solid var(--color-blue); outline-offset: 2px; }
   }
 }
