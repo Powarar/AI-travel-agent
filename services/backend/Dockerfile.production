@@ -1,0 +1,15 @@
+FROM python:3.11-slim
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 PIP_NO_CACHE_DIR=1
+WORKDIR /app
+COPY requirements.lock ./
+RUN pip install -r requirements.lock && useradd --uid 10001 --create-home appuser
+COPY services/backend/ ./
+COPY services/agent /app/services/agent
+COPY services/__init__.py /app/services/__init__.py
+COPY shared /app/shared
+COPY data /app/data
+COPY evaluation /app/evaluation
+RUN mkdir /app/artifacts && chown appuser /app/artifacts
+USER 10001
+EXPOSE 8000
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-proxy-headers"]
