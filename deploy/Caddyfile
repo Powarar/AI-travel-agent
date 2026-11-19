@@ -1,0 +1,19 @@
+{$DOMAIN} {
+    encode zstd gzip
+    header {
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+        -Server
+    }
+    @private path /v1/monitoring/* /api/v1/monitoring/* /monitoring.html /docs* /redoc* /openapi.json
+    handle @private {
+        respond 404
+    }
+    handle /health/* {
+        reverse_proxy backend:8000
+    }
+    handle {
+        reverse_proxy web:8080
+    }
+}

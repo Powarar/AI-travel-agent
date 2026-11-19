@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import secrets
 import time
 from collections import defaultdict
 from datetime import UTC, datetime
@@ -36,6 +37,12 @@ def percentile(values: list[int], q: float) -> int:
 async def evaluate(base_url: str) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     async with httpx.AsyncClient(base_url=base_url, timeout=75) as client:
+        account = await client.post('/v1/auth/register', json={
+            'email': 'acceptance-' + secrets.token_hex(12) + '@example.com',
+            'password': secrets.token_urlsafe(32),
+        })
+        account.raise_for_status()
+        client.headers['Authorization'] = 'Bearer ' + account.json()['access_token']
         for attempt in range(20):
             try:
                 ready = await client.get("/openapi.json")

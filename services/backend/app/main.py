@@ -1,3 +1,4 @@
+import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -12,12 +13,16 @@ from .api.store import close_pool
 
 @asynccontextmanager
 async def _lifespan(_application: FastAPI) -> AsyncIterator[None]:
+    if os.getenv("APP_ENV") == "production":
+        secret = os.getenv("AUTH_JWT_SECRET", "")
+        if len(secret) < 32:
+            raise RuntimeError("Production requires AUTH_JWT_SECRET with at least 32 characters")
     yield
     await close_pool()
 
 
 def create_app() -> FastAPI:
-    application = FastAPI(title="Ostrovok Trip API", version="1.0", lifespan=_lifespan)
+    application = FastAPI(title="AI Travel Agent API", version="1.0", lifespan=_lifespan)
     application.include_router(health_router)
     application.include_router(router)
 
