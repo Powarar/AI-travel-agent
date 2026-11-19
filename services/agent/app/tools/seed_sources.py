@@ -26,22 +26,19 @@
 
 from __future__ import annotations
 
-from contextvars import ContextVar
-
 import json
 import logging
 import re
 from collections.abc import Callable, Mapping
+from contextvars import ContextVar
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, cast
 from zoneinfo import ZoneInfo
 
-from shared.contracts.enums import CostScope, DataStatus, PriceKind
-from shared.contracts.money import Money, PriceLine
 from services.agent.app.orchestration.nodes import (
     ClimateFact,
     DestinationFact,
@@ -53,9 +50,11 @@ from services.agent.app.orchestration.nodes import (
 from services.agent.app.tools.registry import REGISTRY, args_hash
 from services.agent.app.validation.coherence import named_matches
 from services.agent.app.validation.inputs import HotelSpecs, StayNight, TransferLeg, TransportLeg
+from shared.contracts.enums import CostScope, DataStatus, PriceKind
+from shared.contracts.money import Money, PriceLine
 
 SEEDS_DIR = Path(__file__).resolve().parents[4] / "data" / "seeds"
-UTC = timezone.utc
+UTC = UTC
 
 logger = logging.getLogger(__name__)
 

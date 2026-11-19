@@ -12,6 +12,8 @@ dependencies = [
   "alembic>=1.13",
   "pgvector>=0.2.5",
   "httpx>=0.27",
+  "argon2-cffi>=23.1",
+  "PyJWT>=2.8",
 ]
 
 [project.optional-dependencies]

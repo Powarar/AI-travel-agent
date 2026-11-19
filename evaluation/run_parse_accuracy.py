@@ -6,7 +6,7 @@ import asyncio
 import hashlib
 import json
 import os
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from enum import Enum
 from pathlib import Path
@@ -36,7 +36,8 @@ def normalize(value: Any) -> Any:
 
 def matches(path: str, actual: Any, expected: Any) -> bool:
     if isinstance(expected, dict) and "amount" in expected:
-        return isinstance(actual, Money) and actual.currency == expected["currency"] and actual.amount == Decimal(expected["amount"])
+        return (isinstance(actual, Money) and actual.currency == expected["currency"]
+                and actual.amount == Decimal(expected["amount"]))
     if path in {"origin", "direction.explicit"} and isinstance(expected, list):
         return normalize(actual) in [normalize(alias) for alias in expected]
     if path == "transport.max_hours_direct":
@@ -79,15 +80,18 @@ async def evaluate(dataset: dict[str, Any], *, live: bool) -> dict[str, Any]:
     try:
         for case in dataset["cases"]:
             before = len(getattr(slots, "failures", []))
-            request = await slots.parse(case["message"]) if isinstance(slots, AsyncSlots) else slots.parse(case["message"])
+            request = (await slots.parse(case["message"]) if isinstance(slots, AsyncSlots)
+                       else slots.parse(case["message"]))
             row = grade(case, request, fallback=len(getattr(slots, "failures", [])) > before)
             rows.append(row)
             print(json.dumps(row, ensure_ascii=False), flush=True)
         spans = getattr(slots, "spans", [])
-        known_costs = [Decimal(span["estimated_cost_rub"]) for span in spans if span.get("estimated_cost_rub") is not None]
-        return {"created_at": datetime.now(timezone.utc).isoformat(), "dataset_id": dataset["dataset_id"],
+        known_costs = [Decimal(span["estimated_cost_rub"]) for span in spans
+                       if span.get("estimated_cost_rub") is not None]
+        return {"created_at": datetime.now(UTC).isoformat(), "dataset_id": dataset["dataset_id"],
                 "model": slots.config._route("parse")[0] if isinstance(slots, AsyncSlots) else "deterministic-offline",
-                "prompt_version": slots.prompt_versions.get("parse", "unknown") if isinstance(slots, AsyncSlots) else "offline",
+                "prompt_version": (slots.prompt_versions.get("parse", "unknown")
+                                   if isinstance(slots, AsyncSlots) else "offline"),
                 "mode": "live" if live else "offline",
                 **parse_accuracy_summary(rows),
                 "known_estimated_cost_rub": str(sum(known_costs, Decimal(0))),
@@ -101,7 +105,8 @@ async def save(report: dict[str, Any]) -> None:
     dsn = os.environ.get("DATABASE_URL", "postgresql://ostrovok:ostrovok@localhost:5434/ostrovok")
     conn = await asyncpg.connect(dsn.replace("postgresql+asyncpg://", "postgresql://", 1))
     try:
-        await conn.execute("INSERT INTO evaluation_runs(eval_id,dataset_id,dataset_hash,model,prompt_version,mode,report) "
+        await conn.execute("INSERT INTO evaluation_runs(eval_id,dataset_id,dataset_hash,model,"
+                           "prompt_version,mode,report) "
                            "VALUES($1,$2,$3,$4,$5,$6,$7::jsonb)",
                            uuid4(), report["dataset_id"], report["dataset_hash"], report["model"],
                            report["prompt_version"], report["mode"], json.dumps(report, ensure_ascii=False))
@@ -122,14 +127,16 @@ def main() -> int:
     if args.limit:
         dataset["cases"] = dataset["cases"][:args.limit]
     report = asyncio.run(evaluate(dataset, live=args.live))
-    report["dataset_hash"] = hashlib.sha256(json.dumps(dataset, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+    report["dataset_hash"] = hashlib.sha256(
+        json.dumps(dataset, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
     report["limited"] = args.limit is not None
-    target = Path("artifacts") / ("parse-accuracy-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S") + ".json")
+    target = Path("artifacts") / ("parse-accuracy-" + datetime.now(UTC).strftime("%Y%m%dT%H%M%S") + ".json")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(report, ensure_ascii=False, indent=2))
     if args.persist:
         asyncio.run(save(report))
-    print(json.dumps({key: value for key, value in report.items() if key not in {"rows", "spans"}}, ensure_ascii=False, indent=2))
+    print(json.dumps({key: value for key, value in report.items() if key not in {"rows", "spans"}},
+                     ensure_ascii=False, indent=2))
     print("Report:", target)
     return 0 if report["accuracy"] == 1 and report["fallback_cases"] == 0 and report["exact_match_rate"] == 1 else 1
 

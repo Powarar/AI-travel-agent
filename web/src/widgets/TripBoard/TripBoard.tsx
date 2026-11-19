@@ -39,7 +39,7 @@ function BoardSkeleton() {
 
 /** Правая часть экрана: всё, что агент собрал, — из TripState и событий текущего хода. */
 export function TripBoard({ session }: { session: TripSession }) {
-  const { state, busy, phase, previous, planUpdate, order } = session
+  const { state, busy, phase, previous, planUpdate, order, resuming } = session
   const explanationEvent = [...session.feed].reverse().find((i) => i.event?.event === 'answer_text')?.event
   const explanation = explanationEvent?.event === 'answer_text' ? explanationEvent.data : null
   const hasPlan = Boolean(state && Object.keys(state.chosen.component_refs).length)
@@ -49,8 +49,9 @@ export function TripBoard({ session }: { session: TripSession }) {
   return (
     <div className={styles.board}>
       {started && <PhaseStepper phase={phase} busy={busy} done={done} />}
-      {!started && <EmptyBoard />}
-      {started && !hasPlan && busy && <BoardSkeleton />}
+      {!started && !resuming && <EmptyBoard />}
+      {resuming && <BoardSkeleton />}
+      {started && !hasPlan && busy && !resuming && <BoardSkeleton />}
       {state && (hasPlan || (state.outcome && state.outcome !== 'awaiting_answer')) && (
         <div className={`${styles.stack} ${busy ? styles.updating : ''}`.trim()} aria-busy={busy}>
           <TripSummary key={`summary-${state.version}`} state={state} />

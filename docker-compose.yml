@@ -32,16 +32,15 @@ services:
     build:
       <<: *build-root
       dockerfile: services/backend/Dockerfile
-    command: >-
-      python -c 'from importlib import import_module; from fastapi import FastAPI;
-      from uvicorn import run;
-      run(getattr(import_module("app.main"), "app", FastAPI()),
-      host="0.0.0.0", port=8000)'
+    # Планирование исполняется in-process (app/api/agent_executor.py импортирует
+    # services.agent.app.orchestration.runtime); отдельного agent-сервиса нет.
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-ostrovok}:${POSTGRES_PASSWORD:-ostrovok}@postgres:5432/${POSTGRES_DB:-ostrovok}
-      AGENT_URL: http://agent:8001
       HTTP_PORT: "8000"
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Пусто = случайный ключ на процесс (сессии не переживают рестарт backend).
+      AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:-}
       # ход исполняет агент в процессе backend (api/agent_executor.py); fixture — заглушка
       BACKEND_EXECUTOR: ${BACKEND_EXECUTOR:-agent}
       # A local ``make up`` must be reproducible and free. A live provider is
@@ -80,25 +79,13 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-
-  agent:
-    <<: *app-network
-    build:
-      <<: *build-root
-      dockerfile: services/agent/Dockerfile
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
-    environment:
-      BACKEND_URL: http://backend:8000
-      HTTP_PORT: "8001"
-      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
-    ports:
-      - "127.0.0.1:${AGENT_PORT:-8011}:8001"
-    volumes:
-      - ./services/agent/app:/app/app
-      - ./shared:/app/shared:ro
-    depends_on:
-      - backend
+    healthcheck:
+      # В образе нет curl: пробу готовности проверяет штатный python.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
 
   bot:
     <<: *app-network
@@ -129,6 +116,23 @@ services:
     volumes:
       - ./web:/app
       - web_node_modules:/app/node_modules
+
+  # Единственная публичная точка входа: rate limiting, security headers и SSE
+  # живут здесь, а backend/web/postgres публикуются только на 127.0.0.1.
+  nginx:
+    <<: *app-network
+    image: nginx:1.29-alpine
+    restart: unless-stopped
+    ports:
+      - "${NGINX_PORT:-8080}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/proxy-backend.conf:/etc/nginx/snippets/proxy-backend.conf:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+      web:
+        condition: service_started
 
 volumes:
   pgdata:

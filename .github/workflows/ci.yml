@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        # Тот же образ, что в docker-compose.yml: миграции требуют pgvector.
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: ostrovok
+          POSTGRES_PASSWORD: ostrovok
+          POSTGRES_DB: ostrovok
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ostrovok -d ostrovok"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 12
+    env:
+      DATABASE_URL: postgresql+asyncpg://ostrovok:ostrovok@localhost:5432/ostrovok
+      # Тесты с Postgres не имеют права молча скипаться в CI.
+      REQUIRE_TEST_DB: "1"
+      # CI никогда не зовёт платный LLM API: только детерминированный mock.
+      # RUN_LIVE_EVALS намеренно не выставлен — live-тесты остаются skip.
+      LLM_PROVIDER: mock
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.lock
+
+      - name: Install locked dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.lock
+
+      - name: Alembic migrations
+        working-directory: services/backend
+        run: alembic upgrade head
+
+      - name: Pytest with coverage
+        run: |
+          mkdir -p artifacts
+          python -m pytest tests -q \
+            --cov=services --cov=shared \
+            --cov-report=term-missing \
+            --cov-report=xml:artifacts/coverage.xml
+
+      - name: Mypy (strict)
+        run: mypy services/backend/app services/agent/app shared/contracts
+
+      - name: Ruff
+        run: ruff check .
+
+      - name: Upload coverage XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: artifacts/coverage.xml
+          if-no-files-found: warn
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        # npm run build = tsc --noEmit && vite build (см. web/package.json).
+        run: npm run build

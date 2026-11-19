@@ -37,7 +37,8 @@ def _tz_from_openflights() -> dict[str, str]:
     if raw is None:
         return {}
     tz: dict[str, str] = {}
-    # OpenFlights airports.dat: 0 OpenFlights ID,1 name,2 city,3 country,4 IATA,5 ICAO,...,13? timezone is col 14? format:
+    # OpenFlights airports.dat: 0 OpenFlights ID,1 name,2 city,3 country,4 IATA,5 ICAO,...,13?
+    # timezone is col 14? format:
     # airport_id,name,city,country,iata,icao,latitude,longitude,altitude,time_offset,dst,timezone,country_code
     for row in csv.reader(io.StringIO(raw.decode("utf-8", "ignore"))):
         if len(row) < 13:

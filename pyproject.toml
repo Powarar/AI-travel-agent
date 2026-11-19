@@ -5,6 +5,41 @@ files = ["shared/contracts"]
 mypy_path = "."
 explicit_package_bases = true
 
+[tool.ruff]
+target-version = "py311"
+# Измерено по всем *.py репозитория: p95 длины строки = 94, p99 = 106, длинный
+# хвост (промпты/SQL) до ~146. 120 не ломает существующий стиль и оставляет
+# E501 только реальные выбросы, а не сотни строк.
+line-length = 120
+# .venv/node_modules/dist исключены по умолчанию; gitignore уважается (artifacts/,
+# notes/). Миграции — генерируемый DDL, их не линтуем.
+extend-exclude = ["services/backend/app/db/migrations"]
+# Корень репозитория в sys.path (conftest.py, mypy_path): services/shared —
+# first-party импорты, как они и сгруппированы в коде.
+src = ["."]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+# RUF001/002/003 (ambiguous unicode) дают ~1700 ложных срабатываний на
+# кириллических комментариях и строках — они намеренные, а не опечатки.
+# UP042: class X(str, Enum) выбран намеренно, не StrEnum: миграция поменяет
+# семантику str()/f-string (str(Outcome.PLAN_READY) сейчас "Outcome.PLAN_READY",
+# у StrEnum стало бы "plan_ready"); код опирается на явный .value
+# и Pydantic-сериализацию.
+ignore = ["RUF001", "RUF002", "RUF003", "UP042"]
+
+[tool.ruff.lint.per-file-ignores]
+# B023 в compose() — ложные срабатывания: замыкания transfer_for/reachable/
+# leg_for/why_dropped/build вызываются только внутри той же итерации цикла
+# по финалистам (sorted/min/filter и хелперы _within_budget_or_best/
+# _displaced_by_a_filter, которые не сохраняют переданный callable), наружу
+# не уходят — позднее связывание невозможно.
+"services/agent/app/orchestration/nodes.py" = ["B023"]
+
+[tool.ruff.lint.flake8-bugbear]
+# Depends() в дефолтах аргументов — идиоматический DI FastAPI, не B008-баг.
+extend-immutable-calls = ["fastapi.Depends"]
+
 [tool.pytest.ini_options]
 markers = [
   "live: explicitly enabled checks that call a billable model provider",

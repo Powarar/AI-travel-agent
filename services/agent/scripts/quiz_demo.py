@@ -185,8 +185,10 @@ def render_state(state: TripState) -> None:
             if isinstance(field.value, Money):
                 value = field.value.as_display()
             print(f"  {name:<28} = {value!s:<16} [{field.kind.value}, {field.status.value}, source={field.source}]")
-    print(f"\n  вопросов задано: {state.questions_asked}, tool-вызовов: {state.budgets.tool_calls}, llm-вызовов: {state.budgets.llm_calls}")
-    print(f"  лимит хода: questions={state.budgets.questions_limit}, tool={state.budgets.tool_calls_limit}, llm={state.budgets.llm_calls_limit}")
+    print(f"\n  вопросов задано: {state.questions_asked}, tool-вызовов: {state.budgets.tool_calls}, "
+          f"llm-вызовов: {state.budgets.llm_calls}")
+    print(f"  лимит хода: questions={state.budgets.questions_limit}, tool={state.budgets.tool_calls_limit}, "
+          f"llm={state.budgets.llm_calls_limit}")
     print(f"  {NO_NETWORK_NOTE}")
 
 
@@ -213,7 +215,9 @@ def resume_from_file(path: str, answers: list[tuple[str, str]]) -> TripState:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--non-interactive", action="store_true")
-    parser.add_argument("--message", default="хочу к тёплому морю в ноябре вдвоём с ребёнком, 150к, без долгих перелётов, не больше 4 ч в дороге")
+    parser.add_argument("--message",
+                        default="хочу к тёплому морю в ноябре вдвоём с ребёнком, 150к, "
+                                "без долгих перелётов, не больше 4 ч в дороге")
     parser.add_argument("--answers", default="Москва;пропустить", help="через ; для --non-interactive")
     parser.add_argument("--interrupt-file", help="сохранить прерванный ход в файл")
     parser.add_argument("--resume", help="возобновить ход из файла")

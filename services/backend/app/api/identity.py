@@ -1,4 +1,4 @@
-"""Who is calling: a Telegram Mini App user (signed initData) or an anonymous browser."""
+"""Who is calling: a registered user (Bearer JWT) or a Telegram Mini App user (signed initData)."""
 
 from __future__ import annotations
 
@@ -8,9 +8,10 @@ import json
 import os
 import time
 from urllib.parse import parse_qsl
-from uuid import UUID
 
 from fastapi import Header, HTTPException
+
+from .auth import InvalidToken, decode_access
 
 #: initData Telegram выдаёт при каждом открытии Mini App; старше суток — не принимаем.
 INIT_DATA_TTL_S = 24 * 3600
@@ -42,30 +43,36 @@ def verify_init_data(init_data: str, bot_token: str, now: float | None = None) -
     return user
 
 
-def get_owner(authorization: str | None = Header(default=None),
-              x_client_id: str | None = Header(default=None)) -> str | None:
-    """`Authorization: tma <initData>` → `tg:<id>`; `X-Client-Id: <uuid>` → `anon:<uuid>`.
-    Подпись Telegram проверяется всегда: неверная — 401, а не тихий откат к анониму."""
-    if authorization and authorization.startswith("tma "):
+def get_owner(authorization: str | None = Header(default=None)) -> str | None:
+    """`Authorization: Bearer <jwt>` → `user:<uuid>`; `Authorization: tma <initData>` → `tg:<id>`.
+
+    Подпись Telegram и JWT проверяются всегда: неверные — 401, а не тихий откат.
+    Анонимного доступа больше нет: без заголовка владелец не определён (None).
+    """
+    if not authorization:
+        return None
+    scheme, _, value = authorization.partition(" ")
+    scheme = scheme.lower()
+    if scheme == "tma":
         token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
         if not token:
             raise HTTPException(status_code=401, detail="Вход через Telegram не настроен")
         try:
-            user = verify_init_data(authorization[4:], token)
+            user = verify_init_data(value, token)
         except InvalidInitData as exc:
             raise HTTPException(status_code=401, detail="Не удалось подтвердить пользователя Telegram") from exc
         return f"tg:{user['id']}"
-    if x_client_id:
+    if scheme == "bearer":
         try:
-            return f"anon:{UUID(x_client_id)}"
-        except ValueError as exc:
-            raise HTTPException(status_code=422, detail="Некорректные параметры запроса") from exc
+            user_id = decode_access(value)
+        except InvalidToken as exc:
+            raise HTTPException(status_code=401, detail="Не удалось подтвердить пользователя") from exc
+        return f"user:{user_id}"
     return None
 
 
-def require_owner(authorization: str | None = Header(default=None),
-                  x_client_id: str | None = Header(default=None)) -> str:
-    owner = get_owner(authorization, x_client_id)
+def require_owner(authorization: str | None = Header(default=None)) -> str:
+    owner = get_owner(authorization)
     if owner is None:
         raise HTTPException(status_code=401, detail="Не удалось определить пользователя")
     return owner

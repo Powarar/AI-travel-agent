@@ -27,7 +27,6 @@ from __future__ import annotations
 import json
 import logging
 import os
-import re
 import time
 from collections.abc import Mapping
 from datetime import date
@@ -563,7 +562,7 @@ class OpenAICompatibleSlots:
     # --- слот №3: soft_relevance (/rerank) ---------------------------------
 
     @property
-    def reranker(self) -> "Reranker | None":
+    def reranker(self) -> Reranker | None:
         """Клиент `/rerank` наружу: у него свои `failures` и свои токены, и метрике provider integration их
         надо видеть, а не прятать за приватным полем."""
 

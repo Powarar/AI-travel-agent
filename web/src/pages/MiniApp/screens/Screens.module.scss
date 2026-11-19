@@ -60,6 +60,7 @@
   font-size: 0.85rem;
 
   button { border: 0; background: none; color: inherit; font-weight: 800; text-decoration: underline; cursor: pointer; }
+  button:focus-visible { outline: 2px solid var(--color-bad); outline-offset: 2px; border-radius: 4px; }
 }
 
 .list { display: grid; gap: 0.75rem; }
@@ -84,6 +85,8 @@
   color: inherit;
   text-align: left;
   cursor: pointer;
+
+  &:focus-visible { outline: 3px solid var(--color-blue); outline-offset: -3px; border-radius: 22px; }
 }
 
 .orderIcon {
@@ -265,6 +268,7 @@
 
 button.row { cursor: pointer; }
 button.row:active { background: var(--color-page); }
+button.row:focus-visible { outline: 3px solid var(--color-blue); outline-offset: -3px; }
 
 .rowIcon {
   display: grid;

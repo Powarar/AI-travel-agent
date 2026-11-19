@@ -28,7 +28,7 @@ function toBlocks(feed: FeedItem[]): Block[] {
 }
 
 export function ChatPanel({ session }: { session: TripSession }) {
-  const { feed, busy, question, state, error } = session
+  const { feed, busy, question, state, error, retryable } = session
   const scroller = useRef<HTMLDivElement>(null)
   const blocks = useMemo(() => toBlocks(feed), [feed])
   const waiting = state?.run_status === 'interrupted'
@@ -37,13 +37,15 @@ export function ChatPanel({ session }: { session: TripSession }) {
 
   useEffect(() => {
     const el = scroller.current
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+    if (!el) return
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    el.scrollTo({ top: el.scrollHeight, behavior: reduce ? 'auto' : 'smooth' })
   }, [feed.length, busy, question])
 
   return (
     <section className={styles.panel} aria-label="Диалог с агентом">
       <div className={styles.scroller} ref={scroller}>
-        {!blocks.length && (
+        {!blocks.length && !session.resuming && (
           <div className={styles.welcome}>
             <AgentAvatar />
             <p className={`${styles.bubble} ${styles.agentBubble}`}>
@@ -51,6 +53,7 @@ export function ChatPanel({ session }: { session: TripSession }) {
             </p>
           </div>
         )}
+        {!blocks.length && session.resuming && <AgentTurn events={[]} thinking />}
         {blocks.map((block) => block.kind === 'user' ? (
           <p key={block.id} className={`${styles.bubble} ${styles.userBubble} motion-fade-up`}>{block.text}</p>
         ) : (
@@ -61,7 +64,10 @@ export function ChatPanel({ session }: { session: TripSession }) {
           <QuestionCard question={question} disabled={busy} onAnswer={session.answer} />
         )}
         {error && (
-          <p className={styles.error} role="alert"><Icon name="alert" size={16} /> {error}</p>
+          <p className={styles.error} role="alert">
+            <Icon name="alert" size={16} /> <span className={styles.errorText}>{error}</span>
+            {retryable && <button type="button" className={styles.retry} onClick={session.retry}>Повторить</button>}
+          </p>
         )}
       </div>
       <Composer

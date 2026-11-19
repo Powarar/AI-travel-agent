@@ -19,13 +19,13 @@ _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-import data.generators.airports as airports
-import data.generators.common as common
-import data.generators.destinations as destinations
-import data.generators.flights as flights
-import data.generators.hotels as hotels
-import data.generators.routes as routes
-import data.generators.weather as weather
+import data.generators.airports as airports  # noqa: E402 — sys.path.insert выше
+import data.generators.common as common  # noqa: E402 — sys.path.insert выше
+import data.generators.destinations as destinations  # noqa: E402 — sys.path.insert выше
+import data.generators.flights as flights  # noqa: E402 — sys.path.insert выше
+import data.generators.hotels as hotels  # noqa: E402 — sys.path.insert выше
+import data.generators.routes as routes  # noqa: E402 — sys.path.insert выше
+import data.generators.weather as weather  # noqa: E402 — sys.path.insert выше
 
 STEPS = {
     "destinations": destinations.run,

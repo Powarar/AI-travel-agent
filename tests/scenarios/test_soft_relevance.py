@@ -19,16 +19,13 @@ import re
 from decimal import Decimal
 from uuid import UUID, uuid4
 
-import pytest
-
 from services.agent.app.llm.provider_openai_compatible import _usage_tokens
-from services.agent.app.llm.rerank import RerankHit
 from services.agent.app.llm.slots import Explanation, MockSlots
 from services.agent.app.orchestration import nodes
-from services.agent.app.orchestration.nodes import SearchResult, apply_relevance, merge_results
+from services.agent.app.orchestration.nodes import apply_relevance, merge_results
 from services.agent.app.orchestration.runtime import Runtime
 from shared.contracts.enums import DataStatus, Theme
-from shared.contracts.money import BudgetLedger, Money
+from shared.contracts.money import BudgetLedger
 from shared.contracts.state import Candidate, TripState
 from tests.scenarios.test_golden_path import (
     MESSAGE,
@@ -231,7 +228,7 @@ class TestComposeUsesRelevance:
     def test_more_relevant_hotel_wins_over_cheaper(self) -> None:
         """Среди влезющих в бюджет atmospheric-отель бьёт дешёвый, даже он дороже."""
 
-        engine, _slots, run = run_with({})
+        _engine, _slots, run = run_with({})
         #: 300к: AYT-LUX (183 300 ₽) и AYT-FAM (125 200 ₽) оба в лимите, решает балл
         composition = self._composed(run, {"AYT-FAM": 0.10, "AYT-LUX": 0.95,
                                           "HKT-ONE": 0.50, "HER-ONE": 0.50}, budget="300к")
@@ -246,7 +243,7 @@ class TestComposeUsesRelevance:
         то есть soft-поле превратило выполнимый запрос в невыполнимый.
         """
 
-        engine, _slots, run = run_with({})
+        _engine, _slots, run = run_with({})
         composition = self._composed(run, {"AYT-FAM": 0.05, "AYT-LUX": 1.00,
                                           "HKT-ONE": 0.50, "HER-ONE": 0.50})
         assert composition.plan is not None
@@ -257,7 +254,7 @@ class TestComposeUsesRelevance:
     def test_within_one_destination_the_cheapest_miss_wins_when_nothing_fits(self) -> None:
         """Внутри направления при сверхлимите остаётся самый дешёвый набор: отказ обязан называть ближнюю границу."""
 
-        engine, _slots, run = run_with({})
+        _engine, _slots, run = run_with({})
         composition = self._composed(run, {"AYT-FAM": 0.05, "AYT-LUX": 1.00,
                                           "HKT-ONE": 0.50, "HER-ONE": 0.50},
                                      budget="60к", only=["AYT"])
@@ -279,7 +276,7 @@ class TestComposeUsesRelevance:
         Остальные направления не исчезают — они уходят предупреждениями со своими числами.
         """
 
-        engine, _slots, run = run_with({})
+        _engine, _slots, run = run_with({})
         composition = self._composed(run, {"AYT-FAM": 0.05, "AYT-LUX": 1.00,
                                           "HKT-ONE": 0.50, "HER-ONE": 0.50}, budget="60к")
         assert composition.plan is not None
@@ -298,7 +295,7 @@ class TestComposeUsesRelevance:
         исключается до бюджета, потому что «без долгих перелётов» выводит лимит 6 часов.
         """
 
-        engine, _slots, run = run_with({})
+        _engine, _slots, run = run_with({})
         composition = self._composed(run, {"AYT-FAM": 0.10, "AYT-LUX": 0.95,
                                           "HKT-ONE": 0.50, "HER-ONE": 0.50},
                                      budget="140к", only=["HKT", "HER"])
@@ -308,7 +305,7 @@ class TestComposeUsesRelevance:
         assert composition.notes == []
 
     def test_equal_relevance_falls_back_to_price(self) -> None:
-        engine, _slots, run = run_with({})
+        _engine, _slots, run = run_with({})
         composition = self._composed(run, {"AYT-FAM": 0.80, "AYT-LUX": 0.80,
                                           "HKT-ONE": 0.10, "HER-ONE": 0.10})
         assert composition.plan is not None
@@ -316,7 +313,7 @@ class TestComposeUsesRelevance:
         assert composition.plan.hotel.hotel_id == "AYT-FAM"
 
     def test_garbage_relevance_does_not_break_composition(self) -> None:
-        engine, _slots, run = run_with({})
+        _engine, _slots, run = run_with({})
         state = run.state.model_copy(update={}, deep=True)
         state.candidates.hotels[0].ref["relevance"] = "не число"
         composition = nodes.compose(
@@ -343,7 +340,7 @@ class TestRelevanceConcessionIsNamed:
     def test_the_hotel_a_compatibility_filter_rejected_is_named_with_its_reason(self) -> None:
         """AYT-STD вмещает двоих, а едут трое: причина известна коду до всякой модели."""
 
-        engine, _slots, run = run_with({})
+        _engine, _slots, run = run_with({})
         composition = self._composed(run, {"AYT-STD": 1.00, "AYT-FAM": 0.50,
                                           "HKT-ONE": 0.10, "HER-ONE": 0.10})
         assert composition.plan is not None
@@ -359,7 +356,7 @@ class TestRelevanceConcessionIsNamed:
         строку: иначе в объяснении появились бы две уступки про один и тот же отказ.
         """
 
-        engine, _slots, run = run_with({})
+        _engine, _slots, run = run_with({})
         composition = self._composed(run, {"AYT-FAM": 0.05, "AYT-LUX": 1.00,
                                           "HKT-ONE": 0.50, "HER-ONE": 0.50})
         assert composition.facts["cheaper_than_relevant"] == "Gulf Palace"
@@ -368,7 +365,7 @@ class TestRelevanceConcessionIsNamed:
     def test_offline_run_gains_no_concession(self) -> None:
         """Без слота №3 уступки нет: балла, которому она проигрывает, тоже нет."""
 
-        engine, _slots, run = run_with({})
+        _engine, _slots, run = run_with({})
         state = run.state.model_copy(deep=True)
         composition = nodes.compose(
             state, merge_results(list(run.scratch.results.values())), now=NOW)

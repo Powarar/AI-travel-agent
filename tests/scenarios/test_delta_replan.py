@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from services.agent.app.orchestration.runtime import Runtime
 from services.agent.app.llm.slots import MockSlots
+from services.agent.app.orchestration.runtime import Runtime
 from shared.contracts.enums import EscalationStep, Outcome
-
 from tests.scenarios.test_golden_path import NOW, SOURCES, golden_run
 
 

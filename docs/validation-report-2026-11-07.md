@@ -39,9 +39,8 @@
   `GET /v1/monitoring/accuracy`.
 - `GET /v1/monitoring/models` — накопленные HTTP spans, latency, usage, оценочная стоимость
   и coverage по цене. Это не invoice и не accuracy без labelled dataset.
-- [Модельные метрики](model-metrics-2026-11-06.md) — определения метрик и предыдущие измерения.
-- [Архитектура для собеседования](interview-guide-ru.md) — схема, trade-offs, неудобные вопросы
-  и честные границы прототипа.
+- [Модельные метрики](evidence/README.md) — определения метрик и сырые артефакты прогонов.
+- [Архитектура](ARCHITECTURE.md) — схема, trade-offs и честные границы прототипа.
 
 ## Как воспроизвести
 

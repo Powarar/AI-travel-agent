@@ -11,14 +11,15 @@ from collections.abc import Awaitable, Callable, Mapping
 from datetime import date, datetime
 from typing import Any
 
-import asyncpg  # type: ignore[import-untyped]
-
 from services.agent.app.orchestration.nodes import SearchResult
 from services.agent.app.tools import seed_sources as converters
+
+from ..api.store import get_pool
 from .hybrid import hybrid_search
 
 TABLES: dict[str, tuple[str, ...]] = {
-    "suggest_destinations": ("destinations", "airports", "transport_legs", "hotels", "stay_rates", "transfers", "climate"),
+    "suggest_destinations": ("destinations", "airports", "transport_legs", "hotels", "stay_rates",
+                             "transfers", "climate"),
     "weather_climate": ("destinations", "climate"),
     "transport_search": ("destinations", "airports", "transport_legs", "gateways"),
     "hotel_search": ("destinations", "hotels", "stay_rates"),
@@ -69,8 +70,8 @@ class DatabaseSources:
 
     async def call(self, name: str, args: Mapping[str, object]) -> SearchResult:
         started = time.monotonic()
-        conn = await asyncpg.connect(database_url())
-        try:
+        pool = await get_pool()
+        async with pool.acquire() as conn:
             async with conn.transaction(isolation="repeatable_read", readonly=True):
                 data = await snapshot(conn, name, args)
                 token = converters.catalog_override.set(data)
@@ -97,8 +98,6 @@ class DatabaseSources:
                 })
             self.calls.append({"tool": name, "ms": round((time.monotonic() - started) * 1000), "status": "ok"})
             return result
-        finally:
-            await conn.close()
 
     def sources(self) -> dict[str, Callable[[Mapping[str, object]], Awaitable[SearchResult]]]:
         def bind(name: str) -> Callable[[Mapping[str, object]], Awaitable[SearchResult]]:

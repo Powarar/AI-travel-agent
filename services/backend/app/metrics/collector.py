@@ -36,7 +36,8 @@ class MetricsCollector:
         with self._lock:
             n = self._runs
             outcomes = OutcomeMetrics(runs=n, fallbacks=self._fallbacks, **{
-                key: self._outcomes[key] for key in ("plan_ready", "infeasible", "best_effort", "unsupported", "awaiting_answer")
+                key: self._outcomes[key]
+                for key in ("plan_ready", "infeasible", "best_effort", "unsupported", "awaiting_answer")
             })
             return MonitoringSummary(
                 outcomes=outcomes,

@@ -16,7 +16,7 @@ import os
 from typing import Any
 
 import data.generators.common as common
-from data.generators.common import haversine_km, pick, randint, unit, jitter
+from data.generators.common import haversine_km, jitter, pick, randint, unit
 
 WINDOW_START = dt.date(2026, 11, 1)
 WINDOW_END = dt.date(2026, 11, 30)
@@ -124,7 +124,6 @@ def _try_amadeus(routes: list[tuple[str, str, dt.date]]) -> list[dict[str, Any]]
     if not (key and secret):
         print("  Amadeus: нет AMADEUS_CLIENT_KEY/SECRET — остаёмся на синтетике")
         return []
-    import base64
     import urllib.parse
     import urllib.request
     try:
@@ -222,8 +221,8 @@ def run() -> None:
     legs.extend(_try_amadeus(amadeus_routes))
 
     print(f"  transport_legs: {len(legs)} "
-          f"(direct={sum(1 for l in legs if l['direct'])}, "
-          f"overnight={sum(1 for l in legs if l.get('overnight'))})")
+          f"(direct={sum(1 for leg in legs if leg['direct'])}, "
+          f"overnight={sum(1 for leg in legs if leg.get('overnight'))})")
     common.write_seed("transport_legs.json", legs, compact=True)
 
 

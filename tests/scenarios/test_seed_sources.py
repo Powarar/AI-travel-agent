@@ -19,14 +19,14 @@ import json
 import logging
 import sys
 from collections import Counter
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from uuid import UUID
 
 import pytest
 
-from scripts import run_pipeline as rp
 from data.generators import common, run_all
+from scripts import run_pipeline as rp
 from services.agent.app.llm.slots import MockSlots
 from services.agent.app.orchestration.runtime import Runtime
 from services.agent.app.tools import seed_sources as ss
@@ -38,7 +38,7 @@ from services.agent.app.tools.seed_sources import (
 )
 from shared.contracts.enums import Outcome
 
-UTC = timezone.utc
+UTC = UTC
 NOW = datetime(2026, 11, 1, 9, 0, tzinfo=UTC)
 TRIP = UUID("2b1f8c64-3f0e-4f6a-9d2b-1c8a5e7f0a34")
 ANSWERS = {"origin": "Москва"}
@@ -54,7 +54,7 @@ def test_flight_total_scales_with_passengers() -> None:
     two = transport_search({**args, "party.adults": "2"}).transport
     three = transport_search({**args, "party.adults": "3"}).transport
     assert two and len(two) == len(three)
-    for before, after in zip(two, three):
+    for before, after in zip(two, three, strict=True):
         assert before.arrival.leg_id == after.arrival.leg_id
         assert after.arrival.price.amount.amount * 2 == before.arrival.price.amount.amount * 3
         assert after.departure.price.amount.amount * 2 == before.departure.price.amount.amount * 3

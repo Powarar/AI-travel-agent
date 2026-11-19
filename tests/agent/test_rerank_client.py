@@ -21,8 +21,8 @@ import pytest
 from services.agent.app.llm.rerank import (
     DEFAULT_TIMEOUT_S,
     MAX_DOCUMENTS,
-    RerankError,
     Reranker,
+    RerankError,
     parse_rerank_response,
     prepare_documents,
 )

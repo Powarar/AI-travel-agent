@@ -10,8 +10,7 @@ import json
 import os
 import time
 from collections import defaultdict
-from datetime import datetime, timezone
-from decimal import Decimal
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -66,7 +65,8 @@ async def evaluate(base_url: str) -> dict[str, Any]:
                 field = state["awaiting_fields"][0]
                 if answers is None or field not in answers:
                     break
-                response = await client.post(f"/v1/runs/{run_id}/answers", json={"field": field, "value": answers[field]})
+                response = await client.post(f"/v1/runs/{run_id}/answers",
+                                             json={"field": field, "value": answers[field]})
                 response.raise_for_status()
                 trace = response.json()["events"]
             state = (await client.get(f"/v1/trips/{trip_id}/state")).json()
@@ -78,7 +78,8 @@ async def evaluate(base_url: str) -> dict[str, Any]:
                 "no_transport_failure": all(item.get("status") == "ok" for item in model_calls),
                 "no_blocking_plan": expected != "plan_ready" or not any(
                     violation["severity"] == "blocking" for violation in state["violations"]),
-                "russian_response": bool(answers_out) and all("cannot read" not in item["text"] for item in answers_out),
+                "russian_response": bool(answers_out) and all(
+                    "cannot read" not in item["text"] for item in answers_out),
             }
             if case == "hybrid_and_rerank":
                 checks["hybrid_executed"] = any(tool.get("retrieval_mode") == "hybrid" for tool in tools)
@@ -86,13 +87,15 @@ async def evaluate(base_url: str) -> dict[str, Any]:
                 checks["multiple_options"] = len(state.get("options", [])) >= 2
                 checks["pool_requirement"] = "pool" in state["request"]["lodging"]["must"]["value"]
             if case == "flight_only_followup":
-                checks["selective_services"] = {tool["tool"] for tool in tools} <= {"transport_search", "transfer_search"}
+                checks["selective_services"] = (
+                    {tool["tool"] for tool in tools} <= {"transport_search", "transfer_search"})
                 checks["flight_searched"] = any(tool["tool"] == "transport_search" for tool in tools)
             row = {"case": case, "trip_id": trip_id, "outcome": state["outcome"], "checks": checks,
                    "wall_clock_ms": round((time.monotonic() - started) * 1000), "models": model_calls,
                    "services": tools, "answer": answers_out, "options": len(state.get("options", []))}
             rows.append(row)
-            print(json.dumps({"case": case, "checks": checks, "ms": row["wall_clock_ms"]}, ensure_ascii=False), flush=True)
+            print(json.dumps({"case": case, "checks": checks, "ms": row["wall_clock_ms"]},
+                             ensure_ascii=False), flush=True)
             return trip_id
 
         trip = await turn("hybrid_and_rerank", "Хочу в Сочи с 14 по 21 ноября из Москвы вдвоём, "
@@ -112,7 +115,7 @@ async def evaluate(base_url: str) -> dict[str, Any]:
                     "p95_ms": percentile([c["latency_ms"] for c in calls], .95),
                     "tokens": sum(c.get("total_tokens") or 0 for c in calls),
                     "http_errors": sum(c["status"] != "ok" for c in calls)} for key, calls in grouped.items()}
-    return {"at": datetime.now(timezone.utc).isoformat(), "inventory": "synthetic development catalogue",
+    return {"at": datetime.now(UTC).isoformat(), "inventory": "synthetic development catalogue",
             "cases": len(rows), "passed": sum(all(row["checks"].values()) for row in rows),
             "functional_passed": sum(all(value for key, value in row["checks"].items()
                                           if key != "no_transport_failure") for row in rows),
@@ -126,7 +129,8 @@ def main() -> int:
     destination = Path("artifacts/async-e2e.json")
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.exists():
-        destination.rename(destination.with_name("async-e2e-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%f") + ".json"))
+        destination.rename(destination.with_name(
+            "async-e2e-" + datetime.now(UTC).strftime("%Y%m%dT%H%M%S%f") + ".json"))
     destination.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({"report": str(destination), "passed": report["passed"], "cases": report["cases"],
                       "models": report["models"]}, ensure_ascii=False, indent=2))

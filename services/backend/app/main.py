@@ -1,11 +1,24 @@
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from .api.health import router as health_router
 from .api.router import router
+from .api.store import close_pool
+
+
+@asynccontextmanager
+async def _lifespan(_application: FastAPI) -> AsyncIterator[None]:
+    yield
+    await close_pool()
+
 
 def create_app() -> FastAPI:
-    application = FastAPI(title="Ostrovok Trip API", version="1.0")
+    application = FastAPI(title="Ostrovok Trip API", version="1.0", lifespan=_lifespan)
+    application.include_router(health_router)
     application.include_router(router)
 
     @application.exception_handler(RequestValidationError)

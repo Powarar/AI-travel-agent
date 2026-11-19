@@ -144,7 +144,7 @@ class Reranker:
         self.tokens_used = 0
 
     @classmethod
-    def from_config(cls) -> "Reranker | None":
+    def from_config(cls) -> Reranker | None:
         """Собирает клиент из окружения; `None` — если слот выключен или ключа нет.
 
         Дефолт — «не трогаем сеть»: тесты offline fixture/replanning layer обязаны проходить без доступа к шлюзу, и

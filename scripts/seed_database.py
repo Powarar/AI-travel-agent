@@ -1,8 +1,14 @@
-"""Загрузка data/seeds/*.json в Postgres.
+"""Загрузка data/seeds/*.json в Postgres — только ДАННЫЕ.
 
-Stdlib-only: SQL-поток (DDL + COPY FROM STDIN) уходит в `psql` внутри контейнера postgres —
-не нужны ни psycopg, ни собранный backend-образ. Идемпотентно: таблицы пересоздаются,
-данные перезаливаются целиком (dev-сид, не прод).
+Схема принадлежит миграциям (services/backend/app/db/migrations): скрипт больше
+не содержит DDL, а перед загрузкой прогоняет `alembic upgrade head` через venv
+хоста. Stdlib-only: SQL-поток (TRUNCATE + COPY FROM STDIN) уходит в `psql` внутри
+контейнера postgres — не нужны ни psycopg, ни собранный backend-образ.
+Идемпотентно: данные перезаливаются целиком (dev-сид, не прод).
+
+TRUNCATE намеренно без CASCADE и со явным search_documents: поисковый индекс —
+производные от каталога данные, после пересева он пуст и его нужно пересобрать
+(`make index-search`).
 
 Запуск:  python3 scripts/seed_database.py
          python3 scripts/seed_database.py --emit-sql /tmp/seed.sql   # без docker, проверить SQL
@@ -10,6 +16,7 @@ Stdlib-only: SQL-поток (DDL + COPY FROM STDIN) уходит в `psql` вн�
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -17,61 +24,6 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SEEDS = ROOT / "data" / "seeds"
-
-DDL = """
-CREATE TABLE IF NOT EXISTS sources (
-  source_id text PRIMARY KEY, name text, url text, kind text, fetched_at timestamptz
-);
-CREATE TABLE IF NOT EXISTS destinations (
-  code text PRIMARY KEY, geoname_id bigint, name text, country_code text, country text,
-  admin1 text, lat double precision, lon double precision, population integer,
-  timezone text, theme text, tier integer, data_status text, source_id text,
-  fetched_at timestamptz, synthetic boolean
-);
-CREATE TABLE IF NOT EXISTS airports (
-  iata text PRIMARY KEY, ident text, icao text, name text, municipality text,
-  country text, lat double precision, lon double precision, type text, timezone text,
-  data_status text, source_id text, fetched_at timestamptz, synthetic boolean
-);
-CREATE TABLE IF NOT EXISTS gateways (
-  dest_code text PRIMARY KEY REFERENCES destinations(code), iata text,
-  dist_km numeric, airport_name text, tz text
-);
-CREATE TABLE IF NOT EXISTS hotels (
-  hotel_id text PRIMARY KEY, dest_code text REFERENCES destinations(code), name text,
-  stars integer, lat double precision, lon double precision, address text,
-  amenities text[], pet_friendly boolean, min_nights integer, check_in_deadline text,
-  base_price_rub numeric, data_status text, source_id text,
-  fetched_at timestamptz, synthetic boolean
-);
-CREATE TABLE IF NOT EXISTS stay_rates (
-  hotel_id text REFERENCES hotels(hotel_id), date date, price_per_night numeric,
-  availability boolean, min_nights integer, currency text, data_status text,
-  source_id text, fetched_at timestamptz, synthetic boolean,
-  PRIMARY KEY (hotel_id, date)
-);
-CREATE INDEX IF NOT EXISTS idx_stay_rates_date ON stay_rates (date);
-CREATE TABLE IF NOT EXISTS transport_legs (
-  leg_id text PRIMARY KEY, date date, route text, dep_iata text, arr_iata text,
-  dest_code text, dep_at timestamp, dep_tz text, arr_at timestamp, arr_tz text,
-  direct boolean, duration_min integer, base_price_rub numeric, currency text,
-  overnight boolean, data_status text, source_id text,
-  fetched_at timestamptz, synthetic boolean
-);
-CREATE INDEX IF NOT EXISTS idx_transport_legs_date ON transport_legs (date);
-CREATE TABLE IF NOT EXISTS transfers (
-  transfer_id text PRIMARY KEY, dest_code text, hotel_id text, airport_iata text,
-  distance_m integer, duration_s integer, price_rub numeric, pet_ok boolean,
-  capacity integer, currency text, data_status text, source_id text,
-  fetched_at timestamptz, synthetic boolean
-);
-CREATE TABLE IF NOT EXISTS climate (
-  dest_code text REFERENCES destinations(code), month integer, t_max numeric,
-  t_min numeric, precip_mm_month numeric, data_status text, source_id text,
-  fetched_at timestamptz, synthetic boolean,
-  PRIMARY KEY (dest_code, month)
-);
-"""
 
 ORDER = ["sources", "destinations", "airports", "gateways", "hotels", "stay_rates",
          "transport_legs", "transfers", "climate"]
@@ -140,8 +92,11 @@ TABLES: dict[str, tuple[str, list[str]]] = {
 
 
 def build_sql() -> str:
-    parts = ["BEGIN;", "SET client_min_messages = warning;", DDL,
-             "TRUNCATE " + ", ".join(ORDER) + " CASCADE;"]
+    # Схема создаётся миграциями (см. migrate_schema). search_documents явно в
+    # списке: он ссылается на hotels, и пересев каталога обнуляет поисковый
+    # индекс — без явного TRUNCATE statement упал бы на FK.
+    parts = ["BEGIN;", "SET client_min_messages = warning;",
+             "TRUNCATE search_documents, " + ", ".join(ORDER) + ";"]
     for table in ORDER:
         fname, cols = TABLES[table]
         rows = rows_gateways() if table == "gateways" else _load(fname)
@@ -152,6 +107,33 @@ def build_sql() -> str:
         print(f"  {table}: {len(rows)} строк", file=sys.stderr)
     parts.append("COMMIT;")
     return "\n".join(parts) + "\n"
+
+
+def _host_port() -> str:
+    """Порт postgres, опубликованный на хосте: env -> .env -> default compose."""
+    port = os.environ.get("POSTGRES_PORT")
+    if not port:
+        env_file = ROOT / ".env"
+        if env_file.exists():
+            for line in env_file.read_text().splitlines():
+                if line.startswith("POSTGRES_PORT="):
+                    port = line.split("=", 1)[1].strip()
+                    break
+    return port or "5434"
+
+
+def migrate_schema() -> None:
+    """Единственный источник схемы — alembic; DDL в этом скрипте больше нет."""
+    env = dict(os.environ)
+    env["DATABASE_URL"] = (
+        f"postgresql+asyncpg://ostrovok:ostrovok@127.0.0.1:{_host_port()}/ostrovok"
+    )
+    try:
+        subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"],
+                       cwd=ROOT / "services" / "backend", env=env, check=True)
+    except subprocess.CalledProcessError as exc:
+        sys.exit(f"alembic upgrade head завершился с ошибкой: {exc.returncode} "
+                 "(проверь, что выполнено make setup и postgres доступен)")
 
 
 COUNTS_SQL = """
@@ -184,6 +166,7 @@ def main() -> int:
             "-v", "ON_ERROR_STOP=1", "-q"]
     try:
         subprocess.run(["docker", "compose", "up", "-d", "postgres"], cwd=ROOT, check=True)
+        migrate_schema()
         subprocess.run(psql, input=sql.encode(), check=True)
     except FileNotFoundError:
         sys.exit("нет docker — используй --emit-sql /tmp/seed.sql")
@@ -191,7 +174,9 @@ def main() -> int:
         sys.exit(f"psql завершился с ошибкой (см. вывод выше): {exc.returncode}")
 
     for q in (COUNTS_SQL, STATUS_SQL):
-        subprocess.run(psql + ["-c", q], check=True)
+        subprocess.run([*psql, "-c", q], check=True)
+    print("search_documents очищен пересевом — пересобери индекс: make index-search",
+          file=sys.stderr)
     return 0
 
 

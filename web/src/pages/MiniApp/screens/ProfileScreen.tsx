@@ -14,6 +14,7 @@ import styles from './Screens.module.scss'
 
 interface Props {
   orders: Order[]
+  loading: boolean
   session: TripSession
   onNavigate: (screen: Screen) => void
 }
@@ -41,7 +42,7 @@ function spent(orders: Order[]) {
   return formatMoney(fromMinor(sum, currency))
 }
 
-export function ProfileScreen({ orders, session, onNavigate }: Props) {
+export function ProfileScreen({ orders, loading, session, onNavigate }: Props) {
   const user = telegramUser()
   const name = user ? [user.first_name, user.last_name].filter(Boolean).join(' ') : 'Путешественник'
   const nights = orders.reduce((acc, o) => acc + (o.snapshot?.nights ?? 0), 0)
@@ -71,7 +72,7 @@ export function ProfileScreen({ orders, session, onNavigate }: Props) {
         <Row
           icon="ticket"
           title="Мои заказы"
-          hint={orders.length ? `${orders.length} · потрачено ${spent(orders) ?? '—'}` : 'Пока пусто'}
+          hint={loading ? 'Загружаем…' : orders.length ? `${orders.length} · потрачено ${spent(orders) ?? '—'}` : 'Пока пусто'}
           onClick={() => onNavigate('trips')}
         />
         {last && (

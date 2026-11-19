@@ -27,8 +27,8 @@
 
 from __future__ import annotations
 
-import json
 import inspect
+import json
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 from hashlib import sha256

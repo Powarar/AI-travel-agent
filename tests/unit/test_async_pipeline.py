@@ -7,17 +7,14 @@ from uuid import uuid4
 import pytest
 
 from services.agent.app.llm.slots import MockSlots
-from services.agent.app.orchestration.runtime import AsyncRuntime
+from services.agent.app.orchestration import nodes
 from services.agent.app.tools.seed_sources import seed_sources
 from services.backend.app.api.agent_executor import AsyncAgentRunExecutor
 from services.backend.app.api.executor import RunInput
 from services.backend.app.retrieval.hybrid import bm25, fuse
-from shared.contracts.enums import Outcome
+from shared.contracts.enums import ConstraintKind, Outcome
+from shared.contracts.request import FieldValue, TripRequest
 from shared.contracts.state import TripState
-from shared.contracts.request import FieldValue
-from shared.contracts.enums import ConstraintKind
-from services.agent.app.orchestration import nodes
-from shared.contracts.request import TripRequest
 
 MESSAGE = "Хочу в Сочи с 14 по 21 ноября из Москвы вдвоём, бюджет 200000"
 

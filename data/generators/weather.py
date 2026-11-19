@@ -5,11 +5,10 @@
 """
 from __future__ import annotations
 
+import json
 from typing import Any
 
 import data.generators.common as common
-import json
-from data.generators.common import http_get
 
 ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 YEARS = (2020, 2024)

@@ -6,7 +6,7 @@
   padding: 1rem clamp(1rem, 3vw, 2rem);
 }
 
-.actions { display: flex; align-items: center; gap: 0.6rem; }
+.actions { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
 
 
 .newTrip {

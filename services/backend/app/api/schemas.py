@@ -6,10 +6,12 @@ from datetime import date, datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from shared.contracts.enums import RunStatus
 from shared.contracts.money import Money
+
+from .auth import is_valid_email, normalize_email
 
 
 class MessageIn(BaseModel):
@@ -84,3 +86,50 @@ class RunTrace(BaseModel):
     status: RunStatus
     awaiting: list[str]
     events: list[SSEEvent]
+
+
+class CredentialsIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    email: str
+    password: str = Field(min_length=8, max_length=128)
+
+    @field_validator("email")
+    @classmethod
+    def _normalize_and_validate_email(cls, value: str) -> str:
+        normalized = normalize_email(value)
+        if not is_valid_email(normalized):
+            raise ValueError("invalid email")
+        return normalized
+
+
+class RefreshIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    refresh_token: str = Field(min_length=1)
+
+
+class LogoutIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    refresh_token: str = Field(min_length=1)
+
+
+class AuthUser(BaseModel):
+    id: UUID
+    email: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: Literal["bearer"] = "bearer"
+    expires_in: int
+    user: AuthUser
+
+
+class MeOut(BaseModel):
+    id: UUID
+    email: str
+    created_at: datetime
+    telegram_linked: bool

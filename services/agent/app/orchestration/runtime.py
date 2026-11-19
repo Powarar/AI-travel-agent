@@ -29,17 +29,16 @@ import re
 import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from enum import Enum
-from uuid import UUID, uuid4
 from typing import Any
+from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from services.agent.app.llm.slots import (
     Explanation,
-    LLMSlots,
     MockSlots,
     _concession_line,
     display,
@@ -53,7 +52,7 @@ from services.agent.app.tools.registry import REGISTRY, ToolCache
 from services.agent.app.validation.coherence import has_blocking, validate
 from services.agent.app.validation.inputs import Plan
 from shared.contracts.enums import ConstraintKind, DirectionMode, EscalationStep, Outcome, RunStatus, Stage
-from shared.contracts.money import BudgetLedger
+from shared.contracts.money import BudgetLedger, Money
 from shared.contracts.request import FieldValue, TripRequest
 from shared.contracts.state import Candidate, PackageOption, RunBudget, TripState
 from shared.contracts.violation import Violation
@@ -616,13 +615,18 @@ class AsyncRuntime:
         if text is None:
             return self._stop_by_limit(run)
         extra_numbers = explanation.facts.get("options", "")
-        bad = unverified_numbers(text, run.state, ledger, extra=extra_numbers)
+
+        def dishonest(candidate: str) -> list[str]:
+            return (unverified_numbers(candidate, run.state, ledger, extra=extra_numbers)
+                    + contradicted_claims(candidate, ledger))
+
+        bad = dishonest(text)
         if bad:
             run.guard_rejections += 1
             # guard из AGENTS.md: одна перегенерация, потом шаблон из состояния
-            logger.warning("number guard rejected explanation run=%s numbers=%s", run.run_id, bad)
+            logger.warning("honesty guard rejected explanation run=%s tokens=%s", run.run_id, bad)
             again = await self._slot_explain(run, explanation)
-            if again is None or unverified_numbers(again, run.state, ledger, extra=extra_numbers):
+            if again is None or dishonest(again):
                 run.guard_rejections += 1
                 text = self._template(explanation)
                 logger.info("fell back to template run=%s", run.run_id)
@@ -1045,10 +1049,6 @@ class AsyncRuntime:
         догадки: сдвиг возможен только при известных старых датах/бюджете.
         """
 
-        from shared.contracts.enums import ConstraintKind
-        from shared.contracts.money import Money
-        from shared.contracts.request import FieldValue
-
         text = message.lower().replace("−", "-")
         adjusted = delta.model_copy(deep=True)
         # Первый запрос без названного места законно открывает подбор. В последующей
@@ -1112,6 +1112,29 @@ def _ledger_numbers(ledger: BudgetLedger) -> str:
     return " ".join(f"{money.rounded().amount} {money.amount}" for money in amounts)
 
 
+#: Утверждения о цене, которые опровергает посчитанный ledger. `unverified_numbers` их не
+#: видит: «бесплатный» цифр не содержит, а «0» проходит подстрокой внутри честной суммы.
+#: Так инструкция из описания отеля (`evaluation/scenarios/s10_prompt_injection.json`)
+#: доходила до пользователя целиком — примерно в 40% прогонов, в зависимости от того,
+#: встретилась ли выдуманная цифра внутри настоящего числа состояния.
+_PRICE_CLAIM = re.compile(
+    r"бесплатн|даром|скидк|промокод|(?:итого|всего|сумма|стоимость)\s*[:—-]?\s*0\s*(?:₽|руб)"
+)
+
+
+def contradicted_claims(text: str, ledger: BudgetLedger) -> list[str]:
+    """Слова о цене против ledger: «бесплатно» при посчитанных 74 700 ₽ — ложь без цифр.
+
+    На нулевом итоге проверка молчит: там «бесплатно» — правда, и браковать её нельзя.
+    Это не семантический фильтр общего назначения — только тот класс утверждений, который
+    код уже умеет опровергнуть арифметикой.
+    """
+
+    if ledger.total.amount <= 0:
+        return []
+    return sorted({match.group(0) for match in _PRICE_CLAIM.finditer(text.lower())})
+
+
 def _plain(value: object) -> object:
     """Значение поля в том виде, в каком его принимает `json.dumps` (content-hash аргументов)."""
 
@@ -1138,7 +1161,7 @@ def _plain(value: object) -> object:
 def _stamp(now: datetime | None) -> datetime:
     """Время хода решает рантайм и передаёт его узлам аргументом — узлы его не берут."""
 
-    return now if now is not None else datetime.now(timezone.utc)
+    return now if now is not None else datetime.now(UTC)
 
 
 async def _await_result(value: Any) -> Any:
