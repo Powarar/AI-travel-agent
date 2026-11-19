@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Travel Agent · Мониторинг</title>
+<style>
+body{font:16px system-ui;background:#101827;color:#e7edf7;margin:auto;max-width:1200px;padding:32px}h1{font-size:28px}a{color:#9bc7ff}section{margin:28px 0;overflow:auto}table{border-collapse:collapse;width:100%;text-align:left}th,td{padding:12px;border-bottom:1px solid #334155}small,p{color:#bbc9dd}button{padding:10px;border:0;border-radius:6px;cursor:pointer}#status{min-height:24px}td{font-variant-numeric:tabular-nums}
+</style>
+<h1>Мониторинг планирования</h1><p>Автообновление каждые 15 секунд. Сводка ходов сбрасывается при рестарте процесса; модельные вызовы и evals сохраняются в PostgreSQL.</p>
+<button id="refresh">Обновить</button> <a href="/">Приложение</a><p id="status" role="status"></p>
+<section><h2>Модельные вызовы</h2><table><thead><tr><th>Слот / модель</th><th>Вызовы</th><th>Ошибки</th><th>p50 / p95, мс</th><th>Известная цена, ₽</th><th>Покрытие цены</th></tr></thead><tbody id="models"></tbody></table></section>
+<section><h2>Размеченные evals</h2><p>Accuracy относится только к указанному набору. Отсутствие успешных ответов модели означает неизвестное качество.</p><table><thead><tr><th>Набор / промпт</th><th>Дата</th><th>Полей верно</th><th>Exact match</th><th>Fallback</th></tr></thead><tbody id="evals"></tbody></table></section>
+<section><h2>Ходы процесса</h2><pre id="summary"></pre></section>
+<script>
+const dash = document;
+function cells(target,rows){target.replaceChildren(...rows.map(row=>{const tr=dash.createElement('tr');for(const value of row){const td=dash.createElement('td');td.textContent=String(value);tr.append(td)}return tr}))}
+function percent(value){return value==null?'нет данных':(value*100).toFixed(1)+'%'}
+async function update(){const button=dash.getElementById('refresh');button.disabled=true;try{
+const results=await Promise.all(['models','accuracy','summary'].map(async name=>{const response=await fetch('/v1/monitoring/'+name,{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status);return response.json()}));
+cells(dash.getElementById('models'),results[0].models.map(m=>[m.slot+' / '+m.model,m.calls,m.errors,Math.round(m.p50_ms)+' / '+Math.round(m.p95_ms),m.known_estimated_cost_rub,percent(m.cost_coverage)]));
+cells(dash.getElementById('evals'),results[1].evaluations.map(e=>[e.dataset_id+' / '+e.prompt_version,new Date(e.created_at).toLocaleString('ru-RU'),e.accuracy==null?'нет успешных ответов':e.correct_fields+'/'+e.required_fields,percent(e.exact_match_rate),e.fallback_cases+'/'+e.cases]));
+dash.getElementById('summary').textContent=JSON.stringify(results[2],null,2);dash.getElementById('status').textContent='Обновлено: '+new Date().toLocaleTimeString('ru-RU');
+}catch(error){dash.getElementById('status').textContent='Не удалось обновить: '+error.message}finally{button.disabled=false}}
+dash.getElementById('refresh').addEventListener('click',update);update();setInterval(()=>{if(!dash.hidden)update()},15000);
+</script></html>

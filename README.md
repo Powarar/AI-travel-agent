@@ -4,6 +4,11 @@
 
 [Русская версия](README.ru.md) · [Architecture](docs/ARCHITECTURE.md) · [ADR](docs/adr.md) · [Evidence](docs/evidence/)
 
+[Operations and deployment preparation](docs/operations.md) · [Local live monitoring](http://localhost:8080/monitoring.html)
+
+For a server release with built frontend assets, private PostgreSQL and automatic TLS,
+use [the deployment runbook](deploy/README.md) and `compose.production.yml`.
+
 A trip-planning agent that turns a conversational request into a **traceable, constraint-aware
 plan**. The model understands language and writes prose; code owns prices, availability,
 validation and the final decision.
@@ -15,7 +20,7 @@ validation and the final decision.
 
 Most LLM travel demos fail the same way: the model invents a price, drops a hard constraint,
 or quietly forgets the hotel it picked two turns ago. This project makes those failures
-structurally impossible rather than prompt-engineered away:
+less likely through explicit contracts and deterministic checks:
 
 - **`TripState` is the only source of truth.** Chat produces a typed delta, never state.
 - **Hard constraints are filtered in SQL.** Vector similarity ranks *inside* the admissible
@@ -79,8 +84,9 @@ Everything below is reproducible from a committed artifact or a command in this 
 `accuracy_status=no_successful_model_samples` with `accuracy=null` — *not* as 0% accuracy,
 because model quality is unknown when the model never answered. That run is committed too:
 [connect-timeout](docs/evidence/parse-accuracy-2026-11-07-connect-timeout.json).
-Exact match moved 0.95 → 0.90 between the two measured runs on the same dataset and prompt;
-that is model variance, and two runs give no confidence interval.
+Exact match moved 0.95 → 0.90 between the two measured runs on the same dataset with
+different prompt hashes. This does not isolate prompt effects from model variance;
+two runs give no reliable confidence interval.
 
 No load numbers exist. The stand was never load-tested, so there is no RPS or p95-under-load
 figure anywhere in this repo.
